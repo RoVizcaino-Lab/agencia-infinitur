@@ -1,0 +1,155 @@
+{
+  "project_context": {
+    "domain": "Travel, Adventure, Small Agency",
+    "theme": "light",
+    "archetype": "Organic & Earthy (Archetype 1)",
+    "aesthetic": "Warm, adventurous, personalized, trustworthy",
+    "language": "es"
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#C65D3B",
+      "hover": "#A64D31",
+      "foreground": "#FFFFFF"
+    },
+    "secondary": {
+      "DEFAULT": "#6B705C",
+      "hover": "#565A4A",
+      "foreground": "#FFFFFF"
+    },
+    "background": {
+      "base": "#F7F4F0",
+      "surface": "#FFFFFF",
+      "surface_alt": "#EFEAE1"
+    },
+    "text": {
+      "primary": "#2D2C2A",
+      "secondary": "#5C5A56",
+      "muted": "#8F8D88",
+      "inverse": "#FFFFFF"
+    },
+    "border": {
+      "DEFAULT": "#E5E0D8",
+      "focus": "#C65D3B"
+    },
+    "status": {
+      "success": "#4A6B53",
+      "warning": "#D4A373",
+      "error": "#B0413E"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Cormorant Garamond', serif",
+      "body": "'Manrope', sans-serif",
+      "accent": "'Outfit', sans-serif"
+    },
+    "scale": {
+      "h1": "text-5xl sm:text-6xl tracking-tight leading-none font-bold",
+      "h2": "text-4xl sm:text-5xl tracking-tight leading-tight font-bold",
+      "h3": "text-2xl sm:text-3xl leading-snug font-semibold",
+      "h4": "text-xl font-medium",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm uppercase tracking-[0.1em]"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing. Allow images to breathe. Prioritize negative space in marketing pages.",
+    "section_padding": "py-24 sm:py-32",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "grid_modes": {
+      "marketing": "grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12",
+      "dashboard": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"
+    },
+    "radii": {
+      "card": "rounded-3xl",
+      "button": "rounded-full",
+      "input": "rounded-xl"
+    },
+    "shadows": {
+      "soft": "shadow-[0_8px_30px_rgba(198,93,59,0.06)]",
+      "floating": "shadow-[0_20px_40px_rgba(45,44,42,0.08)]"
+    }
+  },
+  "surfaces": {
+    "header": "backdrop-blur-xl bg-white/80 border-b border-[#E5E0D8] z-50",
+    "card": "bg-white border border-[#E5E0D8] transition-transform duration-300 hover:-translate-y-1 hover:shadow-floating",
+    "dashboard_card": "bg-white border border-[#E5E0D8] rounded-xl shadow-sm",
+    "hero_overlay": "bg-gradient-to-t from-black/70 via-black/30 to-black/10"
+  },
+  "components_strategy": {
+    "marketing_pages": {
+      "approach": "Custom HTML/Tailwind. Asymmetrical layouts. No Shadcn wrappers for core layouts.",
+      "hero": "Full-width or 90vw rounded-3xl container, text overlay with gradient, high-quality image.",
+      "trip_catalog": "Bento grid mode A. Mix of square and tall portrait cards. Large high-res images.",
+      "gallery": "Masonry or staggered grid. generous gap.",
+      "cta": "Solid terracotta button, generous padding (px-8 py-4), rounded-full, with hover lift."
+    },
+    "dashboard": {
+      "approach": "Shadcn components heavily utilized (Tables, Forms, Dialogs). Dense spacing.",
+      "layout": "Sidebar navigation + main content area. Strict geometric alignment.",
+      "forms": "Use Shadcn forms. Clear labels, inline validation."
+    }
+  },
+  "image_urls": [
+    {
+      "category": "hero",
+      "url": "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg",
+      "description": "Group hugging at mountain overlook during sunset"
+    },
+    {
+      "category": "destinations",
+      "name": "Mexico / Chichen Itza",
+      "url": "https://images.unsplash.com/photo-1606403759369-e10299ed5740",
+      "description": "Chichen Itza ruins under sky"
+    },
+    {
+      "category": "destinations",
+      "name": "Peru / Machu Picchu",
+      "url": "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg",
+      "description": "Machu Picchu at sunrise"
+    },
+    {
+      "category": "destinations",
+      "name": "Europe / Paris",
+      "url": "https://images.unsplash.com/photo-1570097703229-b195d6dd291f",
+      "description": "Eiffel Tower"
+    },
+    {
+      "category": "gallery",
+      "url": "https://images.pexels.com/photos/6125816/pexels-photo-6125816.jpeg",
+      "description": "People relaxing at sunset on mountain"
+    },
+    {
+      "category": "gallery",
+      "url": "https://images.unsplash.com/photo-1629752123286-49a7f60571f3",
+      "description": "People walking on rocky mountain"
+    },
+    {
+      "category": "gallery",
+      "url": "https://images.unsplash.com/photo-1521437687640-34c398f4e598",
+      "description": "Group standing on top of mountain"
+    },
+    {
+      "category": "guide_portrait",
+      "url": "https://images.unsplash.com/photo-1591953996491-ea0d5ff3db59",
+      "description": "Friendly tour guide portrait"
+    }
+  ],
+  "accessibility_and_interactions": {
+    "focus_states": "focus:outline-none focus:ring-2 focus:ring-[#C65D3B] focus:ring-offset-2 focus:ring-offset-[#F7F4F0]",
+    "hover_states": "Always ensure text contrast remains accessible on hover. E.g., hover:bg-[#A64D31] hover:text-white",
+    "motion": "transition-all duration-300 ease-in-out",
+    "test_attributes": "Add data-testid to all interactive elements."
+  },
+  "instructions_to_main_agent": [
+    "Write ALL content and dummy copy in SPANISH.",
+    "Use Phosphor Icons (@phosphor-icons/react) for marketing pages for a premium touch, and Lucide for the admin panel.",
+    "Do NOT use 'Inter' for headings. Install and apply 'Cormorant Garamond' from Google Fonts for headings, and 'Manrope' for body.",
+    "For the trip catalog, prioritize large, inspiring imagery. Use the provided destination URLs.",
+    "The reservation form should NOT process payments. It should collect user details and selected trip, and include a CTA to open WhatsApp or send an email.",
+    "Admin dashboard must include views to manage trips, reservations, gallery photos, and testimonials.",
+    "Apply the 'hero_overlay' gradient over the hero image instead of a flat black overlay to preserve image visibility.",
+    "All cards must have a border (#E5E0D8) to provide crisp edges rather than relying solely on shadows."
+  ]
+}
