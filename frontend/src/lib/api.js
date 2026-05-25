@@ -12,22 +12,20 @@ export function resolveImage(u) {
 
 const api = axios.create({ baseURL: API });
 
-// Token storage: sessionStorage (cleared on tab close, lower XSS impact than localStorage)
-const TOKEN_KEY = "admin_token";
+// In-memory token (cleared on page refresh). Reduces XSS persistence vector vs. localStorage/sessionStorage.
+let _token = null;
 
 api.interceptors.request.use((cfg) => {
-  const token = sessionStorage.getItem(TOKEN_KEY);
-  if (token) cfg.headers = { ...cfg.headers, Authorization: `Bearer ${token}` };
+  if (_token) cfg.headers = { ...cfg.headers, Authorization: `Bearer ${_token}` };
   return cfg;
 });
 
 export function setToken(t) {
-  if (t) sessionStorage.setItem(TOKEN_KEY, t);
-  else sessionStorage.removeItem(TOKEN_KEY);
+  _token = t || null;
 }
 
 export function getToken() {
-  return sessionStorage.getItem(TOKEN_KEY);
+  return _token;
 }
 
 export function formatApiError(detail) {

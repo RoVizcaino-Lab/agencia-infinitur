@@ -1,29 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import api, { formatApiError, getToken, setToken } from "@/lib/api";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import api, { formatApiError, setToken } from "@/lib/api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // null = checking, false = anon, object = logged in
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      setUser(false);
-      setLoading(false);
-      return;
-    }
-    api
-      .get("/auth/me")
-      .then((res) => setUser(res.data))
-      .catch((err) => {
-        console.error("[auth] /auth/me failed:", err?.response?.status, err?.message);
-        setToken(null);
-        setUser(false);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  // No persisted token → user starts anonymous immediately.
+  // Refreshing the tab requires re-login (in-memory token only).
+  const [user, setUser] = useState(false);
 
   const login = useCallback(async (email, password) => {
     try {
@@ -46,7 +29,8 @@ export function AuthProvider({ children }) {
     setUser(false);
   }, []);
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
+  // `loading` retained for API compatibility with consumers; always false with in-memory tokens.
+  const value = useMemo(() => ({ user, loading: false, login, logout }), [user, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
