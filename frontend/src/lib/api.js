@@ -3,6 +3,13 @@ import axios from "axios";
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 
+// Resolve image URLs that may be relative ('/api/files/<id>') or already absolute
+export function resolveImage(u) {
+  if (!u) return "";
+  if (u.startsWith("http://") || u.startsWith("https://")) return u;
+  return `${BACKEND_URL}${u.startsWith("/") ? u : "/" + u}`;
+}
+
 const api = axios.create({ baseURL: API });
 
 // Attach Bearer token automatically if present in localStorage

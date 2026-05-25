@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
+import ImageUploadField from "@/components/ImageUploadField";
 
 export default function AdminGallery() {
   const [photos, setPhotos] = useState([]);
@@ -11,6 +12,7 @@ export default function AdminGallery() {
 
   const add = async (e) => {
     e.preventDefault();
+    if (!form.url) { toast.error("Sube o pega una URL de imagen"); return; }
     try {
       await api.post("/admin/gallery", form);
       toast.success("Foto agregada");
@@ -27,15 +29,16 @@ export default function AdminGallery() {
   return (
     <div data-testid="admin-gallery">
       <h2 className="font-heading text-3xl text-ink mb-6">Galería</h2>
-      <form onSubmit={add} className="bg-white border border-[#E5E0D8] rounded-2xl p-5 mb-8 grid sm:grid-cols-4 gap-3 items-end">
-        <input data-testid="gallery-url" required placeholder="URL de la imagen" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })}
-          className="px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone sm:col-span-2" />
-        <input data-testid="gallery-caption" placeholder="Descripción" value={form.caption} onChange={(e) => setForm({ ...form, caption: e.target.value })}
-          className="px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone" />
-        <input data-testid="gallery-location" placeholder="Ubicación" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
-          className="px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone" />
-        <button data-testid="add-photo" className="sm:col-span-4 btn-terracotta px-5 py-2.5 rounded-full font-semibold inline-flex items-center justify-center gap-2 w-fit">
-          <Plus size={16} /> Agregar
+      <form onSubmit={add} className="bg-white border border-[#E5E0D8] rounded-2xl p-5 mb-8 space-y-4">
+        <ImageUploadField label="Foto" value={form.url} onChange={(v) => setForm({ ...form, url: v })} testId="gallery-img" />
+        <div className="grid sm:grid-cols-2 gap-3">
+          <input data-testid="gallery-caption" placeholder="Descripción" value={form.caption} onChange={(e) => setForm({ ...form, caption: e.target.value })}
+            className="px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone" />
+          <input data-testid="gallery-location" placeholder="Ubicación" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
+            className="px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone" />
+        </div>
+        <button data-testid="add-photo" className="btn-terracotta px-5 py-2.5 rounded-full font-semibold inline-flex items-center gap-2">
+          <Plus size={16} /> Agregar a galería
         </button>
       </form>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

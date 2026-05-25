@@ -7,6 +7,7 @@ const links = [
   { to: "/viajes", label: "Viajes" },
   { to: "/galeria", label: "Galería" },
   { to: "/sobre-mi", label: "El guía" },
+  { to: "/faq", label: "FAQ" },
   { to: "/contacto", label: "Contacto" },
 ];
 

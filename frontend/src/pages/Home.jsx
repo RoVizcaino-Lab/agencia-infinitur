@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/lib/api";
 import TripCard from "@/components/TripCard";
-import { ArrowRight, Compass, Heart, Users, Star } from "lucide-react";
+import MonthCarousel from "@/components/MonthCarousel";
+import FacebookFeed from "@/components/FacebookFeed";
+import { ArrowRight, Compass, Heart, Users, Star, Sparkles } from "lucide-react";
 
 export default function Home() {
   const [trips, setTrips] = useState([]);
@@ -27,12 +29,11 @@ export default function Home() {
         <div className="absolute inset-0 hero-gradient" />
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full flex flex-col justify-end pb-24">
           <div className="max-w-3xl fade-in">
-            <div className="inline-block px-4 py-1.5 rounded-full bg-white/15 backdrop-blur text-white text-xs uppercase tracking-[0.2em] mb-6 border border-white/20">
-              Grupos chicos · Aventuras grandes
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500 text-white text-xs uppercase tracking-[0.2em] mb-6 font-bold shadow-lg">
+              <Sparkles size={14} /> Grupos chicos · Aventuras grandes
             </div>
-            <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl text-white leading-[0.95] tracking-tight mb-6">
-              Viajar lento.<br />
-              <span className="italic font-light">Sentir profundo.</span>
+            <h1 className="font-heading text-6xl sm:text-7xl lg:text-8xl text-white leading-[0.9] tracking-tight mb-6">
+              ¡El Viaje<br /><span className="text-orange-400">de los Viajes!</span>
             </h1>
             <p className="text-white/85 text-lg max-w-xl leading-relaxed mb-8">
               Aventuras guiadas para grupos de 10 a 15 personas por México, América y Europa.
@@ -49,6 +50,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* MONTH CAROUSEL */}
+      <MonthCarousel />
 
       {/* INTRO */}
       <section className="py-24 sm:py-32 bg-bone">
@@ -123,6 +127,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* FACEBOOK FEED */}
+      <FacebookFeed />
 
       {/* TESTIMONIALS */}
       {testimonials.length > 0 && (

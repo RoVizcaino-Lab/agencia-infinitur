@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
+import ImageUploadField from "@/components/ImageUploadField";
 
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
@@ -136,8 +137,8 @@ function TripModal({ data, onClose, onSave }) {
             <Inp label="Max grupo" type="number" v={f.group_max} onChange={(v) => set("group_max", v)} />
           </div>
           <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
-          <Inp label="Imagen principal (URL)" v={f.cover_image} onChange={(v) => set("cover_image", v)} />
-          <Inp label="Imágenes adicionales (una por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
+          <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
+          <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
           <Inp label="Incluye (una por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} />
           <Inp label="No incluye (una por línea)" v={f.excluded} onChange={(v) => set("excluded", v)} textarea rows={2} />
           <div className="flex gap-6">

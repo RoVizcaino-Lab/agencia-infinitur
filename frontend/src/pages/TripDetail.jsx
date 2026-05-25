@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import api, { formatApiError } from "@/lib/api";
+import api, { formatApiError, resolveImage } from "@/lib/api";
 import { Calendar, Users, Clock, MapPin, Check, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
@@ -49,7 +49,7 @@ export default function TripDetail() {
     <div data-testid="trip-detail-page" className="pt-24 pb-24 bg-bone">
       {/* Hero image */}
       <div className="relative h-[60vh] min-h-[420px] w-full overflow-hidden">
-        <img src={trip.cover_image} alt={trip.title} className="absolute inset-0 w-full h-full object-cover" />
+        <img src={resolveImage(trip.cover_image)} alt={trip.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 hero-gradient" />
         <div className="relative z-10 max-w-7xl mx-auto px-6 h-full flex flex-col justify-end pb-12">
           <Link to="/viajes" className="text-white/85 inline-flex items-center gap-2 mb-4 hover:text-white">

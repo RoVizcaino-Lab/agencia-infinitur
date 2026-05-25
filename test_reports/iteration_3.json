@@ -1,0 +1,48 @@
+{
+  "summary": "Iteration 3 testing complete. 27/27 backend pytest tests pass (10 new: seed counts, FAQ CRUD, upload auth/MIME/size, file serve, plus 17 regression). Playwright UI confirmed: floating WhatsApp button visible on all 7 public routes (/, /viajes, /viajes/:id, /galeria, /sobre-mi, /faq, /contacto) and absent on /admin & /admin/login — bug FIXED. /faq renders [data-testid='faq-page'] with all 8 toggles (faq-toggle-0..7), nav-faq link present. /viajes shows 9 trip cards, /galeria shows 12 photos. Admin login works; dashboard exposes [data-testid='tab-faq'] and AdminFAQ lists all 8 seeded items with Edit/Delete controls and a 'Nueva pregunta' creator. AdminTrips 'Nuevo viaje' modal exposes trip-cover-btn / trip-cover-url / trip-cover-file. AdminGallery exposes gallery-img-btn. Real PNG upload via /api/admin/upload → /api/files/<id> round-trips returning 200 with image/* content-type and the original bytes (Emergent storage init succeeded).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/admin/reservations/{rid}", "issue": "Status string is whitelisted but not validated against enum (nuevo|contactado|confirmado|cancelado) — pre-existing from iter 1."},
+      {"endpoint": "/api/auth/login", "issue": "No brute-force lockout (pre-existing, single-admin MVP)."},
+      {"endpoint": "/api/admin/faq", "issue": "FAQInput has no max length on question/answer — long answers can be inserted unbounded."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/contacto", "issues": ["Pre-existing hydration warning: <span> child inside <option> due to ve-dynamic instrumentation — cosmetic dev-tool noise, not from app code."]},
+      {"screen": "Admin → Nuevo viaje modal", "issues": ["Date inputs use browser default mm/dd/yyyy picker instead of a shadcn Calendar component — pre-existing UX choice, low priority."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_iteration3.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Validate reservation status with an Enum/Literal in Pydantic.",
+    "(Optional) Add max_length constraints on FAQInput.question/answer.",
+    "(Optional) Replace native <input type='date'> with shadcn Calendar in AdminTrips modal."
+  ],
+  "critical_code_review_comments": [
+    "Backend server.py is now ~790 lines and growing — recommend splitting into routers/ (auth, public, admin_trips, admin_faq, files) and a storage.py helper before next iteration.",
+    "init_storage() is synchronous (uses `requests`) and called inside an async route — for /api/admin/upload and /api/files/{id} this blocks the event loop on every upload/serve. Move to httpx.AsyncClient or wrap with run_in_threadpool for scale.",
+    "/api/files/{id} re-fetches the binary from Emergent storage on every request (no caching layer). For images this means a network hop per request even with Cache-Control. Consider streaming or a CDN-style redirect.",
+    "FAQ models duplicate fields between FAQInput and FAQItem; could use a single base model with inheritance like Trip/TripBase.",
+    "AdminFAQ modal: confirm the admin update path uses Authorization Bearer header (Bearer fallback works in get_current_admin) — verified via tests.",
+    "Mongo `_id` correctly excluded via projection on all reads ✓.",
+    "Bcrypt $2b$ hash + seed_admin idempotent ✓; CORS allow_origin_regex='.*' with credentials=True remains overly permissive but is iter-1 carryover."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration3.py"
+  ],
+  "success_rate": {"backend": "100% (27/27)", "frontend": "100% on tested flows"},
+  "test_credentials": "admin@viajes.mx / Aventura2026! (verified working via login + /api/auth/me Bearer)",
+  "seed_data_creation": "Backend re-seeded: 9 trips, 12 gallery photos, 8 FAQ items, 3 testimonials, 1 admin user. test_iteration3.py creates TEST_ FAQ entries / TEST_pixel.png file and cleans up FAQ; uploaded test files remain in db.files (no cleanup endpoint).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Pytest suite at /app/backend/tests/ runs in <8s. The Emergent object storage IS reachable from this preview env — upload/serve roundtrip works (TestUpload.test_upload_image_and_serve passes). If a future iteration removes EMERGENT_LLM_KEY from backend/.env, the upload test auto-skips via pytest.skip on 500. Admin dashboard tab data-testids: tab-viajes/tab-reservas/tab-galeria/tab-testimonios/tab-faq (first three may need a small post-mount delay to be queried). Trip cover upload: trip-cover-btn/trip-cover-url/trip-cover-file; gallery: gallery-img-btn. nav-faq lives in Navbar. WhatsAppButton is mounted exclusively inside PublicShell after Footer — never inside /admin routes.",
+  "rca of the issue": "Floating WhatsApp button regression from iter 2 was caused by it being mounted at app root which got unmounted on /admin routes. Fix moves <WhatsAppButton /> inside PublicShell so it auto-mounts only on public-shell routes — verified visible on all 7 public routes and absent on /admin and /admin/login."
+}

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Calendar, Users, MapPin } from "lucide-react";
+import { resolveImage } from "@/lib/api";
 
 const fmtDate = (iso) => {
   try {
@@ -20,7 +21,7 @@ export default function TripCard({ trip, tall = false }) {
     >
       <div className={`relative overflow-hidden ${tall ? "aspect-[3/4]" : "aspect-[4/3]"}`}>
         <img
-          src={trip.cover_image}
+          src={resolveImage(trip.cover_image)}
           alt={trip.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"

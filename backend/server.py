@@ -9,9 +9,10 @@ import uuid
 import logging
 import bcrypt
 import jwt
+import requests
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, UploadFile, File
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, EmailStr
@@ -24,6 +25,58 @@ db = client[os.environ['DB_NAME']]
 # --- App ---
 app = FastAPI(title="Senderos Auténticos API")
 api_router = APIRouter(prefix="/api")
+
+# --- Object storage (Emergent) ---
+STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY", "")
+APP_NAME = os.environ.get("APP_NAME", "senderos-mx")
+MIME_TYPES = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif"}
+_storage_key = None
+
+
+def init_storage():
+    global _storage_key
+    if _storage_key:
+        return _storage_key
+    if not EMERGENT_KEY:
+        return None
+    try:
+        r = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+        r.raise_for_status()
+        _storage_key = r.json()["storage_key"]
+        return _storage_key
+    except Exception as e:
+        logging.getLogger(__name__).error(f"Storage init failed: {e}")
+        return None
+
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    if not key:
+        raise HTTPException(500, "Storage no inicializado")
+    r = requests.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data, timeout=120,
+    )
+    if r.status_code == 403:
+        global _storage_key
+        _storage_key = None
+        key = init_storage()
+        r = requests.put(
+            f"{STORAGE_URL}/objects/{path}",
+            headers={"X-Storage-Key": key, "Content-Type": content_type},
+            data=data, timeout=120,
+        )
+    r.raise_for_status()
+    return r.json()
+
+
+def get_object(path: str):
+    key = init_storage()
+    r = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    r.raise_for_status()
+    return r.content, r.headers.get("Content-Type", "application/octet-stream")
 
 # --- JWT / auth helpers ---
 JWT_ALGORITHM = "HS256"
@@ -313,6 +366,84 @@ async def root():
     return {"app": "Senderos Auténticos", "status": "ok"}
 
 
+# --- Upload & file serving ---
+@api_router.post("/admin/upload")
+async def admin_upload(file: UploadFile = File(...), user: dict = Depends(get_current_admin)):
+    ext = (file.filename.rsplit(".", 1)[-1] if "." in (file.filename or "") else "bin").lower()
+    if ext not in MIME_TYPES:
+        raise HTTPException(400, "Formato no permitido (usa jpg, png, webp, gif)")
+    content_type = MIME_TYPES[ext]
+    path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
+    data = await file.read()
+    if len(data) > 8 * 1024 * 1024:
+        raise HTTPException(400, "Archivo demasiado grande (máx 8MB)")
+    result = put_object(path, data, content_type)
+    file_id = str(uuid.uuid4())
+    await db.files.insert_one({
+        "id": file_id,
+        "storage_path": result["path"],
+        "original_filename": file.filename,
+        "content_type": content_type,
+        "size": result.get("size", len(data)),
+        "is_deleted": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+    # Build public URL using request scheme/host? Use a relative API path; frontend prefixes BACKEND_URL.
+    public_url = f"/api/files/{file_id}"
+    return {"id": file_id, "url": public_url}
+
+
+@api_router.get("/files/{file_id}")
+async def serve_file(file_id: str):
+    record = await db.files.find_one({"id": file_id, "is_deleted": False}, {"_id": 0})
+    if not record:
+        raise HTTPException(404, "Archivo no encontrado")
+    data, ct = get_object(record["storage_path"])
+    return Response(content=data, media_type=record.get("content_type", ct), headers={"Cache-Control": "public, max-age=86400"})
+
+
+# --- FAQ ---
+class FAQItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    question: str
+    answer: str
+    order: int = 0
+
+
+class FAQInput(BaseModel):
+    question: str
+    answer: str
+    order: int = 0
+
+
+@api_router.get("/faq", response_model=List[FAQItem])
+async def list_faq():
+    docs = await db.faq.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+    return docs
+
+
+@api_router.post("/admin/faq", response_model=FAQItem)
+async def admin_create_faq(data: FAQInput, user: dict = Depends(get_current_admin)):
+    item = FAQItem(**data.model_dump())
+    await db.faq.insert_one(item.model_dump())
+    return item
+
+
+@api_router.put("/admin/faq/{fid}", response_model=FAQItem)
+async def admin_update_faq(fid: str, data: FAQInput, user: dict = Depends(get_current_admin)):
+    res = await db.faq.update_one({"id": fid}, {"$set": data.model_dump()})
+    if res.matched_count == 0:
+        raise HTTPException(404, "FAQ no encontrado")
+    doc = await db.faq.find_one({"id": fid}, {"_id": 0})
+    return doc
+
+
+@api_router.delete("/admin/faq/{fid}")
+async def admin_delete_faq(fid: str, user: dict = Depends(get_current_admin)):
+    await db.faq.delete_one({"id": fid})
+    return {"ok": True}
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -454,6 +585,137 @@ async def seed_demo_data():
                 "featured": True,
                 "active": True,
             },
+            {
+                "title": "Oaxaca Mágico: Mezcal, Mole y Monte Albán",
+                "destination": "Oaxaca, México",
+                "country": "México",
+                "description": "4 días de sabores, colores y tradición zapoteca. Tianguis, mezcalerías artesanales y ruinas.",
+                "long_description": "Vamos a perdernos entre callejones de la ciudad de Oaxaca, subir a Monte Albán al amanecer, comer en mercados con cocineras tradicionales y catar mezcales en palenques familiares de los Valles Centrales.",
+                "duration_days": 4,
+                "start_date": "2026-07-18",
+                "end_date": "2026-07-21",
+                "price": 11500,
+                "currency": "MXN",
+                "group_min": 10,
+                "group_max": 15,
+                "spots_left": 11,
+                "cover_image": "https://images.unsplash.com/photo-1518614368389-a91ff4a47550?w=1200",
+                "images": ["https://images.unsplash.com/photo-1518614368389-a91ff4a47550?w=1200"],
+                "itinerary": [
+                    {"day": 1, "title": "Llegada y centro histórico", "description": "Caminata por el zócalo y cena de bienvenida."},
+                    {"day": 2, "title": "Monte Albán", "description": "Visita arqueológica al amanecer."},
+                    {"day": 3, "title": "Valles Centrales", "description": "Mitla, Teotitlán y palenque mezcalero."},
+                    {"day": 4, "title": "Mercado y despedida", "description": "Mercado 20 de Noviembre y traslado."},
+                ],
+                "included": ["Hospedaje 3 noches", "Transporte interno", "Cata de mezcal", "3 desayunos", "Guía"],
+                "excluded": ["Vuelos", "Comidas no listadas"],
+                "featured": True,
+                "active": True,
+            },
+            {
+                "title": "Cartagena y el Caribe Colombiano",
+                "destination": "Cartagena, Colombia",
+                "country": "América",
+                "description": "5 días entre murallas coloniales, playas de Islas del Rosario y noches de cumbia.",
+                "long_description": "Cartagena de Indias es pura magia caribeña. Caminamos sus calles empedradas, navegamos a islas paradisíacas, comemos arepas de huevo en la calle y bailamos cumbia hasta que el sol nos cache.",
+                "duration_days": 5,
+                "start_date": "2026-08-12",
+                "end_date": "2026-08-16",
+                "price": 28500,
+                "currency": "MXN",
+                "group_min": 10,
+                "group_max": 14,
+                "spots_left": 14,
+                "cover_image": "https://images.unsplash.com/photo-1583531352515-8884af319dc1?w=1200",
+                "images": ["https://images.unsplash.com/photo-1583531352515-8884af319dc1?w=1200"],
+                "itinerary": [
+                    {"day": 1, "title": "Llegada a Cartagena", "description": "Tour por la ciudad amurallada."},
+                    {"day": 3, "title": "Islas del Rosario", "description": "Día completo de playa y snorkel."},
+                    {"day": 5, "title": "Getsemaní y despedida", "description": "Caminata por el barrio bohemio."},
+                ],
+                "included": ["Hospedaje 4 noches", "Tour islas", "Guía local", "Desayunos"],
+                "excluded": ["Vuelos internacionales"],
+                "featured": False,
+                "active": True,
+            },
+            {
+                "title": "Roma, Florencia y la Toscana",
+                "destination": "Italia",
+                "country": "Europa",
+                "description": "Una semana saboreando Italia: arte renacentista, pasta auténtica y atardeceres entre viñedos.",
+                "long_description": "De Roma a Florencia con una escapada de 3 días por la Toscana rural. Visitas guiadas por museos, tour de pasta artesanal, y degustación de vinos en una bodega familiar.",
+                "duration_days": 7,
+                "start_date": "2026-09-22",
+                "end_date": "2026-09-28",
+                "price": 58000,
+                "currency": "MXN",
+                "group_min": 10,
+                "group_max": 12,
+                "spots_left": 10,
+                "cover_image": "https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=1200",
+                "images": ["https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=1200"],
+                "itinerary": [
+                    {"day": 1, "title": "Llegada a Roma", "description": "Cena en Trastevere."},
+                    {"day": 3, "title": "Coliseo y Vaticano", "description": "Tours guiados sin filas."},
+                    {"day": 5, "title": "Toscana", "description": "Bodega y clase de cocina."},
+                ],
+                "included": ["Hospedaje 6 noches", "Tours guiados", "Clase de pasta", "Cata de vinos"],
+                "excluded": ["Vuelos internacionales", "Comidas no listadas"],
+                "featured": True,
+                "active": True,
+            },
+            {
+                "title": "Cañón del Sumidero y Chiapas Profundo",
+                "destination": "Chiapas, México",
+                "country": "México",
+                "description": "5 días entre selvas, cascadas turquesa y comunidades tsotsiles. San Cristóbal, Palenque y más.",
+                "long_description": "Recorrido por uno de los estados más diversos de México. Navegamos el Cañón del Sumidero, exploramos las ruinas mayas de Palenque selva adentro, nos perdemos en San Cristóbal de las Casas y nadamos en las cascadas de Agua Azul.",
+                "duration_days": 5,
+                "start_date": "2026-10-08",
+                "end_date": "2026-10-12",
+                "price": 14500,
+                "currency": "MXN",
+                "group_min": 10,
+                "group_max": 15,
+                "spots_left": 15,
+                "cover_image": "https://images.unsplash.com/photo-1568659585041-3a3905e1aa0c?w=1200",
+                "images": ["https://images.unsplash.com/photo-1568659585041-3a3905e1aa0c?w=1200"],
+                "itinerary": [
+                    {"day": 1, "title": "Llegada a Tuxtla", "description": "Cañón del Sumidero en lancha."},
+                    {"day": 3, "title": "San Cristóbal", "description": "Pueblos tsotsiles y mercado."},
+                    {"day": 5, "title": "Palenque", "description": "Ruinas mayas y cascadas."},
+                ],
+                "included": ["Transporte interno", "Hospedaje 4 noches", "Guía local", "Entradas"],
+                "excluded": ["Vuelos", "Bebidas alcohólicas"],
+                "featured": False,
+                "active": True,
+            },
+            {
+                "title": "Buenos Aires, Mendoza y Patagonia",
+                "destination": "Argentina",
+                "country": "América",
+                "description": "10 días por lo mejor de Argentina: tango, malbec en Mendoza y glaciares en El Calafate.",
+                "long_description": "El viaje más completo a Argentina: arrancamos en Buenos Aires con una milonga inolvidable, volamos a Mendoza para catar vinos al pie de los Andes, y terminamos frente al Perito Moreno en la Patagonia.",
+                "duration_days": 10,
+                "start_date": "2026-11-05",
+                "end_date": "2026-11-14",
+                "price": 62000,
+                "currency": "MXN",
+                "group_min": 10,
+                "group_max": 12,
+                "spots_left": 9,
+                "cover_image": "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=1200",
+                "images": ["https://images.unsplash.com/photo-1589909202802-8f4aadce1849?w=1200"],
+                "itinerary": [
+                    {"day": 1, "title": "Llegada Buenos Aires", "description": "Tour San Telmo y milonga."},
+                    {"day": 4, "title": "Mendoza", "description": "Cata de Malbec en 3 bodegas."},
+                    {"day": 8, "title": "El Calafate", "description": "Glaciar Perito Moreno."},
+                ],
+                "included": ["Vuelos internos", "Hospedaje 9 noches", "Guías", "Catas"],
+                "excluded": ["Vuelos internacionales"],
+                "featured": False,
+                "active": True,
+            },
         ]
         for t in sample_trips:
             doc = Trip(**t).model_dump()
@@ -462,12 +724,18 @@ async def seed_demo_data():
 
     if await db.gallery.count_documents({}) == 0:
         photos = [
-            {"url": "https://images.pexels.com/photos/6125816/pexels-photo-6125816.jpeg", "caption": "Atardecer en la sierra", "location": "México"},
-            {"url": "https://images.unsplash.com/photo-1629752123286-49a7f60571f3", "caption": "Caminata grupal", "location": "Andes"},
-            {"url": "https://images.unsplash.com/photo-1521437687640-34c398f4e598", "caption": "Cumbre conquistada", "location": "Perú"},
-            {"url": "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg", "caption": "Abrazo de grupo", "location": "Tepoztlán"},
-            {"url": "https://images.unsplash.com/photo-1606403759369-e10299ed5740", "caption": "Pirámides al amanecer", "location": "Yucatán"},
-            {"url": "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg", "caption": "Machu Picchu mágico", "location": "Cusco"},
+            {"url": "https://images.pexels.com/photos/6125816/pexels-photo-6125816.jpeg?w=1000", "caption": "Atardecer en la sierra", "location": "México"},
+            {"url": "https://images.unsplash.com/photo-1629752123286-49a7f60571f3?w=1000", "caption": "Caminata grupal", "location": "Andes"},
+            {"url": "https://images.unsplash.com/photo-1521437687640-34c398f4e598?w=1000", "caption": "Cumbre conquistada", "location": "Perú"},
+            {"url": "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg?w=1000", "caption": "Abrazo de grupo", "location": "Tepoztlán"},
+            {"url": "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=1000", "caption": "Pirámides al amanecer", "location": "Yucatán"},
+            {"url": "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=1000", "caption": "Machu Picchu mágico", "location": "Cusco"},
+            {"url": "https://images.unsplash.com/photo-1518614368389-a91ff4a47550?w=1000", "caption": "Colores de Oaxaca", "location": "Oaxaca"},
+            {"url": "https://images.unsplash.com/photo-1583531352515-8884af319dc1?w=1000", "caption": "Murallas de Cartagena", "location": "Colombia"},
+            {"url": "https://images.unsplash.com/photo-1568659585041-3a3905e1aa0c?w=1000", "caption": "Selva chiapaneca", "location": "Chiapas"},
+            {"url": "https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=1000", "caption": "Trajineras en Xochimilco", "location": "CDMX"},
+            {"url": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1000", "caption": "Mercado de artesanías", "location": "México"},
+            {"url": "https://images.unsplash.com/photo-1565073624497-7e91b5cc3843?w=1000", "caption": "Playas escondidas", "location": "Oaxaca"},
         ]
         for p in photos:
             doc = GalleryPhoto(**p).model_dump()
@@ -489,10 +757,30 @@ async def on_startup():
     await db.users.create_index("email", unique=True)
     await db.trips.create_index("id", unique=True)
     await db.reservations.create_index("id", unique=True)
+    init_storage()
     await seed_admin()
     await seed_demo_data()
+    await seed_faq()
 
 
 @app.on_event("shutdown")
 async def on_shutdown():
     client.close()
+
+
+async def seed_faq():
+    if await db.faq.count_documents({}) > 0:
+        return
+    items = [
+        ("¿Cómo reservo mi lugar?", "Llena el formulario de reserva del viaje que te guste. Te contactamos en menos de 24 horas para confirmar disponibilidad y enviarte la información de pago."),
+        ("¿Cuál es la forma de pago?", "Aceptamos transferencia bancaria, depósito y SPEI dentro de México. Para viajes internacionales también aceptamos PayPal. Confirmas con el 50% de anticipo y el resto 30 días antes del viaje."),
+        ("¿Qué incluyen los viajes?", "Generalmente incluyen hospedaje, transporte interno, guía certificado, entradas a sitios y algunos alimentos. Cada viaje tiene un detalle de qué incluye y qué no — revísalo en la página del viaje."),
+        ("¿De cuántas personas son los grupos?", "Grupos chicos de 10 a 15 personas máximo. Esto nos permite movernos con flexibilidad, conocer a todos por su nombre y entrar a lugares que no aceptan grupos grandes."),
+        ("¿Puedo viajar solo/a?", "¡Por supuesto! Más de la mitad de quienes viajan con nosotros llegan solos. Es la mejor forma de hacer amigos viajeros."),
+        ("¿Qué pasa si tengo que cancelar?", "Hasta 30 días antes del viaje devolvemos el 100% del anticipo. Entre 15 y 30 días, el 50%. Menos de 15 días no podemos devolver, pero puedes transferir tu lugar a otra persona."),
+        ("¿Necesito seguro de viaje?", "Recomendamos fuertemente contratar un seguro de viaje, sobre todo para viajes internacionales. Te podemos sugerir opciones confiables al confirmar tu reserva."),
+        ("¿Hacen viajes a la medida para grupos privados?", "Sí. Si tu grupo de amigos, familia o empresa quiere un viaje exclusivo, escríbenos por WhatsApp y armamos algo a tu medida."),
+    ]
+    for i, (q, a) in enumerate(items):
+        item = FAQItem(question=q, answer=a, order=i)
+        await db.faq.insert_one(item.model_dump())

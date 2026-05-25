@@ -18,6 +18,7 @@ export default function Footer() {
             <li><Link to="/viajes" className="hover:text-white">Próximos viajes</Link></li>
             <li><Link to="/galeria" className="hover:text-white">Galería</Link></li>
             <li><Link to="/sobre-mi" className="hover:text-white">Sobre el guía</Link></li>
+            <li><Link to="/faq" className="hover:text-white">Preguntas frecuentes</Link></li>
             <li><Link to="/contacto" className="hover:text-white">Reservar</Link></li>
           </ul>
         </div>

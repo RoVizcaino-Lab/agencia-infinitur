@@ -5,13 +5,15 @@ import AdminTrips from "./AdminTrips";
 import AdminReservations from "./AdminReservations";
 import AdminGallery from "./AdminGallery";
 import AdminTestimonials from "./AdminTestimonials";
-import { LogOut, Plane, Inbox, Image as ImageIcon, Quote, ExternalLink } from "lucide-react";
+import AdminFAQ from "./AdminFAQ";
+import { LogOut, Plane, Inbox, Image as ImageIcon, Quote, ExternalLink, HelpCircle } from "lucide-react";
 
 const TABS = [
   { key: "trips", label: "Viajes", icon: Plane, comp: AdminTrips },
   { key: "reservations", label: "Reservas", icon: Inbox, comp: AdminReservations },
   { key: "gallery", label: "Galería", icon: ImageIcon, comp: AdminGallery },
   { key: "testimonials", label: "Testimonios", icon: Quote, comp: AdminTestimonials },
+  { key: "faq", label: "FAQ", icon: HelpCircle, comp: AdminFAQ },
 ];
 
 export default function AdminDashboard() {
