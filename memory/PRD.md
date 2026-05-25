@@ -1,40 +1,51 @@
 # PRD — Senderos Auténticos (Agencia de viajes)
 
 ## Original problem statement
-Sitio web con front + panel de admin para una agencia de viajes pequeña tipo freelance. Un guía organiza grupos de 10-15 personas para destinos en México, América y Europa. Duración de viajes: 1 día hasta 1 semana.
+Sitio web con front + panel de admin para una agencia de viajes pequeña tipo freelance. Un guía organiza grupos de 10-15 personas para destinos en México, América y Europa. Duración: 1 día a 1 semana.
 
-## User choices (10/Feb/2026)
-- (1e) Funciones públicas: catálogo, reserva/contacto, galería, sobre el guía + testimonios
-- (2d) Admin completo: CRUD viajes, reservas, galería, testimonios
-- (3a) Solo formulario de contacto (sin pagos online; CTA WhatsApp/email)
-- (4a) Auth JWT custom para admin
-- (5a) Estilo cálido/aventurero (terracota + bone)
+## User choices
+- Funciones públicas completas, admin completo, sin pagos online, JWT custom admin, estilo cálido/aventurero
+- Iteración 2: WhatsApp flotante, carrusel de meses, embed Facebook, slogan "¡El Viaje de los Viajes!", paleta naranja vibrante estilo Vagando por México
+- Iteración 3: subida de imágenes desde admin, más viajes/galería demo, FAQ + admin FAQ
 
 ## Architecture
-- Backend: FastAPI + MongoDB (motor) + bcrypt + PyJWT
+- Backend: FastAPI + MongoDB (motor) + bcrypt + PyJWT + Emergent object storage
 - Frontend: React + Tailwind + shadcn UI + sonner toasts + react-router
-- Auth: Bearer token (localStorage `admin_token`); también soporta cookie fallback
-- Idiomas: ES; tipografías: Cormorant Garamond (heading) + Manrope (body)
+- Auth: Bearer token (localStorage `admin_token`)
+- Idiomas: ES; tipografías: Fraunces/Cormorant (heading) + Manrope (body)
 
-## Personas
-- Viajeros curiosos buscando experiencias en grupos pequeños y guiados
-- Guía/admin gestionando viajes, solicitudes, galería y testimonios
-
-## Implementado (10/Feb/2026)
+## Implementado
+**Iter 1 (10/Feb)**
 - Páginas públicas: Home, /viajes, /viajes/:id, /galeria, /sobre-mi, /contacto
-- Panel admin: /admin/login, /admin con tabs Viajes / Reservas / Galería / Testimonios
-- API REST `/api`: trips, gallery, testimonials, reservations + admin CRUD protegido
-- Seeding automático: admin + 4 viajes demo + 6 fotos + 3 testimonios
-- Filtro por país, formulario de reserva con WhatsApp CTA
-- Toasts, navbar con scroll-aware, footer
+- Panel admin: /admin/login, /admin con tabs Viajes/Reservas/Galería/Testimonios
+- Seeding admin + 4 viajes + 6 fotos + 3 testimonios
 
-## Backlog (P0 / P1 / P2)
-- P1: Subida de imágenes (object storage) — actualmente solo URLs
-- P1: Notificaciones email al admin cuando llega una reserva (Resend / SendGrid)
-- P2: Pasarela de pagos opcional (Stripe) para anticipo de reserva
-- P2: Brute-force lockout en login y validación enum de status de reserva
-- P2: Newsletter / suscripción para próximas salidas
-- P2: SEO (meta tags por viaje, sitemap)
+**Iter 2 (15/Feb)**
+- Botón flotante WhatsApp (con burbuja "¿Tienes dudas?")
+- Carrusel de 12 meses → enlaza a /viajes?mes=N
+- Embed Facebook Page Plugin
+- Nuevo slogan "¡El Viaje de los Viajes!"
+- Paleta naranja vibrante (#FF6B2C) + amarillo sol (#FFB627)
+
+**Iter 3 (25/May)**
+- Subida de imágenes en admin (Emergent object storage) — endpoint /api/admin/upload + /api/files/:id
+- Componente ImageUploadField reutilizable en AdminTrips y AdminGallery
+- 9 viajes demo (Oaxaca, Cartagena, Italia, Chiapas, Argentina + originales)
+- 12 fotos de galería más vibrantes
+- Página /faq con acordeón + sección de WhatsApp CTA
+- Admin tab FAQ con CRUD completo (8 preguntas sembradas)
+- Bug fix: WhatsApp button ahora dentro de PublicShell
+- 27/27 backend tests passed
+
+## Backlog (P1 / P2)
+- P1: Notificaciones por email al admin cuando entra una reserva (Resend/SendGrid)
+- P1: Newsletter/suscripción desde el footer
+- P2: Stripe para anticipo opcional
+- P2: Brute-force lockout en login, enum validation en status, max_length en FAQ
+- P2: Reemplazar input date nativo por shadcn Calendar en AdminTrips
+- P2: Cachear /api/files/:id (CDN o redirect) — actualmente refetch cada request
+- P2: Reemplazar Facebook iframe placeholder por URL real cuando el usuario la provea
+- P2: SEO meta tags + sitemap
 
 ## Test credentials
 admin@viajes.mx / Aventura2026!
