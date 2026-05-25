@@ -74,8 +74,8 @@ export default function Home() {
             { icon: Users, title: "Grupos chicos", text: "Solo 10 a 15 viajeros por salida. Conoces a todos por nombre." },
             { icon: Compass, title: "Itinerarios curados", text: "Cada parada tiene sentido. Sin tiempos muertos ni trampas turísticas." },
             { icon: Heart, title: "Conexión real", text: "Comemos con familias locales y caminamos rutas que recordarás siempre." },
-          ].map((f, i) => (
-            <div key={i} className="bg-white border border-[#E5E0D8] rounded-3xl p-8 hover:-translate-y-1 transition-all duration-300">
+          ].map((f) => (
+            <div key={f.title} className="bg-white border border-[#E5E0D8] rounded-3xl p-8 hover:-translate-y-1 transition-all duration-300">
               <div className="w-12 h-12 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta mb-5">
                 <f.icon size={22} />
               </div>
@@ -142,7 +142,8 @@ export default function Home() {
                 <div key={t.id} className="bg-white border border-[#E5E0D8] rounded-3xl p-8">
                   <div className="flex gap-0.5 text-terracotta mb-4">
                     {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                      <Star key={i} size={14} fill="currentColor" />
+                      // eslint-disable-next-line react/no-array-index-key -- stars are presentational, no reorder/filter
+                      <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
                     ))}
                   </div>
                   <p className="text-ink/80 italic leading-relaxed mb-6">"{t.text}"</p>

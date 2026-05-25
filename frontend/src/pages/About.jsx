@@ -42,7 +42,10 @@ export default function About() {
               {testimonials.map((t) => (
                 <div key={t.id} className="bg-white border border-[#E5E0D8] rounded-2xl p-6">
                   <div className="flex gap-0.5 text-terracotta mb-3">
-                    {Array.from({ length: t.rating || 5 }).map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                    {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                      // eslint-disable-next-line react/no-array-index-key -- presentational stars
+                      <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
+                    ))}
                   </div>
                   <p className="text-ink/80 italic mb-3 leading-relaxed">"{t.text}"</p>
                   <div className="text-sm font-semibold text-ink">{t.author} <span className="text-ink/50 font-normal">· {t.location}</span></div>

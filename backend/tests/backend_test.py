@@ -4,8 +4,8 @@ import pytest
 import requests
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://grupos-expedicion.preview.emergentagent.com").rstrip("/")
-ADMIN_EMAIL = "admin@viajes.mx"
-ADMIN_PASSWORD = "Aventura2026!"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@viajes.mx")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Aventura2026!")
 
 
 @pytest.fixture(scope="session")

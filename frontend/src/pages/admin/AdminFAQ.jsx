@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
@@ -7,8 +7,8 @@ export default function AdminFAQ() {
   const [items, setItems] = useState([]);
   const [editing, setEditing] = useState(null);
 
-  const load = () => api.get("/faq").then((r) => setItems(r.data));
-  useEffect(() => { load(); }, []);
+  const load = useCallback(() => api.get("/faq").then((r) => setItems(r.data)), []);
+  useEffect(() => { load(); }, [load]);
 
   const save = async (data) => {
     try {

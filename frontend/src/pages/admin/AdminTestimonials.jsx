@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Trash2, Plus, Star } from "lucide-react";
@@ -6,8 +6,8 @@ import { Trash2, Plus, Star } from "lucide-react";
 export default function AdminTestimonials() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({ author: "", location: "", text: "", rating: 5 });
-  const load = () => api.get("/testimonials").then((r) => setItems(r.data));
-  useEffect(() => { load(); }, []);
+  const load = useCallback(() => api.get("/testimonials").then((r) => setItems(r.data)), []);
+  useEffect(() => { load(); }, [load]);
 
   const add = async (e) => {
     e.preventDefault();
@@ -45,7 +45,10 @@ export default function AdminTestimonials() {
           <div key={t.id} className="bg-white border border-[#E5E0D8] rounded-2xl p-5">
             <div className="flex justify-between items-start mb-3">
               <div className="flex gap-0.5 text-terracotta">
-                {Array.from({ length: t.rating || 5 }).map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                  // eslint-disable-next-line react/no-array-index-key -- presentational stars
+                  <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
+                ))}
               </div>
               <button data-testid={`del-testimonial-${t.id}`} onClick={() => del(t.id)} className="p-1 text-ink/50 hover:text-destructive"><Trash2 size={14} /></button>
             </div>

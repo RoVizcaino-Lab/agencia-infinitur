@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
@@ -7,8 +7,8 @@ import ImageUploadField from "@/components/ImageUploadField";
 export default function AdminGallery() {
   const [photos, setPhotos] = useState([]);
   const [form, setForm] = useState({ url: "", caption: "", location: "" });
-  const load = () => api.get("/gallery").then((r) => setPhotos(r.data));
-  useEffect(() => { load(); }, []);
+  const load = useCallback(() => api.get("/gallery").then((r) => setPhotos(r.data)), []);
+  useEffect(() => { load(); }, [load]);
 
   const add = async (e) => {
     e.preventDefault();

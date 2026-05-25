@@ -80,7 +80,7 @@ export default function TripDetail() {
               <h2 className="font-heading text-3xl text-ink mb-6">Itinerario día a día</h2>
               <div className="space-y-4">
                 {trip.itinerary.map((d, i) => (
-                  <div key={i} className="bg-white border border-[#E5E0D8] rounded-2xl p-6 flex gap-5">
+                  <div key={`day-${d.day ?? i}-${d.title}`} className="bg-white border border-[#E5E0D8] rounded-2xl p-6 flex gap-5">
                     <div className="flex-shrink-0 w-14 h-14 rounded-full bg-terracotta text-white flex items-center justify-center font-heading text-xl">
                       {d.day || i + 1}
                     </div>
@@ -99,8 +99,8 @@ export default function TripDetail() {
               <div className="bg-white border border-[#E5E0D8] rounded-2xl p-6">
                 <h3 className="font-heading text-xl text-ink mb-4">Incluye</h3>
                 <ul className="space-y-2">
-                  {trip.included.map((it, i) => (
-                    <li key={i} className="flex gap-2 text-ink/80"><Check size={18} className="text-terracotta flex-shrink-0 mt-0.5" /> {it}</li>
+                  {trip.included.map((it) => (
+                    <li key={`inc-${it}`} className="flex gap-2 text-ink/80"><Check size={18} className="text-terracotta flex-shrink-0 mt-0.5" /> {it}</li>
                   ))}
                 </ul>
               </div>
@@ -109,8 +109,8 @@ export default function TripDetail() {
               <div className="bg-white border border-[#E5E0D8] rounded-2xl p-6">
                 <h3 className="font-heading text-xl text-ink mb-4">No incluye</h3>
                 <ul className="space-y-2">
-                  {trip.excluded.map((it, i) => (
-                    <li key={i} className="flex gap-2 text-ink/80"><X size={18} className="text-ink/40 flex-shrink-0 mt-0.5" /> {it}</li>
+                  {trip.excluded.map((it) => (
+                    <li key={`exc-${it}`} className="flex gap-2 text-ink/80"><X size={18} className="text-ink/40 flex-shrink-0 mt-0.5" /> {it}</li>
                   ))}
                 </ul>
               </div>

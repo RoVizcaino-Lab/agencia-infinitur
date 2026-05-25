@@ -478,8 +478,16 @@ async def seed_admin():
 
 
 async def seed_demo_data():
-    if await db.trips.count_documents({}) == 0:
-        sample_trips = [
+    """Orchestrates demo data seeding by delegating to small helpers."""
+    await _seed_trips_if_empty()
+    await _seed_gallery_if_empty()
+    await _seed_testimonials_if_empty()
+
+
+async def _seed_trips_if_empty():
+    if await db.trips.count_documents({}) > 0:
+        return
+    sample_trips = [
             {
                 "title": "Chichén Itzá y Cenotes Sagrados",
                 "destination": "Yucatán, México",
@@ -717,13 +725,16 @@ async def seed_demo_data():
                 "active": True,
             },
         ]
-        for t in sample_trips:
-            doc = Trip(**t).model_dump()
-            await db.trips.insert_one(doc)
-        logger.info("Viajes demo sembrados")
+    for t in sample_trips:
+        doc = Trip(**t).model_dump()
+        await db.trips.insert_one(doc)
+    logger.info("Viajes demo sembrados")
 
-    if await db.gallery.count_documents({}) == 0:
-        photos = [
+
+async def _seed_gallery_if_empty():
+    if await db.gallery.count_documents({}) > 0:
+        return
+    photos = [
             {"url": "https://images.pexels.com/photos/6125816/pexels-photo-6125816.jpeg?w=1000", "caption": "Atardecer en la sierra", "location": "México"},
             {"url": "https://images.unsplash.com/photo-1629752123286-49a7f60571f3?w=1000", "caption": "Caminata grupal", "location": "Andes"},
             {"url": "https://images.unsplash.com/photo-1521437687640-34c398f4e598?w=1000", "caption": "Cumbre conquistada", "location": "Perú"},
@@ -736,20 +747,23 @@ async def seed_demo_data():
             {"url": "https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=1000", "caption": "Trajineras en Xochimilco", "location": "CDMX"},
             {"url": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1000", "caption": "Mercado de artesanías", "location": "México"},
             {"url": "https://images.unsplash.com/photo-1565073624497-7e91b5cc3843?w=1000", "caption": "Playas escondidas", "location": "Oaxaca"},
-        ]
-        for p in photos:
-            doc = GalleryPhoto(**p).model_dump()
-            await db.gallery.insert_one(doc)
+    ]
+    for p in photos:
+        doc = GalleryPhoto(**p).model_dump()
+        await db.gallery.insert_one(doc)
 
-    if await db.testimonials.count_documents({}) == 0:
-        items = [
+
+async def _seed_testimonials_if_empty():
+    if await db.testimonials.count_documents({}) > 0:
+        return
+    items = [
             {"author": "María Fernanda", "location": "CDMX", "text": "El viaje a Yucatán superó todas mis expectativas. Diego conoce cada rincón y nos hizo sentir como familia.", "rating": 5, "avatar": ""},
             {"author": "Roberto Sánchez", "location": "Guadalajara", "text": "Perú con este grupo fue mágico. Todo perfectamente organizado y sin estrés. Volvería sin dudarlo.", "rating": 5, "avatar": ""},
             {"author": "Lucía Ortega", "location": "Monterrey", "text": "Lo que más me gustó fue la calidad humana. Grupos pequeños hacen toda la diferencia.", "rating": 5, "avatar": ""},
-        ]
-        for i in items:
-            doc = Testimonial(**i).model_dump()
-            await db.testimonials.insert_one(doc)
+    ]
+    for i in items:
+        doc = Testimonial(**i).model_dump()
+        await db.testimonials.insert_one(doc)
 
 
 @app.on_event("startup")

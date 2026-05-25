@@ -24,8 +24,8 @@ export default function FacebookFeed() {
             podrías estar viendo el lugar al que vas a viajar el mes que entra.
           </p>
           <div className="space-y-3">
-            {["📹 Videos cortos de cada viaje", "📸 Historias detrás de cada destino", "🗓️ Anuncios de salidas exclusivas"].map((t, i) => (
-              <div key={i} className="flex items-center gap-3 text-ink/80">
+            {["📹 Videos cortos de cada viaje", "📸 Historias detrás de cada destino", "🗓️ Anuncios de salidas exclusivas"].map((t) => (
+              <div key={t} className="flex items-center gap-3 text-ink/80">
                 <PlayCircle size={18} className="text-orange-500 flex-shrink-0" />
                 <span>{t}</span>
               </div>

@@ -12,16 +12,22 @@ export function resolveImage(u) {
 
 const api = axios.create({ baseURL: API });
 
-// Attach Bearer token automatically if present in localStorage
+// Token storage: sessionStorage (cleared on tab close, lower XSS impact than localStorage)
+const TOKEN_KEY = "admin_token";
+
 api.interceptors.request.use((cfg) => {
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem(TOKEN_KEY);
   if (token) cfg.headers = { ...cfg.headers, Authorization: `Bearer ${token}` };
   return cfg;
 });
 
 export function setToken(t) {
-  if (t) localStorage.setItem("admin_token", t);
-  else localStorage.removeItem("admin_token");
+  if (t) sessionStorage.setItem(TOKEN_KEY, t);
+  else sessionStorage.removeItem(TOKEN_KEY);
+}
+
+export function getToken() {
+  return sessionStorage.getItem(TOKEN_KEY);
 }
 
 export function formatApiError(detail) {

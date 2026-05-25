@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/api";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
@@ -7,8 +7,8 @@ const STATUSES = ["nuevo", "contactado", "confirmado", "cancelado"];
 
 export default function AdminReservations() {
   const [items, setItems] = useState([]);
-  const load = () => api.get("/admin/reservations").then((r) => setItems(r.data));
-  useEffect(() => { load(); }, []);
+  const load = useCallback(() => api.get("/admin/reservations").then((r) => setItems(r.data)), []);
+  useEffect(() => { load(); }, [load]);
 
   const setStatus = async (id, status) => {
     await api.put(`/admin/reservations/${id}`, { status });
