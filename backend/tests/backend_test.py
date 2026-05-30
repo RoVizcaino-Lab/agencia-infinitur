@@ -1,4 +1,4 @@
-"""Backend API tests for Senderos Auténticos travel agency."""
+"""Backend API tests for INFINITUR travel agency."""
 import os
 import pytest
 import requests

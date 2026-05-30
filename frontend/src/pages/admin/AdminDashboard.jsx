@@ -30,7 +30,15 @@ export default function AdminDashboard() {
       <header className="bg-white border-b border-[#E5E0D8] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="font-heading text-xl text-ink">Panel · Senderos<span className="text-terracotta">.</span></div>
+          <div className="flex items-center gap-2.5">
+            <span className="w-9 h-9 rounded-lg bg-white border border-[#E5E0D8] flex items-center justify-center">
+              <img src="/infinitur-logo.png" alt="INFINITUR" className="w-full h-full object-contain p-0.5" />
+            </span>
+            <div className="leading-tight">
+              <div className="font-heading text-lg text-ink tracking-wide">Panel · INFINITUR</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-terracotta">Administración</div>
+            </div>
+          </div>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/" target="_blank" className="text-sm text-ink/60 hover:text-terracotta inline-flex items-center gap-1">

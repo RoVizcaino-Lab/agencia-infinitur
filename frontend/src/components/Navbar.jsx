@@ -32,9 +32,17 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
-        <Link to="/" data-testid="logo-link" className="flex items-center gap-2">
-          <span className={`font-heading text-2xl tracking-tight ${scrolled ? "text-ink" : "text-white drop-shadow"}`}>
-            Senderos<span className="text-terracotta">.</span>
+        <Link to="/" data-testid="logo-link" className="flex items-center gap-2.5">
+          <span className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${scrolled ? "bg-white" : "bg-white/95"}`}>
+            <img src="/infinitur-logo.png" alt="INFINITUR" className="w-full h-full object-contain p-0.5" />
+          </span>
+          <span className="leading-tight">
+            <span className={`block font-heading text-xl sm:text-2xl tracking-wide ${scrolled ? "text-ink" : "text-white drop-shadow"}`}>
+              INFINITUR
+            </span>
+            <span className={`hidden sm:block text-[10px] uppercase tracking-[0.2em] ${scrolled ? "text-terracotta" : "text-white/85"}`}>
+              ¡El viaje de los viajes!
+            </span>
           </span>
         </Link>
 

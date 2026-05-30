@@ -58,7 +58,7 @@ export default function Home() {
       <section className="py-24 sm:py-32 bg-bone">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-12 gap-10 items-end">
           <div className="md:col-span-6">
-            <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-4">Por qué Senderos</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-4">Por qué INFINITUR</div>
             <h2 className="font-heading text-4xl sm:text-5xl text-ink leading-tight">
               No vendemos paquetes.<br /><span className="italic">Compartimos caminos.</span>
             </h2>

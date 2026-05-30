@@ -46,7 +46,7 @@ export default function FacebookFeed() {
           <div className="absolute -inset-4 bg-gradient-to-tr from-orange-400 to-yellow-400 rounded-[2rem] rotate-2 opacity-30 blur-2xl" />
           <div className="relative bg-white rounded-[1.75rem] border-4 border-white shadow-floating overflow-hidden">
             <div className="bg-gradient-to-r from-[#1877F2] to-[#0f5fc4] px-5 py-3 flex items-center gap-2 text-white text-sm font-semibold">
-              <Facebook size={16} fill="white" /> @senderos.mx
+              <Facebook size={16} fill="white" /> @infinitur.mx
             </div>
             <iframe
               title="Facebook feed"

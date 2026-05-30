@@ -25,6 +25,7 @@ module.exports = {
         terracotta: { DEFAULT: "#FF6B2C", hover: "#FF5510" },
         sun: { DEFAULT: "#FFB627", hover: "#F09F0E" },
         sage: { DEFAULT: "#6B705C", hover: "#565A4A" },
+        jade: { DEFAULT: "#2D8F4E", hover: "#226D3C" },
         bone: "#F7F4F0",
         sand: "#EFEAE1",
         ink: "#2D2C2A",

@@ -23,13 +23,13 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # --- App ---
-app = FastAPI(title="Senderos Auténticos API")
+app = FastAPI(title="INFINITUR API")
 api_router = APIRouter(prefix="/api")
 
 # --- Object storage (Emergent) ---
 STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
 EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY", "")
-APP_NAME = os.environ.get("APP_NAME", "senderos-mx")
+APP_NAME = os.environ.get("APP_NAME", "infinitur-mx")
 MIME_TYPES = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif"}
 _storage_key = None
 
@@ -363,7 +363,7 @@ async def admin_delete_testimonial(tid: str, user: dict = Depends(get_current_ad
 
 @api_router.get("/")
 async def root():
-    return {"app": "Senderos Auténticos", "status": "ok"}
+    return {"app": "INFINITUR", "status": "ok"}
 
 
 # --- Upload & file serving ---

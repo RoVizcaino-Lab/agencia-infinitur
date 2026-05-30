@@ -38,8 +38,8 @@ export default function Contact() {
           </div>
           <div className="space-y-4">
             <Item icon={MessageCircle} label="WhatsApp" value="+52 55 1234 5678"
-              href="https://wa.me/525512345678?text=Hola!%20Me%20interesa%20viajar%20con%20Senderos." />
-            <Item icon={Mail} label="Email" value="hola@senderos.mx" href="mailto:hola@senderos.mx" />
+              href="https://wa.me/525512345678?text=Hola!%20Me%20interesa%20viajar%20con%20INFINITUR." />
+            <Item icon={Mail} label="Email" value="hola@infinitur.mx" href="mailto:hola@infinitur.mx" />
             <Item icon={Phone} label="Teléfono" value="+52 55 1234 5678" href="tel:+525512345678" />
             <Item icon={MapPin} label="Base" value="Ciudad de México, México" />
           </div>

@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 
 // TODO: reemplaza este número por el real (con código de país, sin signos)
 const WA_NUMBER = "525512345678";
-const DEFAULT_MSG = "¡Hola! Me interesa viajar con Senderos.";
+const DEFAULT_MSG = "¡Hola! Me interesa viajar con INFINITUR.";
 
 export default function WhatsAppButton() {
   const [hint, setHint] = useState(false);
