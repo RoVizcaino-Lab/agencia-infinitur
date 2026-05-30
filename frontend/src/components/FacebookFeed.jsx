@@ -1,7 +1,6 @@
 import { Facebook, PlayCircle } from "lucide-react";
 
-// TODO: cambia esta URL por la de tu página real de Facebook
-const FB_PAGE_URL = "https://www.facebook.com/facebook";
+const FB_PAGE_URL = "https://www.facebook.com/marinerus.infinitur";
 
 export default function FacebookFeed() {
   const encoded = encodeURIComponent(FB_PAGE_URL);

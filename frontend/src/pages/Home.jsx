@@ -44,7 +44,7 @@ export default function Home() {
                 Ver próximos viajes <ArrowRight size={16} />
               </Link>
               <Link to="/sobre-mi" data-testid="hero-cta-about" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white border border-white/40 hover:bg-white hover:text-ink transition-all">
-                Conoce al guía
+                Conoce INFINITUR
               </Link>
             </div>
           </div>

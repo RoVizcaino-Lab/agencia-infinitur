@@ -6,7 +6,7 @@ const links = [
   { to: "/", label: "Inicio" },
   { to: "/viajes", label: "Viajes" },
   { to: "/galeria", label: "Galería" },
-  { to: "/sobre-mi", label: "El guía" },
+  { to: "/sobre-mi", label: "INFINITUR" },
   { to: "/faq", label: "FAQ" },
   { to: "/contacto", label: "Contacto" },
 ];
