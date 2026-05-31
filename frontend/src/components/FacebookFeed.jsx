@@ -4,7 +4,8 @@ const FB_PAGE_URL = "https://www.facebook.com/marinerus.infinitur";
 
 export default function FacebookFeed() {
   const encoded = encodeURIComponent(FB_PAGE_URL);
-  const src = `https://www.facebook.com/plugins/page.php?href=${encoded}&tabs=timeline&width=500&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false&appId`;
+  // Page Plugin set to timeline tab — video posts play inline within the iframe in modern browsers.
+  const src = `https://www.facebook.com/plugins/page.php?href=${encoded}&tabs=timeline&width=500&height=720&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId`;
 
   return (
     <section className="py-24 sm:py-32 relative overflow-hidden bg-gradient-to-br from-orange-50 via-bone to-yellow-50">
@@ -51,7 +52,7 @@ export default function FacebookFeed() {
               title="Facebook feed"
               src={src}
               width="100%"
-              height="560"
+              height="720"
               style={{ border: "none", overflow: "hidden", display: "block" }}
               scrolling="no"
               frameBorder="0"

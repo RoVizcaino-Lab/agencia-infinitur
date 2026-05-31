@@ -22,22 +22,22 @@ export default function Home() {
       {/* HERO */}
       <section className="relative h-[100vh] min-h-[640px] w-full overflow-hidden">
         <img
-          src="https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg"
-          alt="Atardecer en la montaña"
+          src="https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1920&q=80"
+          alt="Chichén Itzá, México"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 hero-gradient" />
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full flex flex-col justify-end pb-24">
           <div className="max-w-3xl fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500 text-white text-xs uppercase tracking-[0.2em] mb-6 font-bold shadow-lg">
-              <Sparkles size={14} /> Grupos chicos · Aventuras grandes
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-orange-500 text-white text-sm uppercase tracking-[0.25em] mb-6 font-extrabold shadow-lg">
+              <Sparkles size={16} /> SOMOS INFINITUR
             </div>
             <h1 className="font-heading text-6xl sm:text-7xl lg:text-8xl text-white leading-[0.9] tracking-tight mb-6">
               ¡El Viaje<br /><span className="text-orange-400">de los Viajes!</span>
             </h1>
-            <p className="text-white/85 text-lg max-w-xl leading-relaxed mb-8">
-              Aventuras guiadas para grupos de 10 a 15 personas por México, América y Europa.
-              Itinerarios cuidados, experiencias auténticas, y un guía que te trata como amigo.
+            <p className="text-white/90 text-lg sm:text-xl max-w-2xl leading-relaxed mb-8">
+              Aventuras guiadas por México, América y Europa. Para involucrarse con la riqueza de la naturaleza, cultura y tradiciones.
+              Itinerarios confiables y experiencias auténticas. <span className="font-bold text-orange-400">¡Somos INFINITUR!</span>
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/viajes" data-testid="hero-cta-trips" className="btn-terracotta inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold">
