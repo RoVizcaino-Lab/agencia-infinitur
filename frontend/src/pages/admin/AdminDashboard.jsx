@@ -6,12 +6,14 @@ import AdminReservations from "./AdminReservations";
 import AdminGallery from "./AdminGallery";
 import AdminTestimonials from "./AdminTestimonials";
 import AdminFAQ from "./AdminFAQ";
-import { LogOut, Plane, Inbox, Image as ImageIcon, Quote, ExternalLink, HelpCircle } from "lucide-react";
+import AdminVideos from "./AdminVideos";
+import { LogOut, Plane, Inbox, Image as ImageIcon, Quote, ExternalLink, HelpCircle, PlayCircle } from "lucide-react";
 
 const TABS = [
   { key: "trips", label: "Viajes", icon: Plane, comp: AdminTrips },
   { key: "reservations", label: "Reservas", icon: Inbox, comp: AdminReservations },
   { key: "gallery", label: "Galería", icon: ImageIcon, comp: AdminGallery },
+  { key: "videos", label: "Videos", icon: PlayCircle, comp: AdminVideos },
   { key: "testimonials", label: "Testimonios", icon: Quote, comp: AdminTestimonials },
   { key: "faq", label: "FAQ", icon: HelpCircle, comp: AdminFAQ },
 ];

@@ -142,11 +142,10 @@ export default function Home() {
                 <div key={t.id} className="bg-white border border-[#E5E0D8] rounded-3xl p-8">
                   <div className="flex gap-0.5 text-terracotta mb-4">
                     {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                      // eslint-disable-next-line react/no-array-index-key -- stars are presentational, no reorder/filter
                       <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
                     ))}
                   </div>
-                  <p className="text-ink/80 italic leading-relaxed mb-6">"{t.text}"</p>
+                  <p className="text-ink/80 italic leading-relaxed mb-6">&ldquo;{t.text}&rdquo;</p>
                   <div className="text-sm">
                     <div className="font-semibold text-ink">{t.author}</div>
                     <div className="text-ink/60">{t.location}</div>

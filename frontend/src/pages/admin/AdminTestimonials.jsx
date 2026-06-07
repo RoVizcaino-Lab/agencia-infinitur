@@ -46,13 +46,12 @@ export default function AdminTestimonials() {
             <div className="flex justify-between items-start mb-3">
               <div className="flex gap-0.5 text-terracotta">
                 {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                  // eslint-disable-next-line react/no-array-index-key -- presentational stars
                   <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
                 ))}
               </div>
               <button data-testid={`del-testimonial-${t.id}`} onClick={() => del(t.id)} className="p-1 text-ink/50 hover:text-destructive"><Trash2 size={14} /></button>
             </div>
-            <p className="text-ink/80 italic text-sm mb-3">"{t.text}"</p>
+            <p className="text-ink/80 italic text-sm mb-3">&ldquo;{t.text}&rdquo;</p>
             <div className="text-sm font-semibold text-ink">{t.author} <span className="text-ink/50 font-normal">· {t.location}</span></div>
           </div>
         ))}

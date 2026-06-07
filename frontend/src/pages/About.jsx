@@ -171,11 +171,10 @@ export default function About() {
                 <div key={t.id} className="bg-white border border-[#E5E0D8] rounded-3xl p-7">
                   <div className="flex gap-0.5 text-terracotta mb-3">
                     {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                      // eslint-disable-next-line react/no-array-index-key -- presentational stars
                       <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
                     ))}
                   </div>
-                  <p className="text-ink/80 italic leading-relaxed mb-4">"{t.text}"</p>
+                  <p className="text-ink/80 italic leading-relaxed mb-4">&ldquo;{t.text}&rdquo;</p>
                   <div className="text-sm font-semibold text-ink">{t.author} <span className="text-ink/50 font-normal">· {t.location}</span></div>
                 </div>
               ))}

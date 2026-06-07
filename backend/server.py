@@ -366,6 +366,40 @@ async def root():
     return {"app": "INFINITUR", "status": "ok"}
 
 
+# --- Videos (Facebook video URLs) ---
+class VideoInput(BaseModel):
+    fb_url: str
+    title: Optional[str] = ""
+    order: int = 0
+
+
+class Video(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    fb_url: str
+    title: str = ""
+    order: int = 0
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+@api_router.get("/videos", response_model=List[Video])
+async def list_videos():
+    docs = await db.videos.find({}, {"_id": 0}).sort([("order", 1), ("created_at", -1)]).to_list(50)
+    return docs
+
+
+@api_router.post("/admin/videos", response_model=Video)
+async def admin_create_video(data: VideoInput, user: dict = Depends(get_current_admin)):
+    v = Video(**data.model_dump())
+    await db.videos.insert_one(v.model_dump())
+    return v
+
+
+@api_router.delete("/admin/videos/{vid}")
+async def admin_delete_video(vid: str, user: dict = Depends(get_current_admin)):
+    await db.videos.delete_one({"id": vid})
+    return {"ok": True}
+
+
 # --- Upload & file serving ---
 @api_router.post("/admin/upload")
 async def admin_upload(file: UploadFile = File(...), user: dict = Depends(get_current_admin)):
