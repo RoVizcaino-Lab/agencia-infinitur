@@ -4,17 +4,13 @@ import api from "@/lib/api";
 import TripCard from "@/components/TripCard";
 import MonthCarousel from "@/components/MonthCarousel";
 import FacebookFeed from "@/components/FacebookFeed";
-import { ArrowRight, Compass, Heart, Users, Star, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, Heart, Users, Sparkles } from "lucide-react";
 
 export default function Home() {
   const [trips, setTrips] = useState([]);
-  const [photos, setPhotos] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
 
   useEffect(() => {
     api.get("/trips?featured=true").then((r) => setTrips(r.data));
-    api.get("/gallery").then((r) => setPhotos(r.data.slice(0, 6)));
-    api.get("/testimonials").then((r) => setTestimonials(r.data));
   }, []);
 
   return (
@@ -78,6 +74,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FEATURED TRIPS */}
+      <section className="py-24 sm:py-32">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-3">Próximas salidas</div>
+              <h2 className="font-heading text-4xl sm:text-5xl text-ink">Viajes destacados</h2>
+            </div>
+            <Link to="/viajes" data-testid="see-all-trips" className="text-terracotta font-semibold inline-flex items-center gap-2 hover:gap-3 transition-all">
+              Ver todos <ArrowRight size={16} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {trips.map((t) => <TripCard key={t.id} trip={t} />)}
+          </div>
+        </div>
+      </section>
+
       {/* MONTH CAROUSEL */}
       <MonthCarousel />
 
@@ -113,76 +127,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FEATURED TRIPS */}
-      <section className="py-24 sm:py-32">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-3">Próximas salidas</div>
-              <h2 className="font-heading text-4xl sm:text-5xl text-ink">Viajes destacados</h2>
-            </div>
-            <Link to="/viajes" data-testid="see-all-trips" className="text-terracotta font-semibold inline-flex items-center gap-2 hover:gap-3 transition-all">
-              Ver todos <ArrowRight size={16} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {trips.map((t) => <TripCard key={t.id} trip={t} />)}
-          </div>
-        </div>
-      </section>
-
-      {/* GALLERY PREVIEW */}
-      {photos.length > 0 && (
-        <section className="py-24 bg-sand">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
-              <div>
-                <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-3">Memorias</div>
-                <h2 className="font-heading text-4xl sm:text-5xl text-ink">Momentos en el camino</h2>
-              </div>
-              <Link to="/galeria" className="text-terracotta font-semibold inline-flex items-center gap-2 hover:gap-3 transition-all">
-                Ver galería <ArrowRight size={16} />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {photos.slice(0, 6).map((p, i) => (
-                <div key={p.id} className={`relative overflow-hidden rounded-2xl ${i === 0 ? "md:row-span-2 aspect-square md:aspect-auto" : "aspect-[4/3]"}`}>
-                  <img src={p.url} alt={p.caption} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* FACEBOOK FEED */}
       <FacebookFeed />
-
-      {/* TESTIMONIALS */}
-      {testimonials.length > 0 && (
-        <section className="py-24 sm:py-32">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-3 text-center">Voces del camino</div>
-            <h2 className="font-heading text-4xl sm:text-5xl text-ink text-center mb-16">Lo que dicen quienes ya viajaron</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {testimonials.slice(0, 3).map((t) => (
-                <div key={t.id} className="bg-white border border-[#E5E0D8] rounded-3xl p-8">
-                  <div className="flex gap-0.5 text-terracotta mb-4">
-                    {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                      <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
-                    ))}
-                  </div>
-                  <p className="text-ink/80 italic leading-relaxed mb-6">&ldquo;{t.text}&rdquo;</p>
-                  <div className="text-sm">
-                    <div className="font-semibold text-ink">{t.author}</div>
-                    <div className="text-ink/60">{t.location}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* CTA */}
       <section className="py-24 bg-ink text-white">
