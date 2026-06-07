@@ -20,32 +20,59 @@ export default function Home() {
   return (
     <div data-testid="home-page">
       {/* HERO */}
-      <section className="relative h-[100vh] min-h-[640px] w-full overflow-hidden">
+      <section className="relative min-h-[760px] lg:h-screen w-full overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1920&q=80"
           alt="Chichén Itzá, México"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 hero-gradient" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full flex flex-col justify-end pb-24">
-          <div className="max-w-3xl fade-in">
-            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-orange-500 text-white text-sm uppercase tracking-[0.25em] mb-6 font-extrabold shadow-lg">
-              <Sparkles size={16} /> SOMOS INFINITUR
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full pt-32 pb-16 lg:pt-0 lg:pb-24 lg:flex lg:items-end">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 w-full items-end">
+            {/* LEFT: Slogan + CTAs */}
+            <div className="lg:col-span-7 fade-in">
+              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-orange-500 text-white text-sm uppercase tracking-[0.25em] mb-6 font-extrabold shadow-lg">
+                <Sparkles size={16} /> SOMOS INFINITUR
+              </div>
+              <h1 className="font-heading text-6xl sm:text-7xl lg:text-8xl text-white leading-[0.9] tracking-tight mb-6">
+                ¡El Viaje<br /><span className="text-orange-400">de los Viajes!</span>
+              </h1>
+              <p className="text-white/90 text-lg sm:text-xl max-w-2xl leading-relaxed mb-8">
+                Aventuras guiadas por México, América y Europa. Para involucrarse con la riqueza de la naturaleza, cultura y tradiciones.
+                Itinerarios confiables y experiencias auténticas. <span className="font-bold text-orange-400">¡Somos INFINITUR!</span>
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link to="/viajes" data-testid="hero-cta-trips" className="btn-terracotta inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold">
+                  Ver próximos viajes <ArrowRight size={16} />
+                </Link>
+                <Link to="/sobre-mi" data-testid="hero-cta-about" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white border border-white/40 hover:bg-white hover:text-ink transition-all">
+                  Conoce INFINITUR
+                </Link>
+              </div>
             </div>
-            <h1 className="font-heading text-6xl sm:text-7xl lg:text-8xl text-white leading-[0.9] tracking-tight mb-6">
-              ¡El Viaje<br /><span className="text-orange-400">de los Viajes!</span>
-            </h1>
-            <p className="text-white/90 text-lg sm:text-xl max-w-2xl leading-relaxed mb-8">
-              Aventuras guiadas por México, América y Europa. Para involucrarse con la riqueza de la naturaleza, cultura y tradiciones.
-              Itinerarios confiables y experiencias auténticas. <span className="font-bold text-orange-400">¡Somos INFINITUR!</span>
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/viajes" data-testid="hero-cta-trips" className="btn-terracotta inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold">
-                Ver próximos viajes <ArrowRight size={16} />
-              </Link>
-              <Link to="/sobre-mi" data-testid="hero-cta-about" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white border border-white/40 hover:bg-white hover:text-ink transition-all">
-                Conoce INFINITUR
-              </Link>
+
+            {/* RIGHT: Three pinned destination cards */}
+            <div className="lg:col-span-5 grid grid-cols-3 gap-3 sm:gap-4">
+              {HERO_DESTINATIONS.map((d, i) => (
+                <div
+                  key={d.name}
+                  data-testid={`hero-destination-${i}`}
+                  className="group relative rounded-2xl overflow-hidden shadow-floating ring-1 ring-white/30 transition-transform duration-300 hover:-translate-y-1"
+                  style={{ transform: i === 1 ? "translateY(-12px) rotate(0deg)" : `rotate(${i === 0 ? -2 : 2}deg)` }}
+                >
+                  <div className="aspect-[3/4] relative">
+                    <img src={d.img} alt={d.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute top-2.5 left-2.5 bg-white px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-orange-600">
+                      {d.tag}
+                    </div>
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <div className="font-heading text-base sm:text-lg lg:text-xl leading-tight drop-shadow">{d.name}</div>
+                      <div className="text-[10px] sm:text-xs text-white/80 mt-0.5">{d.country}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -172,3 +199,25 @@ export default function Home() {
     </div>
   );
 }
+
+
+const HERO_DESTINATIONS = [
+  {
+    name: "Chichén Itzá",
+    country: "Yucatán · México",
+    tag: "México",
+    img: "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=800&q=80",
+  },
+  {
+    name: "Machu Picchu",
+    country: "Cusco · Perú",
+    tag: "América",
+    img: "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=800",
+  },
+  {
+    name: "Toscana",
+    country: "Italia",
+    tag: "Europa",
+    img: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=800&q=80",
+  },
+];
