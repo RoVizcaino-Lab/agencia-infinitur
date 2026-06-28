@@ -153,6 +153,12 @@ class TripBase(BaseModel):
     excluded: List[str] = []
     featured: bool = False
     active: bool = True
+    # New (per Figma briefing)
+    trip_type: str = "Clásico"  # Clásico | Explora | Aventura | Bienestar | Mochilero | Confort | Alturismo
+    region: str = "Nacional"  # Nacional | Internacional
+    places: List[str] = []  # ["Maruata", "Palma Sola", ...]
+    pricing_tiers: List[dict] = []  # [{label: "Campamento", price: 3900, icon: "tent"}]
+    itinerary_pdf_url: Optional[str] = ""
 
 
 class Trip(TripBase):
@@ -518,6 +524,34 @@ async def seed_demo_data():
     await _seed_testimonials_if_empty()
 
 
+def _region_from_country(country: str) -> str:
+    return "Nacional" if country == "México" else "Internacional"
+
+
+async def _migrate_trip_fields():
+    """Backfill new fields on legacy trips (trip_type, region, places, pricing_tiers)."""
+    cursor = db.trips.find({}, {"_id": 0})
+    async for t in cursor:
+        update = {}
+        if not t.get("trip_type"):
+            update["trip_type"] = "Clásico"
+        if not t.get("region"):
+            update["region"] = _region_from_country(t.get("country", "México"))
+        if "places" not in t or not t.get("places"):
+            update["places"] = []
+        if "pricing_tiers" not in t or not t.get("pricing_tiers"):
+            base = float(t.get("price", 0))
+            update["pricing_tiers"] = [
+                {"label": "Cuádruple", "price": base, "icon": "bed"},
+                {"label": "Triple", "price": round(base * 1.15), "icon": "bed"},
+                {"label": "Doble", "price": round(base * 1.30), "icon": "bed"},
+            ]
+        if "itinerary_pdf_url" not in t:
+            update["itinerary_pdf_url"] = ""
+        if update:
+            await db.trips.update_one({"id": t["id"]}, {"$set": update})
+
+
 async def _seed_trips_if_empty():
     if await db.trips.count_documents({}) > 0:
         return
@@ -809,6 +843,7 @@ async def on_startup():
     await seed_admin()
     await seed_demo_data()
     await seed_faq()
+    await _migrate_trip_fields()
 
 
 @app.on_event("shutdown")

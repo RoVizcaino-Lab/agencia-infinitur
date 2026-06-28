@@ -1,0 +1,44 @@
+{
+  "summary": "Iteration 4 testing complete. 33/33 backend pytest tests pass (incl. 6 new for trip_type/region/places/pricing_tiers migration). All 5 public pages verified via Playwright on the public preview URL: /destinos (hero, 8 filter chips with counts, 9 trip cards w/ 'Ver más', calendario, 'A la carta' CTA), /destinos/:id (breadcrumb 'Destinos > Nacional > ...', trip_type+region tags, 'DESDE $1,800' from first tier, all sections: Sobre este viaje / Qué incluye [Transporte+Hospedaje+Coordinador] / Itinerario / Otros destinos, aside: 'Cupo limitado' alert+barra, 'Costo por viajero' tiers Cuádruple/Triple/Doble, Formas de pago, 'Reservar por WhatsApp' button, 'Compartir este viaje'), /conocenos (hero 'Somos INFINITUR', stats +10 años / +2,400 / +40, all 4 pilares: Grupos chicos / Coordinador / Rutas / Comunidad), /lo-que-debes-saber (all 4 tabs work, Seguro shows April content, Cancelaciones toggle shows both 'viajero' & 'Infinitur'), /contactanos (form fields render). Navbar shows brand 'INFINITUR' + tagline + Destinos/Conócenos/Lo que debes saber/Contáctanos. All 4 legacy redirects work: /viajes→/destinos, /sobre-mi→/conocenos, /faq→/lo-que-debes-saber, /contacto→/contactanos. Filter chip interaction: clicking 'Explora'/'Aventura'/'Bienestar' filters to 0 (correct: all seeded trips were backfilled with trip_type='Clásico' default by _migrate_trip_fields); clicking 'Todos' restores all 9.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/trips", "issue": "All 9 seeded trips have trip_type='Clásico' because _migrate_trip_fields defaults legacy trips to Clásico. Filter chips Explora/Aventura/Bienestar/Mochilero/Confort/Alturismo show count 0. Not a bug — expected migration behavior. Consider tagging seed data with diverse trip_types so the catalog UI shows non-zero counts across all chips."},
+      {"endpoint": "/api/admin/reservations/{rid}", "issue": "status field still not validated against enum (pre-existing from iter 1/3)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/contactanos", "issues": ["Pre-existing hydration warning '<span> cannot be child of <option>' caused by ve-dynamic instrumentation injected into <option>{t.title}</option>. Cosmetic dev-tool noise, not from app source. Already documented in iter 3."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_iteration3.py",
+    "/app/backend/tests/test_iteration4.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Update seed_trips to assign varied trip_type values (Aventura/Bienestar/Explora/etc.) so the filter chips in /destinos display non-zero counts across categories. Right now only 'Todos' and 'Clásico' show 9; the other 6 chips show 0."
+  ],
+  "critical_code_review_comments": [
+    "Trip migration in _migrate_trip_fields defaults trip_type='Clásico' for legacy docs — fine for backfill, but the seeder _seed_trips_if_empty does not set trip_type/region/places/pricing_tiers explicitly on new trips, so Trip pydantic defaults apply (also Clásico). This makes the Destinos filter chips look broken (all 0 except Clásico). Recommend assigning diverse trip_type in seed data.",
+    "TripDetail breadcrumb correctly shows region (Nacional/Internacional) — visually verified.",
+    "Backend server.py still ~870 lines — split recommended (carry-over from iter 3).",
+    "init_storage()/put_object() still synchronous inside async handlers — carry-over from iter 3.",
+    "Mongo `_id` excluded via projection on all reads ✓. CORS allow_origin_regex='.*' with credentials=true remains overly permissive — carry-over.",
+    "Legacy /viajes/:id redirect uses window.location at render time (LegacyTripRedirect) — works but is non-idiomatic; consider a Route param + Navigate."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration4.py"
+  ],
+  "success_rate": {"backend": "100% (33/33)", "frontend": "100% on tested flows"},
+  "test_credentials": "admin@viajes.mx / Aventura2026! (not needed for this iter — public-only flows)",
+  "seed_data_creation": "No new seeds; existing 9 trips / 12 gallery / 8 FAQ / 3 testimonials. Migration verified to backfill all 9 trips with trip_type='Clásico', region matching country, 3 default pricing_tiers (Cuádruple/Triple/Doble), places=[], itinerary_pdf_url=''.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Pytest at /app/backend/tests/ runs 33 tests in ~8s. test_iteration4.py validates new Trip fields (trip_type, region, places, pricing_tiers, itinerary_pdf_url) and the startup _migrate_trip_fields backfill. All 5 public pages /destinos, /destinos/:id, /conocenos, /lo-que-debes-saber, /contactanos render correctly. data-testids on Contact: contact-page, contact-form, contact-trip (select). Filter chips on /destinos are role=button with text 'Todos|Clásico|Explora|Aventura|Bienestar|Mochilero|Confort|Alturismo' followed by a count badge. Trip cards: each has a 'Ver más' link → /destinos/:id. Tip: if main agent diversifies trip_type values in seeder, expect chip counts (9,n,n,n,...) to redistribute.",
+  "rca of the issue": "No issue to RCA in this iteration. The only observation worth flagging is that the catalog filter chips for non-Clásico types are empty because both seeder and migration default new/legacy trips to Clásico. Fix: assign varied trip_type values in _seed_trips_if_empty."
+}

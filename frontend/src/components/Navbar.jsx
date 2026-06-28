@@ -17,15 +17,19 @@ export default function Navbar() {
   return (
     <header data-testid="site-navbar" className="sticky top-0 left-0 right-0 z-50 bg-bone/95 backdrop-blur-md border-b border-[#E8E6E0]">
       <div className="max-w-[1440px] mx-auto px-5 lg:px-20 flex items-center justify-between h-20">
-        <Link to="/" data-testid="logo-link" className="flex items-center gap-2.5">
-          <span className="flex-shrink-0 w-11 h-11 rounded-lg bg-white border border-[#E8E6E0] flex items-center justify-center">
-            <img src="/infinitur-logo.png" alt="INFINITUR" className="w-full h-full object-contain p-0.5" />
-          </span>
-          <span
-            className="leading-none text-orange-500"
-            style={{ fontFamily: "'Brygada 1918', Georgia, serif", fontWeight: 700 }}
-          >
-            <span className="block text-2xl tracking-wide">INFINITUR</span>
+        <Link to="/" data-testid="logo-link" className="flex items-center gap-3 h-full py-2">
+          <img
+            src="/infinitur-mark.png"
+            alt="INFINITUR"
+            className="h-full w-auto object-contain flex-shrink-0"
+          />
+          <span className="leading-none text-orange-500">
+            <span
+              className="block text-2xl tracking-wide"
+              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700 }}
+            >
+              INFINITUR
+            </span>
             <span
               className="block text-[11px] mt-1 text-text-sec tracking-[0.02em]"
               style={{ fontFamily: "'Brygada 1918', Georgia, serif", fontStyle: "italic", fontWeight: 400 }}
