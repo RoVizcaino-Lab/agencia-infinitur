@@ -21,33 +21,37 @@ export default function Navbar() {
           <span className="flex-shrink-0 w-11 h-11 rounded-lg bg-white border border-[#E8E6E0] flex items-center justify-center">
             <img src="/infinitur-logo.png" alt="INFINITUR" className="w-full h-full object-contain p-0.5" />
           </span>
-          <span className="font-display text-2xl tracking-wide text-orange-500 font-bold">INFINITUR</span>
+          <span
+            className="text-2xl tracking-wide text-orange-500"
+            style={{ fontFamily: "'Brygada 1918', Georgia, serif", fontWeight: 700 }}
+          >
+            INFINITUR
+          </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-10">
-          {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              data-testid={`nav-${l.label.toLowerCase().replace(/\s/g, "-")}`}
-              className={({ isActive }) =>
-                `text-sm font-medium tracking-wide transition-colors ${
-                  isActive ? "text-green-700" : "text-text-main hover:text-green-700"
-                }`
-              }
-            >
-              {l.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-8">
+            {links.map((l) => (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                data-testid={`nav-${l.label.toLowerCase().replace(/\s/g, "-")}`}
+                className={({ isActive }) =>
+                  `text-sm font-medium tracking-wide transition-colors ${
+                    isActive ? "text-green-700" : "text-text-main hover:text-green-700"
+                  }`
+                }
+              >
+                {l.label}
+              </NavLink>
+            ))}
+          </nav>
           <a
             href={waLink(WA_MESSAGES.navbar)}
             target="_blank"
             rel="noreferrer"
             data-testid="navbar-cta-contactanos"
-            className="hidden sm:inline-flex btn-whatsapp items-center gap-2 px-5 lg:px-7 py-2.5 rounded-full font-semibold text-sm"
+            className="hidden sm:inline-flex btn-whatsapp items-center gap-2 px-5 lg:px-6 py-2.5 rounded-full font-semibold text-sm"
           >
             <MessageCircle size={16} fill="white" /> Contáctanos
           </a>
