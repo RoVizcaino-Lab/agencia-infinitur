@@ -22,10 +22,16 @@ export default function Navbar() {
             <img src="/infinitur-logo.png" alt="INFINITUR" className="w-full h-full object-contain p-0.5" />
           </span>
           <span
-            className="text-2xl tracking-wide text-orange-500"
+            className="leading-none text-orange-500"
             style={{ fontFamily: "'Brygada 1918', Georgia, serif", fontWeight: 700 }}
           >
-            INFINITUR
+            <span className="block text-2xl tracking-wide">INFINITUR</span>
+            <span
+              className="block text-[11px] mt-1 text-text-sec tracking-[0.02em]"
+              style={{ fontFamily: "'Brygada 1918', Georgia, serif", fontStyle: "italic", fontWeight: 400 }}
+            >
+              ¡El viaje de los viajes!
+            </span>
           </span>
         </Link>
 
