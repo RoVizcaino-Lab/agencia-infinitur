@@ -42,8 +42,8 @@ export default function Home() {
     <div data-testid="home-page">
       {/* HERO */}
       <section className="bg-bone pt-12 pb-16 lg:pt-16 lg:pb-20">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7 fade-in">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-12 gap-10 items-stretch">
+          <div className="lg:col-span-7 fade-in flex flex-col justify-center">
             <div className="text-orange-500 font-bold uppercase tracking-[0.2em] text-sm mb-5">¡SOMOS INFINITUR!</div>
             <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl text-text-main leading-[0.95] tracking-tight mb-6">
               ¡El viaje<br />de los viajes!
@@ -60,9 +60,9 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="lg:col-span-5 grid grid-cols-3 gap-3 sm:gap-4">
-            {HERO_PHOTOS.map((src, i) => (
-              <div key={src} className="aspect-[3/4] rounded-2xl overflow-hidden shadow-floating">
+          <div className="lg:col-span-5 grid grid-cols-3 gap-3 sm:gap-4 min-h-[420px] lg:min-h-0">
+            {HERO_PHOTOS.map((src) => (
+              <div key={src} className="rounded-2xl overflow-hidden shadow-floating min-h-[420px] lg:min-h-full">
                 <img src={src} alt="" loading="lazy" className="w-full h-full object-cover" />
               </div>
             ))}
