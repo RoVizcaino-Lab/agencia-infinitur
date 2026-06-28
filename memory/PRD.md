@@ -1,51 +1,84 @@
-# PRD — Senderos Auténticos (Agencia de viajes)
+# INFINITUR — Product Requirements Document
 
 ## Original problem statement
-Sitio web con front + panel de admin para una agencia de viajes pequeña tipo freelance. Un guía organiza grupos de 10-15 personas para destinos en México, América y Europa. Duración: 1 día a 1 semana.
+Sitio web (frontend público + admin) para INFINITUR, una agencia de viajes mexicana freelance que organiza expediciones en grupos chicos (10-15 personas) por México, América y Europa, con viajes de 1 día a 1 semana. El usuario proporcionó un briefing Figma (`briefing_entrega_dev_infinitur.docx`) con el rediseño completo.
 
-## User choices
-- Funciones públicas completas, admin completo, sin pagos online, JWT custom admin, estilo cálido/aventurero
-- Iteración 2: WhatsApp flotante, carrusel de meses, embed Facebook, slogan "¡El Viaje de los Viajes!", paleta naranja vibrante estilo Vagando por México
-- Iteración 3: subida de imágenes desde admin, más viajes/galería demo, FAQ + admin FAQ
+## User personas
+- **Viajero potencial**: explora catálogo, ve fechas, reserva por WhatsApp o formulario.
+- **Coordinador/admin (1 sólo)**: gestiona catálogo (Trips, Gallery, FAQ, Videos, Testimonials) vía panel admin.
 
-## Architecture
-- Backend: FastAPI + MongoDB (motor) + bcrypt + PyJWT + Emergent object storage
-- Frontend: React + Tailwind + shadcn UI + sonner toasts + react-router
-- Auth: Bearer token (localStorage `admin_token`)
-- Idiomas: ES; tipografías: Fraunces/Cormorant (heading) + Manrope (body)
+## Stack
+- Frontend: React, Tailwind, Shadcn UI, lucide-react.
+- Backend: FastAPI, Motor (MongoDB).
+- Auth: JWT en cookie httpOnly + memoria pura en frontend (refresh pierde sesión por diseño).
+- Storage: Emergent Object Storage para imágenes.
 
-## Implementado
-**Iter 1 (10/Feb)**
-- Páginas públicas: Home, /viajes, /viajes/:id, /galeria, /sobre-mi, /contacto
-- Panel admin: /admin/login, /admin con tabs Viajes/Reservas/Galería/Testimonios
-- Seeding admin + 4 viajes + 6 fotos + 3 testimonios
+## Paletas y tipografía
+- Naranjas (`#EE7E2C`) + Verdes (`#4E7A1A`, `#D6EDCA`) + Bone/Cream.
+- Tipografías: `Brygada 1918` (display) y `DM Sans` (UI).
 
-**Iter 2 (15/Feb)**
-- Botón flotante WhatsApp (con burbuja "¿Tienes dudas?")
-- Carrusel de 12 meses → enlaza a /viajes?mes=N
-- Embed Facebook Page Plugin
-- Nuevo slogan "¡El Viaje de los Viajes!"
-- Paleta naranja vibrante (#FF6B2C) + amarillo sol (#FFB627)
+## Estado actual — Fase 2 completa
+Las 5 páginas del briefing Figma están implementadas y validadas:
 
-**Iter 3 (25/May)**
-- Subida de imágenes en admin (Emergent object storage) — endpoint /api/admin/upload + /api/files/:id
-- Componente ImageUploadField reutilizable en AdminTrips y AdminGallery
-- 9 viajes demo (Oaxaca, Cartagena, Italia, Chiapas, Argentina + originales)
-- 12 fotos de galería más vibrantes
-- Página /faq con acordeón + sección de WhatsApp CTA
-- Admin tab FAQ con CRUD completo (8 preguntas sembradas)
-- Bug fix: WhatsApp button ahora dentro de PublicShell
-- 27/27 backend tests passed
+### Páginas públicas
+- **Home (`/`)** — Hero seccionado, calendario interactivo, 4 viajes destacados, gallery, FB videos. ✅
+- **Destinos (`/destinos`)** — Hero "Elige tu próximo viaje", 8 chips de filtro con counts (Todos/Clásico/Explora/Aventura/Bienestar/Mochilero/Confort/Alturismo), grid 3 columnas de cards iconográficas, calendario, sección "A la carta". ✅
+- **Destino Detalle (`/destinos/:id`)** — Breadcrumb, hero ilustrado con tags + precio "desde", secciones: Sobre/Lugares/Qué incluye/Itinerario/Otros destinos, aside sticky (Cupo limitado + Costo por viajero + Formas de pago + Reservar WA + Compartir), CTA dark. ✅
+- **Conócenos (`/conocenos`)** — Hero con stats, grid asimétrico, Filosofía + El Guía, 4 Pilares (Grupos chicos/Coordinador/Rutas/Comunidad), Modalidades (7 tipos + A la carta), Testimonios, CTA dark. ✅
+- **Lo que debes saber (`/lo-que-debes-saber`)** — 4 tabs (Cómo reservar / Seguro médico / Cancelaciones / Políticas de viaje) con paneles dinámicos. Toggle viajero/Infinitur en Cancelaciones. Banner WhatsApp footer. ✅
+- **Contáctanos (`/contactanos`)** — Hero, CTA grande WhatsApp, formulario que POST → /api/reservations. ✅
 
-## Backlog (P1 / P2)
-- P1: Notificaciones por email al admin cuando entra una reserva (Resend/SendGrid)
-- P1: Newsletter/suscripción desde el footer
-- P2: Stripe para anticipo opcional
-- P2: Brute-force lockout en login, enum validation en status, max_length en FAQ
-- P2: Reemplazar input date nativo por shadcn Calendar en AdminTrips
-- P2: Cachear /api/files/:id (CDN o redirect) — actualmente refetch cada request
-- P2: Reemplazar Facebook iframe placeholder por URL real cuando el usuario la provea
-- P2: SEO meta tags + sitemap
+### Admin
+- `/admin/login` + `/admin/dashboard` con CRUDs: Trips, Gallery, FAQ, Videos, Testimonials. ✅
 
-## Test credentials
-admin@viajes.mx / Aventura2026!
+## Modelos de datos
+### Trip (extendido)
+```
+title, destination, country, region, trip_type, description, long_description,
+duration_days, start_date, end_date, price, currency, group_min/max, spots_left,
+cover_image, images, itinerary, included, excluded, featured, active,
+places[], pricing_tiers[{label,price,icon}], itinerary_pdf_url
+```
+
+### Migración automática
+`_migrate_trip_fields()` corre en startup y rellena valores por defecto en trips legacy + asigna `trip_type` diverso vía heurística de keywords en el título.
+
+## Endpoints clave
+- `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
+- `GET/POST/PUT/DELETE /api/trips`, `GET /api/trips/:id`
+- `GET/POST/DELETE /api/gallery`, `/api/videos`, `/api/testimonials`
+- `GET/POST/PUT /api/faq`
+- `POST /api/reservations` (público), `GET/PATCH /api/admin/reservations`
+- `POST /api/storage/upload`
+
+## Integraciones 3rd party
+- Emergent Object Storage (sin API key)
+- Facebook Video Embed (iframe estándar)
+- WhatsApp link directo (`+52 ...`)
+
+## Roadmap / Backlog
+### P1 (mejoras de contenido)
+- Cargar foto real del coordinador en Conócenos (ahora placeholder con ícono).
+- Diversificar `trip_type` en `_seed_trips_if_empty()` directamente (en lugar de sólo en migración).
+- Subir PDFs de itinerario por viaje (campo `itinerary_pdf_url` ya soporta).
+
+### P2 (técnico)
+- Split `server.py` (~870 líneas) en `/app/backend/routes/`.
+- `init_storage()`/`put_object()` async wrappers en lugar de sync calls dentro de async handlers.
+- Reemplazar `window.location` en `LegacyTripRedirect` por `<Navigate>` idiomático.
+- Endpoint admin/reservations: validar `status` contra enum.
+- CORS: restringir `allow_origin_regex` a dominio real en producción.
+
+### P3 (futuro)
+- Pasarela de pago directa (Stripe) para reservar online.
+- Cuenta de viajero (login + historial).
+- Notificaciones por email (Resend / SendGrid).
+- SEO: meta tags dinámicos + sitemap.
+
+## Testing status
+- Backend: 33/33 pytest passing (`/app/backend/tests/`).
+- Frontend: validado vía testing_agent_v3_fork en 5 páginas + flujos.
+- Test reports: `/app/test_reports/iteration_{1,3,4}.json`.
+
+## Credenciales
+Ver `/app/memory/test_credentials.md`.

@@ -529,12 +529,40 @@ def _region_from_country(country: str) -> str:
 
 
 async def _migrate_trip_fields():
-    """Backfill new fields on legacy trips (trip_type, region, places, pricing_tiers)."""
+    """Backfill new fields on legacy trips (trip_type, region, places, pricing_tiers).
+
+    To enrich the catalog UX, assign varied trip_type values based on title
+    keywords when the trip currently has the default 'Clásico'.
+    """
+    # Title keyword → trip_type heuristic, applied only if still default.
+    type_map = [
+        ("machu", "Aventura"),
+        ("patagonia", "Aventura"),
+        ("sumidero", "Explora"),
+        ("cañon", "Explora"),
+        ("oaxaca", "Explora"),
+        ("tepoztl", "Bienestar"),
+        ("paris", "Confort"),
+        ("parís", "Confort"),
+        ("toscana", "Confort"),
+        ("roma", "Confort"),
+        ("cartagena", "Mochilero"),
+        ("buenos aires", "Confort"),
+    ]
+
     cursor = db.trips.find({}, {"_id": 0})
     async for t in cursor:
         update = {}
-        if not t.get("trip_type"):
+        current_type = t.get("trip_type")
+        if not current_type:
             update["trip_type"] = "Clásico"
+        # Diversify legacy 'Clásico' defaults based on title.
+        title_l = (t.get("title") or "").lower()
+        if current_type in (None, "", "Clásico"):
+            for kw, mapped in type_map:
+                if kw in title_l:
+                    update["trip_type"] = mapped
+                    break
         if not t.get("region"):
             update["region"] = _region_from_country(t.get("country", "México"))
         if "places" not in t or not t.get("places"):
