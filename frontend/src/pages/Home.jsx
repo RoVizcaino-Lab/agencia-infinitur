@@ -17,7 +17,7 @@ const fmtRange = (s, e) => {
 };
 
 const HERO_PHOTOS = [
-  "https://images.unsplash.com/photo-1518614368389-a91ff4a47550?w=900&q=80",
+  "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg?w=900",
   "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=900&q=80",
   "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=900",
 ];
@@ -34,7 +34,7 @@ export default function Home() {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
-    api.get("/trips?featured=true").then((r) => setDestacados(r.data.slice(0, 3)));
+    api.get("/trips?featured=true").then((r) => setDestacados(r.data.slice(0, 4)));
     api.get("/videos").then((r) => setVideos(r.data.slice(0, 3))).catch(() => setVideos([]));
   }, []);
 
@@ -75,7 +75,7 @@ export default function Home() {
           <div className="flex items-center gap-2 text-sm text-text-sec mb-8">
             <span className="w-2 h-2 rounded-full bg-orange-500" /> Salidas desde CDMX
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {destacados.map((t) => <DestinoCard key={t.id} trip={t} />)}
           </div>
           <div className="flex justify-center mt-10">
