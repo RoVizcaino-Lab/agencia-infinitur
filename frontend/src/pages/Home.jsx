@@ -42,20 +42,20 @@ export default function Home() {
     <div data-testid="home-page">
       {/* HERO */}
       <section className="bg-bone pt-12 pb-16 lg:pt-16 lg:pb-20">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 items-stretch">
           <div className="fade-in flex flex-col justify-center">
-            <div className="text-orange-500 font-bold uppercase tracking-[0.18em] text-xs mb-4">¡SOMOS INFINITUR!</div>
-            <h1 className="font-display text-4xl xl:text-5xl text-text-main leading-[0.95] tracking-tight mb-5">
+            <div className="text-orange-500 font-bold uppercase tracking-[0.2em] text-sm mb-5">¡SOMOS INFINITUR!</div>
+            <h1 className="font-display text-5xl xl:text-6xl text-text-main leading-[0.95] tracking-tight mb-5">
               ¡El viaje<br />de los viajes!
             </h1>
-            <p className="text-text-sec text-base leading-relaxed mb-6">
+            <p className="text-text-sec text-lg leading-relaxed max-w-md mb-7">
               Te llevamos a conocer México y el mundo viviendo una experiencia única.
             </p>
-            <div className="flex flex-col gap-2.5">
-              <Link to="/destinos" data-testid="hero-cta-destinos" className="btn-orange inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm">
+            <div className="flex flex-wrap gap-3">
+              <Link to="/destinos" data-testid="hero-cta-destinos" className="btn-orange inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm">
                 Ver próximos destinos
               </Link>
-              <Link to="/conocenos" data-testid="hero-cta-conocenos" className="btn-secondary-ghost inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm">
+              <Link to="/conocenos" data-testid="hero-cta-conocenos" className="btn-secondary-ghost inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm">
                 Conócenos <ArrowRight size={14} />
               </Link>
             </div>
