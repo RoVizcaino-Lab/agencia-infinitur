@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -33,18 +33,34 @@ function App() {
         <Routes>
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminDashboard />} />
+
           <Route path="/" element={<PublicShell><Home /></PublicShell>} />
-          <Route path="/viajes" element={<PublicShell><Trips /></PublicShell>} />
-          <Route path="/viajes/:id" element={<PublicShell><TripDetail /></PublicShell>} />
+
+          {/* New routes per Infinitur briefing */}
+          <Route path="/destinos" element={<PublicShell><Trips /></PublicShell>} />
+          <Route path="/destinos/:id" element={<PublicShell><TripDetail /></PublicShell>} />
+          <Route path="/conocenos" element={<PublicShell><About /></PublicShell>} />
+          <Route path="/lo-que-debes-saber" element={<PublicShell><FAQ /></PublicShell>} />
+          <Route path="/contactanos" element={<PublicShell><Contact /></PublicShell>} />
+
+          {/* Legacy routes (kept for backwards compat — redirect to new ones) */}
+          <Route path="/viajes" element={<Navigate to="/destinos" replace />} />
+          <Route path="/viajes/:id" element={<LegacyTripRedirect />} />
+          <Route path="/sobre-mi" element={<Navigate to="/conocenos" replace />} />
+          <Route path="/faq" element={<Navigate to="/lo-que-debes-saber" replace />} />
+          <Route path="/contacto" element={<Navigate to="/contactanos" replace />} />
+
           <Route path="/galeria" element={<PublicShell><Gallery /></PublicShell>} />
-          <Route path="/sobre-mi" element={<PublicShell><About /></PublicShell>} />
-          <Route path="/faq" element={<PublicShell><FAQ /></PublicShell>} />
-          <Route path="/contacto" element={<PublicShell><Contact /></PublicShell>} />
         </Routes>
         <Toaster position="top-right" richColors />
       </BrowserRouter>
     </AuthProvider>
   );
+}
+
+function LegacyTripRedirect() {
+  const path = window.location.pathname.replace("/viajes/", "/destinos/");
+  return <Navigate to={path} replace />;
 }
 
 export default App;

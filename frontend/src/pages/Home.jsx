@@ -1,169 +1,251 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "@/lib/api";
-import TripCard from "@/components/TripCard";
+import { ArrowRight, Calendar, MapPin, MessageCircle } from "lucide-react";
+import api, { resolveImage } from "@/lib/api";
 import MonthCarousel from "@/components/MonthCarousel";
-import FacebookFeed from "@/components/FacebookFeed";
-import { ArrowRight, Compass, Heart, Users, Sparkles } from "lucide-react";
+import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
+
+const fmtMoney = (n) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
+const fmtRange = (s, e) => {
+  if (!s) return "";
+  const a = new Date(s); const b = e ? new Date(e) : a;
+  const opts = { day: "numeric", month: "short", year: "numeric" };
+  if (a.getMonth() === b.getMonth()) {
+    return `${a.getDate()} al ${b.getDate()} de ${a.toLocaleDateString("es-MX", { month: "long" })}, ${a.getFullYear()}`;
+  }
+  return `${a.toLocaleDateString("es-MX", opts)} – ${b.toLocaleDateString("es-MX", opts)}`;
+};
+
+const HERO_PHOTOS = [
+  "https://images.unsplash.com/photo-1518614368389-a91ff4a47550?w=900&q=80",
+  "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=900&q=80",
+  "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=900",
+];
+
+const MANIFIESTO_GRID = [
+  "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg?w=800",
+  "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=800",
+  "https://images.unsplash.com/photo-1521437687640-34c398f4e598?w=800",
+  "https://images.unsplash.com/photo-1629752123286-49a7f60571f3?w=800",
+];
 
 export default function Home() {
-  const [trips, setTrips] = useState([]);
+  const [destacados, setDestacados] = useState([]);
+  const [videos, setVideos] = useState([]);
 
   useEffect(() => {
-    api.get("/trips?featured=true").then((r) => setTrips(r.data));
+    api.get("/trips?featured=true").then((r) => setDestacados(r.data.slice(0, 3)));
+    api.get("/videos").then((r) => setVideos(r.data.slice(0, 3))).catch(() => setVideos([]));
   }, []);
 
   return (
     <div data-testid="home-page">
       {/* HERO */}
-      <section className="relative min-h-[760px] lg:h-screen w-full overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1518638150340-f706e86654de?w=1920&q=80"
-          alt="Chichén Itzá, México"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 hero-gradient" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 h-full pt-32 pb-16 lg:pt-0 lg:pb-24 lg:flex lg:items-end">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 w-full items-end">
-            {/* LEFT: Slogan + CTAs */}
-            <div className="lg:col-span-7 fade-in">
-              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-orange-500 text-white text-sm uppercase tracking-[0.25em] mb-6 font-extrabold shadow-lg">
-                <Sparkles size={16} /> SOMOS INFINITUR
-              </div>
-              <h1 className="font-heading text-6xl sm:text-7xl lg:text-8xl text-white leading-[0.9] tracking-tight mb-6">
-                ¡El Viaje<br /><span className="text-orange-400">de los Viajes!</span>
-              </h1>
-              <p className="text-white/90 text-lg sm:text-xl max-w-2xl leading-relaxed mb-8">
-                Aventuras guiadas por México, América y Europa. Para involucrarse con la riqueza de la naturaleza, cultura y tradiciones.
-                Itinerarios confiables y experiencias auténticas. <span className="font-bold text-orange-400">¡Somos INFINITUR!</span>
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/viajes" data-testid="hero-cta-trips" className="btn-terracotta inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold">
-                  Ver próximos viajes <ArrowRight size={16} />
-                </Link>
-                <Link to="/sobre-mi" data-testid="hero-cta-about" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-white border border-white/40 hover:bg-white hover:text-ink transition-all">
-                  Conoce INFINITUR
-                </Link>
-              </div>
+      <section className="bg-bone pt-12 pb-16 lg:pt-16 lg:pb-20">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 fade-in">
+            <div className="text-orange-500 font-bold uppercase tracking-[0.2em] text-sm mb-5">¡SOMOS INFINITUR!</div>
+            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl text-text-main leading-[0.95] tracking-tight mb-6">
+              ¡El viaje<br />de los viajes!
+            </h1>
+            <p className="text-text-sec text-lg leading-relaxed max-w-xl mb-8">
+              Te llevamos a conocer México y el mundo viviendo una experiencia única.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/destinos" data-testid="hero-cta-destinos" className="btn-orange inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold">
+                Ver próximos destinos
+              </Link>
+              <Link to="/conocenos" data-testid="hero-cta-conocenos" className="btn-secondary-ghost inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold">
+                Conócenos <ArrowRight size={16} />
+              </Link>
             </div>
-
-            {/* RIGHT: Three pinned destination cards */}
-            <div className="lg:col-span-5 grid grid-cols-3 gap-3 sm:gap-4">
-              {HERO_DESTINATIONS.map((d, i) => (
-                <div
-                  key={d.name}
-                  data-testid={`hero-destination-${i}`}
-                  className="group relative rounded-2xl overflow-hidden shadow-floating ring-1 ring-white/30 transition-transform duration-300 hover:-translate-y-1"
-                  style={{ transform: i === 1 ? "translateY(-12px) rotate(0deg)" : `rotate(${i === 0 ? -2 : 2}deg)` }}
-                >
-                  <div className="aspect-[3/4] relative">
-                    <img src={d.img} alt={d.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute top-2.5 left-2.5 bg-white px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-orange-600">
-                      {d.tag}
-                    </div>
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <div className="font-heading text-base sm:text-lg lg:text-xl leading-tight drop-shadow">{d.name}</div>
-                      <div className="text-[10px] sm:text-xs text-white/80 mt-0.5">{d.country}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          </div>
+          <div className="lg:col-span-5 grid grid-cols-3 gap-3 sm:gap-4">
+            {HERO_PHOTOS.map((src, i) => (
+              <div key={src} className="aspect-[3/4] rounded-2xl overflow-hidden shadow-floating">
+                <img src={src} alt="" loading="lazy" className="w-full h-full object-cover" />
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* FEATURED TRIPS */}
-      <section className="py-24 sm:py-32">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
-            <div>
-              <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-3">Próximas salidas</div>
-              <h2 className="font-heading text-4xl sm:text-5xl text-ink">Viajes destacados</h2>
-            </div>
-            <Link to="/viajes" data-testid="see-all-trips" className="text-terracotta font-semibold inline-flex items-center gap-2 hover:gap-3 transition-all">
-              Ver todos <ArrowRight size={16} />
+      {/* PRÓXIMOS DESTINOS */}
+      <section className="bg-bone py-12 lg:py-16">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
+          <h2 className="font-display text-4xl sm:text-5xl text-text-main mb-2">Próximos destinos</h2>
+          <div className="flex items-center gap-2 text-sm text-text-sec mb-8">
+            <span className="w-2 h-2 rounded-full bg-orange-500" /> Salidas desde CDMX
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {destacados.map((t) => <DestinoCard key={t.id} trip={t} />)}
+          </div>
+          <div className="flex justify-center mt-10">
+            <Link to="/destinos" data-testid="ver-todos-destinos" className="btn-orange-outline inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
+              Ver todos los destinos <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {trips.map((t) => <TripCard key={t.id} trip={t} />)}
-          </div>
         </div>
       </section>
 
-      {/* MONTH CAROUSEL */}
+      {/* CALENDARIO DE AVENTURAS */}
       <MonthCarousel />
-
-      {/* INTRO */}
-      <section className="py-24 sm:py-32 bg-bone">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-12 gap-10 items-end">
-          <div className="md:col-span-6">
-            <div className="text-xs uppercase tracking-[0.25em] text-terracotta mb-4">Por qué INFINITUR</div>
-            <h2 className="font-heading text-4xl sm:text-5xl text-ink leading-tight">
-              No vendemos paquetes.<br /><span className="italic">Compartimos caminos.</span>
-            </h2>
-          </div>
-          <p className="md:col-span-6 text-lg text-ink/70 leading-relaxed">
-            Cada viaje está diseñado a mano. Visitamos lugares que nos enamoraron, dormimos en hospedajes con alma,
-            y conocemos personas que enriquecen el camino. Si buscas tours masivos, no somos lo que buscas. Si buscas conexión, bienvenido.
-          </p>
+      <div className="bg-white pb-12 -mt-8">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 flex justify-center">
+          <Link to="/destinos" className="btn-orange-outline inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
+            Ver todo el catálogo <ArrowRight size={16} />
+          </Link>
         </div>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 mt-16 grid md:grid-cols-3 gap-6">
-          {[
-            { icon: Users, title: "Grupos chicos", text: "Solo 10 a 15 viajeros por salida. Conoces a todos por nombre." },
-            { icon: Compass, title: "Itinerarios curados", text: "Cada parada tiene sentido. Sin tiempos muertos ni trampas turísticas." },
-            { icon: Heart, title: "Conexión real", text: "Comemos con familias locales y caminamos rutas que recordarás siempre." },
-          ].map((f) => (
-            <div key={f.title} className="bg-white border border-[#E5E0D8] rounded-3xl p-8 hover:-translate-y-1 transition-all duration-300">
-              <div className="w-12 h-12 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta mb-5">
-                <f.icon size={22} />
-              </div>
-              <h3 className="font-heading text-2xl text-ink mb-2">{f.title}</h3>
-              <p className="text-ink/70 leading-relaxed">{f.text}</p>
+      {/* CÓMO VIAJAMOS */}
+      <section className="bg-white py-20 lg:py-24">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 text-center">
+          <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-3">CÓMO VIAJAMOS</div>
+          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-text-main leading-tight max-w-4xl mx-auto">
+            No vendemos paquetes. <span className="text-orange-500">Compartimos caminos.</span>
+          </h2>
+          <p className="text-text-sec text-lg max-w-3xl mx-auto mt-5 leading-relaxed">
+            Cada viaje está diseñado a mano. Visitamos lugares que nos enamoraron, dormimos en hospedajes con alma,
+            y conocemos personas que enriquecen el camino. Si buscas conexión, bienvenido/a.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2.5 mt-8">
+            {["GRUPOS PEQUEÑOS", "ITINERARIOS CUIDADOS", "UN GUÍA COMO AMIGO", "CONEXIÓN REAL"].map((p) => (
+              <span key={p} className="px-4 py-1.5 rounded-full border border-green-700 text-green-700 text-xs font-bold tracking-widest">{p}</span>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1 mt-12">
+          {MANIFIESTO_GRID.map((src, i) => (
+            <div key={src + i} className="aspect-[3/2] overflow-hidden">
+              <img src={src} alt="" loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
             </div>
           ))}
         </div>
+        <div className="flex justify-center mt-12">
+          <Link to="/conocenos" className="btn-secondary-ghost inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
+            Conócenos <ArrowRight size={16} />
+          </Link>
+        </div>
       </section>
 
-      {/* FACEBOOK FEED */}
-      <FacebookFeed />
-
-      {/* CTA */}
-      <section className="py-24 bg-ink text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="font-heading text-4xl sm:text-5xl mb-6">¿Listo para tu próximo viaje?</h2>
-          <p className="text-white/75 text-lg mb-8">
-            Cuéntanos a dónde sueñas ir o súmate a una de nuestras próximas salidas. Te respondemos en menos de 24 horas.
+      {/* VIVE CADA VIAJE EN TIEMPO REAL */}
+      <section className="bg-bone py-20 lg:py-24">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 text-center">
+          <h2 className="font-display text-4xl sm:text-5xl text-text-main">
+            Vive cada viaje en <span className="italic text-green-700">tiempo real</span>
+          </h2>
+          <p className="text-text-sec text-lg max-w-3xl mx-auto mt-4">
+            Mira los reels de nuestros grupos en ruta — podrías estar viendo el lugar al que vas a viajar el próximo mes.
           </p>
-          <Link to="/contacto" data-testid="footer-cta-contact" className="btn-terracotta inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold">
-            Reservar mi lugar <ArrowRight size={16} />
-          </Link>
+
+          {videos.length === 0 ? (
+            <div className="mt-10 max-w-2xl mx-auto bg-white border border-[#E8E6E0] rounded-3xl p-10 text-center">
+              <p className="text-text-sec">El administrador puede agregar URLs de videos de Facebook desde el panel para reproducirlos aquí.</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
+              {videos.map((v) => (
+                <div key={v.id} className="bg-black aspect-[9/16] rounded-2xl overflow-hidden shadow-floating">
+                  <iframe
+                    title={v.title || "Reel INFINITUR"}
+                    src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(v.fb_url)}&show_text=false&width=400&t=0`}
+                    className="w-full h-full"
+                    style={{ border: "none" }}
+                    scrolling="no"
+                    allowFullScreen
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-12">
+            <p className="font-display text-2xl text-text-main">¿Te gustó lo que viste?</p>
+            <p className="text-text-sec mt-1">Síguenos en nuestras redes para no perderte ninguna salida.</p>
+            <div className="flex justify-center gap-4 mt-5">
+              <SocialBtn href="https://instagram.com/marinerus.infinitur" bg="bg-gradient-to-tr from-purple-600 via-pink-500 to-yellow-400" label="Instagram" />
+              <SocialBtn href="https://www.facebook.com/marinerus.infinitur" bg="bg-[#1877F2]" label="Facebook" />
+              <SocialBtn href="https://www.tiktok.com/@marinerus.infinitur" bg="bg-black" label="TikTok" />
+              <SocialBtn href="https://youtube.com/@marinerus.infinitur" bg="bg-[#FF0000]" label="YouTube" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BANNER WHATSAPP */}
+      <section className="bg-carbon text-white py-14">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 className="font-display text-3xl sm:text-4xl text-white">
+              ¿Tienes alguna duda?<br />
+              <span className="text-whatsapp italic">¡Escríbenos!</span>
+            </h2>
+            <p className="text-white/70 mt-4 max-w-md">
+              Estamos en WhatsApp para resolver cualquier pregunta — desde cómo funciona Infinitur hasta los detalles de tu próximo viaje.
+              <span className="font-bold"> Sin formularios, sin esperas.</span>
+            </p>
+          </div>
+          <div className="md:text-right">
+            <a href={waLink(WA_MESSAGES.homeBanner)} target="_blank" rel="noreferrer"
+              className="btn-whatsapp inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-base mb-3">
+              <MessageCircle size={18} fill="white" /> Contáctanos
+            </a>
+            <div className="font-display text-3xl text-whatsapp font-bold tracking-wide">{WA_DISPLAY}</div>
+            <div className="text-xs text-white/60 mt-1">Lunes a domingo · Respondemos en menos de 24 hrs</div>
+          </div>
         </div>
       </section>
     </div>
   );
 }
 
+function DestinoCard({ trip }) {
+  return (
+    <Link to={`/destinos/${trip.id}`} data-testid={`destino-card-${trip.id}`}
+      className="block bg-white border border-[#E8E6E0] rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-floating transition-all duration-300">
+      <div className="aspect-[3/2] overflow-hidden">
+        <img src={resolveImage(trip.cover_image)} alt={trip.title} loading="lazy"
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+      </div>
+      <div className="p-5">
+        <div className="flex gap-2 mb-3 flex-wrap">
+          <span className="tag-orange px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+            Infinitur 90°
+          </span>
+          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            trip.country === "México" ? "bg-green-100 text-green-700" : "bg-blue-50 text-blue-700"
+          }`}>
+            {trip.country === "México" ? "Nacional" : "Internacional"}
+          </span>
+        </div>
+        <h3 className="font-display text-2xl text-text-main leading-tight">{trip.title}</h3>
+        <div className="text-xs text-text-sec flex items-center gap-1 mt-1.5">
+          <Calendar size={11} /> {fmtRange(trip.start_date, trip.end_date)}
+        </div>
+        <div className="text-sm text-text-sec mt-3 line-clamp-2">
+          <span className="font-semibold text-text-main">Lugares:</span> {trip.destination}
+        </div>
+        <div className="flex items-end justify-between mt-4 pt-4 border-t border-[#E8E6E0]">
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-text-sec">desde</div>
+            <div className="font-display text-2xl text-green-700 font-bold">{fmtMoney(trip.price)}<span className="text-xs text-text-sec ml-1">MXN</span></div>
+          </div>
+          <span className="btn-orange-outline inline-flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-bold">
+            Ver más <ArrowRight size={12} />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
-const HERO_DESTINATIONS = [
-  {
-    name: "Chichén Itzá",
-    country: "Yucatán · México",
-    tag: "México",
-    img: "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=800&q=80",
-  },
-  {
-    name: "Machu Picchu",
-    country: "Cusco · Perú",
-    tag: "América",
-    img: "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=800",
-  },
-  {
-    name: "Toscana",
-    country: "Italia",
-    tag: "Europa",
-    img: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=800&q=80",
-  },
-];
+function SocialBtn({ href, bg, label }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" aria-label={label}
+      className={`w-12 h-12 rounded-full ${bg} flex items-center justify-center text-white shadow-floating hover:scale-110 transition-transform`}>
+      <span className="font-bold text-sm">{label[0]}</span>
+    </a>
+  );
+}
