@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "@/lib/api";
+import api, { resolveImage } from "@/lib/api";
 import {
   Calendar, Bus, Home, Star, MessageCircle, Share2, MapPin,
   Bed, Tent, AlertCircle, Download, ChevronRight, ArrowRight,
@@ -181,7 +181,7 @@ export default function TripDetail() {
                 El itinerario completo con todos los detalles del viaje está disponible para descargar.
               </p>
               {trip.itinerary_pdf_url ? (
-                <a href={trip.itinerary_pdf_url} target="_blank" rel="noreferrer"
+                <a href={resolveImage(trip.itinerary_pdf_url)} target="_blank" rel="noreferrer"
                   data-testid="download-itinerary"
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-full border-2 border-[#E8E6E0] hover:border-green-700 hover:text-green-700 font-semibold text-sm transition">
                   <Download size={16} /> Descargar itinerario PDF
