@@ -30,7 +30,7 @@ api_router = APIRouter(prefix="/api")
 STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
 EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY", "")
 APP_NAME = os.environ.get("APP_NAME", "infinitur-mx")
-MIME_TYPES = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif"}
+MIME_TYPES = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif", "pdf": "application/pdf"}
 _storage_key = None
 
 
@@ -411,12 +411,13 @@ async def admin_delete_video(vid: str, user: dict = Depends(get_current_admin)):
 async def admin_upload(file: UploadFile = File(...), user: dict = Depends(get_current_admin)):
     ext = (file.filename.rsplit(".", 1)[-1] if "." in (file.filename or "") else "bin").lower()
     if ext not in MIME_TYPES:
-        raise HTTPException(400, "Formato no permitido (usa jpg, png, webp, gif)")
+        raise HTTPException(400, "Formato no permitido (usa jpg, png, webp, gif o pdf)")
     content_type = MIME_TYPES[ext]
     path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
     data = await file.read()
-    if len(data) > 8 * 1024 * 1024:
-        raise HTTPException(400, "Archivo demasiado grande (máx 8MB)")
+    max_size = 16 * 1024 * 1024 if ext == "pdf" else 8 * 1024 * 1024
+    if len(data) > max_size:
+        raise HTTPException(400, f"Archivo demasiado grande (máx {max_size // (1024*1024)}MB)")
     result = put_object(path, data, content_type)
     file_id = str(uuid.uuid4())
     await db.files.insert_one({

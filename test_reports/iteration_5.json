@@ -1,0 +1,25 @@
+{
+  "summary": "Iteration 5 testing complete for the two surgical features (PDF upload + coordinator photo). Backend: 8/8 pytest pass in test_iteration5_pdf.py — /api/admin/upload accepts PDF (max 16MB), still accepts images (max 8MB), rejects .txt with 400, requires admin auth. /api/files/{id} returns application/pdf content-type with %PDF payload. Trip model accepts+persists itinerary_pdf_url on create + update, GET returns it, and all 9 seeded trips have the field (empty string). Frontend: /conocenos coordinator photo loads (naturalWidth=1536, correct URL, Marinerus card overlay present). Admin /admin/trips 'Nuevo viaje' modal renders PdfUploadField with all data-testids (trip-pdf-url, trip-pdf-btn, trip-pdf-file) plus 'Itinerario PDF' label — confirmed visually. End-to-end integration: (a) uploaded a PDF via /api/admin/upload from the browser (cookie session) → 200 with /api/files/{id} url; (b) POST /api/admin/trips with that itinerary_pdf_url → 200; (c) visited /destinos/{id} → 'Descargar itinerario PDF' button (download-itinerary) rendered with correct href to the PDF file. Seed trips (empty pdf) correctly fall back to the day-by-day itinerary blocks (download-itinerary count=0).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_iteration5_pdf.py",
+    "/app/test_reports/pytest/iteration5.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "PdfUploadField href in TripDetail uses trip.itinerary_pdf_url directly (e.g. '/api/files/xxx'). Because the ingress serves frontend+backend on the same host, browsers resolve the relative URL to the correct origin — works fine here, but if the app is ever deployed with a separate BACKEND_URL host, the download link would 404. Consider prefixing with BACKEND_URL (as PdfUploadField already does for the 'Ver PDF' preview).",
+    "MIME_TYPES accepts pdf but /api/admin/upload validates only by file extension (file.filename.rsplit). No magic-byte check — a malicious admin could upload arbitrary bytes named .pdf. Low risk since endpoint requires admin auth, but worth noting.",
+    "Carry-over from prior iterations: init_storage/put_object still sync inside async handlers; server.py still ~900 lines; CORS allow_origin_regex='.*' with credentials=true remains overly permissive."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration5_pdf.py"
+  ],
+  "success_rate": {"backend": "100% (8/8 new + prior 33/33 still pass)", "frontend": "100% on tested flows (About photo, Admin PdfUploadField, e2e PDF upload → trip create → public detail download button)"},
+  "test_credentials": "admin@viajes.mx / Aventura2026! (used to create/delete a TEST_PDF trip; cleaned up after run)",
+  "seed_data_creation": "None persisted. A temporary TEST_PDF Frontend trip was created via the browser to verify the public download button rendered, then deleted via DELETE /api/admin/trips/{id}. One PDF file was uploaded to object storage via /api/admin/upload during testing (id 573107b8-...) — no cleanup endpoint exists but the file record remains dormant.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Iteration 5 validated PDF-upload + coordinator-photo features. Backend pytest suite location unchanged: /app/backend/tests/ — now with test_iteration5_pdf.py (8 tests). data-testids for admin: trip-pdf-url, trip-pdf-btn, trip-pdf-file, trip-pdf-link, trip-pdf-clear. Public: download-itinerary (only rendered when trip.itinerary_pdf_url truthy). Admin auth note: after login the AdminTrips page requires SPA navigation (in-memory auth token); a hard page.goto('/admin/trips') renders a blank page — click the 'Viajes' button in the admin sidebar instead. The /admin/login button says 'Entrar' (no type=submit). To exercise the upload endpoint quickly from a browser context use fetch('/api/admin/upload', {credentials:'include', ...}) — cookie is httpOnly access_token.",
+  "rca of the issue": "No functional issue found in the two features under review. Both PDF upload flow (backend + admin UI + public download) and the coordinator photo on /conocenos work end-to-end."
+}

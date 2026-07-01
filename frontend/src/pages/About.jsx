@@ -81,9 +81,13 @@ export default function About() {
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid md:grid-cols-12 gap-12 items-center">
           <div className="md:col-span-5">
             <div className="relative aspect-[4/5] rounded-3xl bg-gradient-to-br from-[#FFE0C8] via-[#F0F7EA] to-[#D6EDCA] flex items-end justify-center overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center opacity-40">
-                <Users className="text-green-800" size={180} strokeWidth={1} />
-              </div>
+              <img
+                src="https://customer-assets.emergentagent.com/job_grupos-expedicion/artifacts/4rw8xqhn_Infinitur%20Im%C3%A1genes_Con%C3%B3cenos_1.jpg"
+                alt="Coordinador Infinitur"
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0 pointer-events-none" />
               <div className="relative w-full bg-white/95 backdrop-blur px-6 py-5 m-4 rounded-2xl shadow-soft">
                 <div className="text-[10px] uppercase tracking-[0.25em] text-orange-500 font-bold mb-1">Coordinador Infinitur</div>
                 <div className="font-display text-2xl text-text-main">Marinerus</div>

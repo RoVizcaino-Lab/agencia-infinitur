@@ -3,12 +3,14 @@ import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
+import PdfUploadField from "@/components/PdfUploadField";
 
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
   duration_days: 1, start_date: "", end_date: "", price: 0, currency: "MXN",
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
+  itinerary_pdf_url: "",
 };
 
 export default function AdminTrips() {
@@ -138,6 +140,7 @@ function TripModal({ data, onClose, onSave }) {
           </div>
           <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
+          <PdfUploadField label="Itinerario PDF" value={f.itinerary_pdf_url} onChange={(v) => set("itinerary_pdf_url", v)} testId="trip-pdf" />
           <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
           <Inp label="Incluye (una por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} />
           <Inp label="No incluye (una por línea)" v={f.excluded} onChange={(v) => set("excluded", v)} textarea rows={2} />
