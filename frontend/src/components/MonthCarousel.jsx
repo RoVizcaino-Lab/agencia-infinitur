@@ -1,37 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Calendar, MapPin, ArrowRight, MessageCircle } from "lucide-react";
-import api, { resolveImage } from "@/lib/api";
+import { ChevronLeft, ChevronRight, MapPin, ArrowRight, MessageCircle } from "lucide-react";
+import api from "@/lib/api";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
 
 const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
+const VISIBLE_MONTHS = 5;
+const CARD_STEP = 236; // card width (220) + gap (16)
+
 const fmtMoney = (n) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 
-export default function MonthCarousel({ year, expanded = true, eyebrow = "CALENDARIO DE AVENTURAS", title = "¿Cuándo te vas de viaje?", subtitle = "Estos son los meses con viajes confirmados. Elige el que más te emocione." }) {
+export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO DE AVENTURAS", title = "¿Cuándo te vas de viaje?", subtitle = "Estos son los meses con viajes confirmados. Elige el que más te emocione." }) {
   const [trips, setTrips] = useState([]);
   const [active, setActive] = useState(null);
-  const [currentYear, setCurrentYear] = useState(year || new Date().getFullYear());
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
   const railRef = useRef(null);
+  const baselineScrollLeft = useRef(null);
 
   useEffect(() => { api.get("/trips").then((r) => setTrips(r.data)); }, []);
 
-  // Map: monthIndex (0-11) → list of trips that start in that month/year
-  const byMonth = trips.reduce((acc, t) => {
-    if (!t.start_date) return acc;
-    const d = new Date(t.start_date);
-    if (d.getFullYear() !== currentYear) return acc;
-    const m = d.getMonth();
-    (acc[m] = acc[m] || []).push(t);
-    return acc;
-  }, {});
+  // Only months with upcoming confirmed trips, sorted chronologically
+  const groups = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const map = new Map();
+    trips.forEach((t) => {
+      if (!t.start_date) return;
+      const d = new Date(t.start_date);
+      if (d < now) return;
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!map.has(key)) map.set(key, { year: d.getFullYear(), month: d.getMonth(), trips: [] });
+      map.get(key).trips.push(t);
+    });
+    return Array.from(map.values()).sort((a, b) => (a.year - b.year) || (a.month - b.month));
+  }, [trips]);
 
-  const activeTrips = active !== null ? (byMonth[active] || []) : [];
+  const activeGroup = groups.find((g) => `${g.year}-${g.month}` === active) || null;
+  const activeTrips = activeGroup ? activeGroup.trips : [];
+  const showArrows = groups.length > VISIBLE_MONTHS;
+
+  const updateScrollState = () => {
+    const el = railRef.current;
+    if (!el) return;
+    if (baselineScrollLeft.current === null) baselineScrollLeft.current = el.scrollLeft;
+    setCanScrollPrev(el.scrollLeft > baselineScrollLeft.current + 4);
+    setCanScrollNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => { baselineScrollLeft.current = null; updateScrollState(); }, [groups]);
 
   const scroll = (dir) => {
     if (!railRef.current) return;
-    railRef.current.scrollBy({ left: dir * 320, behavior: "smooth" });
+    railRef.current.scrollBy({ left: dir * CARD_STEP, behavior: "smooth" });
+    setTimeout(updateScrollState, 300);
   };
 
   return (
@@ -43,61 +67,76 @@ export default function MonthCarousel({ year, expanded = true, eyebrow = "CALEND
             <h2 className="font-display text-4xl sm:text-5xl text-text-main leading-tight">{title}</h2>
             <p className="text-text-sec mt-3 max-w-2xl">{subtitle}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <button data-testid="year-prev" onClick={() => setCurrentYear((y) => y - 1)}
-              className="w-10 h-10 rounded-full bg-white border-2 border-[#E8E6E0] text-text-main hover:border-orange-500 hover:text-orange-500 transition-all flex items-center justify-center">
-              <ChevronLeft size={18} />
-            </button>
-            <span className="font-display text-2xl font-bold text-text-main min-w-[60px] text-center">{currentYear}</span>
-            <button data-testid="year-next" onClick={() => setCurrentYear((y) => y + 1)}
-              className="w-10 h-10 rounded-full bg-white border-2 border-[#E8E6E0] text-text-main hover:border-orange-500 hover:text-orange-500 transition-all flex items-center justify-center">
-              <ChevronRight size={18} />
-            </button>
-          </div>
+          {showArrows && (
+            <div className="flex items-center gap-3">
+              <button
+                data-testid="month-carousel-prev"
+                onClick={() => scroll(-1)}
+                disabled={!canScrollPrev}
+                className={`w-10 h-10 rounded-full bg-white border-2 border-[#E8E6E0] flex items-center justify-center transition-all
+                  ${canScrollPrev ? "text-text-main hover:border-orange-500 hover:text-orange-500" : "text-text-sec opacity-40 cursor-not-allowed"}`}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                data-testid="month-carousel-next"
+                onClick={() => scroll(1)}
+                disabled={!canScrollNext}
+                className={`w-10 h-10 rounded-full bg-white border-2 border-[#E8E6E0] flex items-center justify-center transition-all
+                  ${canScrollNext ? "text-text-main hover:border-orange-500 hover:text-orange-500" : "text-text-sec opacity-40 cursor-not-allowed"}`}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Rail of month cards */}
         <div className="relative">
-          <div ref={railRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 lg:-mx-20 px-5 lg:px-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {MONTH_NAMES.map((name, i) => {
-              const count = (byMonth[i] || []).length;
-              const isActive = active === i;
-              const hasTrips = count > 0;
-              return (
-                <button
-                  key={name}
-                  data-testid={`month-card-${i + 1}`}
-                  onClick={() => hasTrips && setActive(isActive ? null : i)}
-                  disabled={!hasTrips}
-                  className={`snap-start flex-shrink-0 min-w-[220px] h-32 rounded-2xl px-6 text-left transition-all duration-200 flex flex-col justify-between
-                    ${isActive
-                      ? "bg-green-700 text-white ring-4 ring-orange-500 ring-offset-2 ring-offset-white"
-                      : hasTrips
-                        ? "bg-green-600 text-white hover:bg-green-700 cursor-pointer"
-                        : "bg-[#D7D6CF] text-text-sec cursor-default opacity-80"}
-                  `}
-                  style={{ paddingTop: "1.25rem", paddingBottom: "1.25rem" }}
-                >
-                  <div className="font-display text-2xl">{name}</div>
-                  {hasTrips ? (
+          {groups.length === 0 ? (
+            <p data-testid="month-carousel-empty" className="text-text-sec">Aún no hay viajes confirmados próximamente.</p>
+          ) : (
+            <div
+              ref={railRef}
+              onScroll={updateScrollState}
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 lg:-mx-20 px-5 lg:px-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {groups.map((g) => {
+                const key = `${g.year}-${g.month}`;
+                const isActive = active === key;
+                const count = g.trips.length;
+                return (
+                  <button
+                    key={key}
+                    data-testid={`month-card-${key}`}
+                    onClick={() => setActive(isActive ? null : key)}
+                    className={`snap-start flex-shrink-0 min-w-[220px] h-32 rounded-2xl px-6 text-left transition-all duration-200 flex flex-col justify-between
+                      ${isActive
+                        ? "bg-green-700 text-white ring-4 ring-orange-500 ring-offset-2 ring-offset-white"
+                        : "bg-green-600 text-white hover:bg-green-700 cursor-pointer"}
+                    `}
+                    style={{ paddingTop: "1.25rem", paddingBottom: "1.25rem" }}
+                  >
+                    <div>
+                      <div className="font-display text-2xl leading-tight">{MONTH_NAMES[g.month]}</div>
+                      <div className="text-xs opacity-80 font-semibold">{g.year}</div>
+                    </div>
                     <div className="flex items-center gap-1.5 text-sm">
                       <span className="w-2 h-2 rounded-full bg-orange-500" />
                       {count} {count === 1 ? "viaje" : "viajes"}
                     </div>
-                  ) : (
-                    <div className="text-sm italic opacity-90">Próximamente</div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Expandable panel */}
-        {expanded && active !== null && (
+        {expanded && activeGroup && (
           <div data-testid="month-panel" className="mt-8 bg-bone border border-[#E8E6E0] rounded-2xl p-5 sm:p-7">
             <div className="text-xs uppercase tracking-[0.2em] text-green-700 font-bold mb-4">
-              Viajes en {MONTH_NAMES[active]} {currentYear}
+              Viajes en {MONTH_NAMES[activeGroup.month]} {activeGroup.year}
             </div>
             {activeTrips.length === 0 ? (
               <p className="text-text-sec">Aún no hay viajes confirmados este mes.</p>

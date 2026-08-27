@@ -1,0 +1,32 @@
+{
+  "summary": "Frontend-only verification of the rewritten MonthCarousel on Home (/) and Destinos (/destinos). Current DB state (today = 2026-08-27) yields 3 upcoming months (Sep/Oct/Nov 2026): only those 3 cards render, no 'Próximamente'/disabled cards, no year-prev/year-next, and no scroll arrows (correct for <=5 months). To exercise the >5-month case I seeded 4 TEST_ trips (Dec 2026, Jan/Feb/Mar 2027) via /api/admin/trips -> 7 month cards, month-carousel-prev/next appeared, next scrolled the rail (scrollLeft 80 -> 316 -> 356) and became disabled at the end; panel expansion, Ver más navigation and WhatsApp link all work on both pages, mobile (390px) included. Seed data deleted afterwards (DB back to 9 trips, 3 month cards). Zero JS console errors / pageerrors. One real defect found: prev arrow is never disabled at the start position.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "MonthCarousel", "issue": "'prev' arrow is never disabled at the initial/leftmost position. The rail uses '-mx-5 px-5 lg:-mx-20 lg:px-20', so its minimum scrollLeft is the horizontal padding (80px desktop / 20px mobile), while canScrollPrev is computed as scrollLeft > 4. Result: at scroll start the prev button looks enabled but clicking it does nothing (scrollLeft stays 80). Requirement 'prev disabled at scroll=0' FAILS. Fix: compare against the rail's real minimum (e.g. track an initial scrollLeft baseline or use scroll-padding instead of px padding).", "selector": "[data-testid=\"month-carousel-prev\"]", "priority": "MEDIUM"},
+      {"component": "MonthCarousel rail (mobile 390px)", "issue": "Because the rail starts scrolled by its 20px inner padding, the first month card sits flush against the left screen edge, misaligned with the section heading/paragraph (20px gutter). Same root cause as above.", "selector": "[data-testid^=\"month-card-\"]", "priority": "LOW"},
+      {"component": "Home - Próximos destinos card", "issue": "Broken cover image (naturalWidth=0): alt text 'Oaxaca Mágico: Mezcal, Mole y Monte Albán' shows instead of an image. src=https://images.unsplash.com/photo-1518614368389-a91ff4a47550?w=1200 . Not part of MonthCarousel but user-visible.", "selector": "img[alt*=\"Oaxaca\"]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home/Destinos - Calendario de aventuras (1920px)", "issues": ["VISIBLE_MONTHS=5 only gates arrow visibility; at 1920px width 6 cards fit and are shown, so 'default 5 months' is not visually enforced (cosmetic, arrows logic still correct)"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/seed_month_trips.py"],
+  "action_items": [
+    "Fix canScrollPrev baseline in MonthCarousel so the prev arrow is disabled at the leftmost position (account for the rail's px-5/px-20 padding offset) and the first card aligns with the page gutter.",
+    "Replace/fix the broken Unsplash cover image on the Oaxaca Mágico trip."
+  ],
+  "critical_code_review_comments": [
+    "MonthCarousel: api.get('/trips') has no .catch and no loading/error state - a failed request leaves the section silently empty (no error UI).",
+    "scroll() relies on a hardcoded CARD_STEP=236 and setTimeout(300) to sync arrow state; prefer measuring card width / relying on the onScroll handler only."
+  ],
+  "updated_files": ["/app/backend/tests/seed_month_trips.py"],
+  "success_rate": {"backend": "not tested (per request)", "frontend": "90% (6/7 requirements pass; prev-disabled-at-start fails)"},
+  "seed_data_creation": "4 TEST_ trips (Dec 2026, Jan/Feb/Mar 2027) created via POST /api/admin/trips to force >5 months, then deleted. DB verified clean (9 trips, no TEST_ titles). Reusable helper: python /app/backend/tests/seed_month_trips.py create|cleanup",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "admin@viajes.mx / Aventura2026! (used only for seeding trips; login worked, 200)",
+  "context_for_next_testing_agent": "Today is 2026-08-27, so only Sep/Oct/Nov 2026 trips are upcoming -> 3 month cards and no arrows is the EXPECTED state. Use /app/backend/tests/seed_month_trips.py create to add 4 future-month TEST_ trips (7 months total) to test arrows, then cleanup. Arrow logic verified: next scrolls and disables at end; prev never disables at start (bug).",
+  "rca_of_the_issue": "Rail element has negative margins with matching horizontal padding (-mx-20 px-20). With snap-mandatory the browser rests at scrollLeft = padding (80px desktop, 20px mobile), never 0. canScrollPrev = scrollLeft > 4 therefore evaluates true at the leftmost position, leaving the prev arrow permanently enabled and a no-op click."
+}
