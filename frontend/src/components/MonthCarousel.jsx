@@ -22,20 +22,37 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
 
   useEffect(() => { api.get("/trips").then((r) => setTrips(r.data)); }, []);
 
-  // Only months with upcoming confirmed trips, sorted chronologically
+  // Always VISIBLE_MONTHS consecutive months starting from the current month.
+  // Months without confirmed trips are filled in as "Próximamente" placeholders,
+  // extending the sequence further if a trip lies beyond the default window.
   const groups = useMemo(() => {
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const baseYear = today.getFullYear();
+    const baseMonth = today.getMonth();
     const map = new Map();
     trips.forEach((t) => {
       if (!t.start_date) return;
       const d = new Date(t.start_date);
-      if (d < now) return;
+      if (d < today) return;
       const key = `${d.getFullYear()}-${d.getMonth()}`;
       if (!map.has(key)) map.set(key, { year: d.getFullYear(), month: d.getMonth(), trips: [] });
       map.get(key).trips.push(t);
     });
-    return Array.from(map.values()).sort((a, b) => (a.year - b.year) || (a.month - b.month));
+    let maxOffset = 0;
+    map.forEach((g) => {
+      const offset = (g.year - baseYear) * 12 + (g.month - baseMonth);
+      if (offset > maxOffset) maxOffset = offset;
+    });
+    const totalMonths = Math.max(VISIBLE_MONTHS, maxOffset + 1);
+    const result = [];
+    for (let i = 0; i < totalMonths; i++) {
+      const d = new Date(baseYear, baseMonth + i, 1);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      const g = map.get(key);
+      result.push({ year: d.getFullYear(), month: d.getMonth(), trips: g ? g.trips : [] });
+    }
+    return result;
   }, [trips]);
 
   const activeGroup = groups.find((g) => `${g.year}-${g.month}` === active) || null;
@@ -93,43 +110,47 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
 
         {/* Rail of month cards */}
         <div className="relative">
-          {groups.length === 0 ? (
-            <p data-testid="month-carousel-empty" className="text-text-sec">Aún no hay viajes confirmados próximamente.</p>
-          ) : (
-            <div
-              ref={railRef}
-              onScroll={updateScrollState}
-              className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 lg:-mx-20 px-5 lg:px-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
-              {groups.map((g) => {
-                const key = `${g.year}-${g.month}`;
-                const isActive = active === key;
-                const count = g.trips.length;
-                return (
-                  <button
-                    key={key}
-                    data-testid={`month-card-${key}`}
-                    onClick={() => setActive(isActive ? null : key)}
-                    className={`snap-start flex-shrink-0 min-w-[220px] h-32 rounded-2xl px-6 text-left transition-all duration-200 flex flex-col justify-between
-                      ${isActive
-                        ? "bg-green-700 text-white ring-4 ring-orange-500 ring-offset-2 ring-offset-white"
-                        : "bg-green-600 text-white hover:bg-green-700 cursor-pointer"}
-                    `}
-                    style={{ paddingTop: "1.25rem", paddingBottom: "1.25rem" }}
-                  >
-                    <div>
-                      <div className="font-display text-2xl leading-tight">{MONTH_NAMES[g.month]}</div>
-                      <div className="text-xs opacity-80 font-semibold">{g.year}</div>
-                    </div>
+          <div
+            ref={railRef}
+            onScroll={updateScrollState}
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 lg:-mx-20 px-5 lg:px-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {groups.map((g) => {
+              const key = `${g.year}-${g.month}`;
+              const isActive = active === key;
+              const count = g.trips.length;
+              const hasTrips = count > 0;
+              return (
+                <button
+                  key={key}
+                  data-testid={`month-card-${key}`}
+                  onClick={() => hasTrips && setActive(isActive ? null : key)}
+                  disabled={!hasTrips}
+                  className={`snap-start flex-shrink-0 min-w-[220px] h-32 rounded-2xl px-6 text-left transition-all duration-200 flex flex-col justify-between
+                    ${isActive
+                      ? "bg-green-700 text-white ring-4 ring-orange-500 ring-offset-2 ring-offset-white"
+                      : hasTrips
+                        ? "bg-green-600 text-white hover:bg-green-700 cursor-pointer"
+                        : "bg-[#D7D6CF] text-text-sec cursor-default opacity-80"}
+                  `}
+                  style={{ paddingTop: "1.25rem", paddingBottom: "1.25rem" }}
+                >
+                  <div>
+                    <div className="font-display text-2xl leading-tight">{MONTH_NAMES[g.month]}</div>
+                    <div className="text-xs opacity-80 font-semibold">{g.year}</div>
+                  </div>
+                  {hasTrips ? (
                     <div className="flex items-center gap-1.5 text-sm">
                       <span className="w-2 h-2 rounded-full bg-orange-500" />
                       {count} {count === 1 ? "viaje" : "viajes"}
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                  ) : (
+                    <div className="text-sm italic opacity-90">Próximamente</div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Expandable panel */}

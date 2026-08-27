@@ -1,0 +1,26 @@
+{
+  "summary": "Frontend-only retest of MonthCarousel new spec (5 consecutive months from current month with 'Próximamente' placeholders, consecutive extension when a far trip exists). Today = 2026-08-27, DB has 3 upcoming trips (2026-09-22, 2026-10-08, 2026-11-05). Home (/): exactly 5 cards month-card-2026-7..2026-11 in order Ago(Próximamente, disabled, bg #D7D6CF, cursor-default)/Sep(1 viaje)/Oct(1 viaje)/Nov(1 viaje)/Dic(Próximamente, disabled); no month-carousel-prev/next in DOM; click on Agosto/Diciembre blocked by disabled attr and no month-panel rendered; clicking Sep/Oct/Nov opens month-panel with the correct trip. /destinos: identical result (5 cards, no arrows, panel works). EXTENDED CASE: seeded 1 admin trip start_date 2027-03-15 -> carousel rendered 8 consecutive cards with NO gaps (Ago2026..Mar2027, Dic/Ene/Feb as Próximamente disabled, Mar2027 '1 viaje' clickable), month-carousel-prev/next appeared, prev was DISABLED at the resting position (scrollLeft=80 baseline fix works), next scrolled the rail 80->592 and self-disabled at the end revealing Marzo 2027, prev then scrolled back and became disabled exactly at scrollLeft=80 with Agosto 2026 as the leftmost card (never any month before Agosto). Test trip deleted; carousel returned to 5 cards (verified desktop and mobile 390px). Zero JS console errors / pageerrors on all runs. All 7 requested requirements PASS.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home/Destinos - Calendario de aventuras (rail alignment)", "issues": ["When the rail is scrollable (extended >5-month case at 1920px, or mobile 390px), it rests at scrollLeft = inner padding (80px / 20px), so the first month card sits 80px (desktop) / 20px (mobile) to the LEFT of the heading gutter - on mobile Agosto is flush against the screen edge while the heading has a 20px gutter. Cosmetic only; arrow enable/disable logic is now correct.", "At 1920px six 220px cards would fit, so the 5-month window is not visually enforced by width - only by the group count (cosmetic, matches spec)"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/seed_far_trip.py", "/app/backend/tests/seed_month_trips.py"],
+  "action_items": ["Optional (LOW): align the first month card with the section gutter when the rail is scrollable (use scroll-padding-left instead of -mx/px padding), so the card row lines up with the heading."],
+  "critical_code_review_comments": [
+    "MonthCarousel: api.get('/trips') still has no .catch and no loading/error state - a failed request leaves the calendar silently empty with no error UI.",
+    "scroll() still depends on hardcoded CARD_STEP=236 and setTimeout(300); prefer measuring the card width and relying solely on the onScroll handler.",
+    "baselineScrollLeft is captured on the first updateScrollState call after a groups change; if the browser restores a different scroll position (e.g. bfcache/back navigation) the baseline could be captured mid-scroll and mis-disable prev. Consider computing the minimum as 0 + scroll padding explicitly."
+  ],
+  "updated_files": ["/app/backend/tests/seed_far_trip.py"],
+  "success_rate": {"backend": "not tested (per request)", "frontend": "100% (7/7 requirements pass)"},
+  "seed_data_creation": "1 temporary trip 'TEST_Viaje Lejano 2027-03' (start 2027-03-15) created via POST /api/admin/trips and deleted afterwards; DB verified back to 9 trips. Helper: python /app/backend/tests/seed_far_trip.py create|cleanup",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "admin@viajes.mx / Aventura2026! - login 200, admin trip create/delete worked",
+  "context_for_next_testing_agent": "Today 2026-08-27. Base DB: 9 trips, only 2026-09-22/10-08/11-05 are future -> expected carousel = Ago(Próximamente)/Sep/Oct/Nov/Dic(Próximamente), no arrows. Use seed_far_trip.py to force the extended >5-month case (2027-03) then cleanup. The prev-arrow-baseline bug from iteration_6 is FIXED and verified. Remaining known non-carousel issue from iteration_6: broken Unsplash cover image on 'Oaxaca Mágico' trip (not re-verified this run).",
+  "rca_of_the_issue": "No functional defect found this iteration. The previous prev-arrow bug is resolved by baselineScrollLeft.current capturing the rail's resting scrollLeft (80px desktop / 20px mobile) and comparing scrollLeft > baseline + 4."
+}
