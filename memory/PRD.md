@@ -88,3 +88,7 @@ Ver `/app/memory/test_credentials.md`.
 - Logo del footer con misma composición del navbar: marca PNG sin recuadro blanco + "INFINITUR" DM Sans bold blanco + "¡El viaje de los viajes!" en serif italic gris claro.
 - Íconos sociales cuadrados (rounded-md) 48x48 con glifo blanco 24px.
 - Banner WhatsApp (Home): botón rectangular rounded-xl con glifo oficial de WhatsApp (SVG inline `WhatsAppGlyph`).
+
+## 2026-06 Chips de filtro "Tipo de viaje" (/destinos)
+- 5 estados implementados en `FilterChip` (Trips.jsx): Default (blanco/borde arena), Hover (bg green-50 + borde green-400 + texto green-800), Activo (green-800 sólido, texto blanco), Activo Hover (green-700), Disabled (count 0: bg #F5F2EC, texto atenuado, no clickeable).
+- Chips de Tipo en estado activo muestran ✕ para limpiar el filtro (testid `filter-{tipo}-clear`); el chip "Todos" no lleva ✕.

@@ -74,6 +74,7 @@ export default function Trips() {
                 count={counts[t.key] || 0}
                 active={typeFilter === t.key}
                 onClick={() => setTypeFilter(t.key)}
+                onClear={() => setTypeFilter("Todos")}
                 style={t}
               />
             ))}
@@ -137,35 +138,43 @@ export default function Trips() {
   );
 }
 
-function FilterChip({ testid, label, count, active, onClick, primary = false, style }) {
-  // Active styles vary depending on chip
-  const base = "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all";
-  if (primary) {
-    return (
-      <button
-        data-testid={testid}
-        onClick={onClick}
-        className={`${base} ${active
-          ? "bg-green-700 text-white border-green-700"
-          : "bg-white text-text-main border-[#E8E6E0] hover:border-green-700 hover:text-green-700"}`}
-      >
-        <span>{label}</span>
-        <span className={`text-[11px] px-2 py-0.5 rounded-full ${active ? "bg-white/25" : "bg-[#F5F2EC]"}`}>{count}</span>
-      </button>
-    );
-  }
-  const Icon = style?.icon;
+function FilterChip({ testid, label, count, active, onClick, onClear, primary = false, style }) {
+  const disabled = count === 0 && !active;
+  const base = "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-colors duration-200";
+
+  let state = "bg-white text-text-main border-[#E8E6E0] hover:bg-green-50 hover:border-green-400 hover:text-green-800";
+  if (active) state = "bg-green-800 text-white border-green-800 hover:bg-green-700 hover:border-green-700";
+  if (disabled) state = "bg-[#F5F2EC] text-text-sec/45 border-transparent cursor-not-allowed";
+
+  const Icon = primary ? null : style?.icon;
+  const iconColor = active ? "text-white" : disabled ? "opacity-40" : style?.fg;
+
   return (
     <button
       data-testid={testid}
-      onClick={onClick}
-      className={`${base} ${active
-        ? "bg-green-700 text-white border-green-700"
-        : "bg-white text-text-main border-[#E8E6E0] hover:border-green-700"}`}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
+      aria-pressed={active}
+      className={`${base} ${state}`}
     >
-      {Icon && <Icon size={14} className={active ? "text-white" : style?.fg} />}
+      {Icon && <Icon size={14} className={iconColor} />}
       <span>{label}</span>
-      <span className={`text-[11px] px-2 py-0.5 rounded-full ${active ? "bg-white/25" : "bg-[#F5F2EC]"}`}>{count}</span>
+      <span className={`text-[11px] px-2 py-0.5 rounded-full ${
+        active ? "bg-white/25" : disabled ? "bg-white/60 text-text-sec/45" : "bg-[#F5F2EC]"
+      }`}>{count}</span>
+      {active && !primary && (
+        <span
+          role="button"
+          tabIndex={0}
+          data-testid={`${testid}-clear`}
+          aria-label={`Quitar filtro ${label}`}
+          onClick={(e) => { e.stopPropagation(); onClear?.(); }}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onClear?.(); } }}
+          className="text-white/70 hover:text-white text-xs leading-none -mr-1 pl-0.5"
+        >
+          ✕
+        </span>
+      )}
     </button>
   );
 }
