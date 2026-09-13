@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calendar, MapPin, MessageCircle } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, MessageCircle, Instagram, Play } from "lucide-react";
 import api, { resolveImage } from "@/lib/api";
 import MonthCarousel from "@/components/MonthCarousel";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
@@ -135,7 +135,7 @@ export default function Home() {
           <h2 className="font-display text-4xl sm:text-5xl text-text-main">
             Vive cada viaje en <span className="italic text-green-700">tiempo real</span>
           </h2>
-          <p className="text-text-sec text-lg max-w-3xl mx-auto mt-4">
+          <p className="text-text-sec text-lg max-w-4xl mx-auto mt-4 whitespace-normal lg:whitespace-nowrap">
             Mira los reels de nuestros grupos en ruta — podrías estar viendo el lugar al que vas a viajar el próximo mes.
           </p>
 
@@ -162,13 +162,29 @@ export default function Home() {
           )}
 
           <div className="mt-12">
-            <p className="font-display text-2xl text-text-main">¿Te gustó lo que viste?</p>
+            <p className="font-display text-3xl font-bold text-text-main">¿Te gustó lo que viste?</p>
             <p className="text-text-sec mt-1">Síguenos en nuestras redes para no perderte ninguna salida.</p>
             <div className="flex justify-center gap-4 mt-5">
-              <SocialBtn href="https://instagram.com/marinerus.infinitur" bg="bg-gradient-to-tr from-purple-600 via-pink-500 to-yellow-400" label="Instagram" />
-              <SocialBtn href="https://www.facebook.com/marinerus.infinitur" bg="bg-[#1877F2]" label="Facebook" />
-              <SocialBtn href="https://www.tiktok.com/@marinerus.infinitur" bg="bg-black" label="TikTok" />
-              <SocialBtn href="https://youtube.com/@marinerus.infinitur" bg="bg-[#FF0000]" label="YouTube" />
+              <SocialIcon href="https://instagram.com/marinerus.infinitur" label="Instagram">
+                <span className="w-12 h-12 rounded-full bg-white border border-[#E8E6E0] flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
+                  <Instagram size={22} strokeWidth={1.8} className="text-text-main" />
+                </span>
+              </SocialIcon>
+              <SocialIcon href="https://www.facebook.com/marinerus.infinitur" label="Facebook">
+                <span className="w-12 h-12 rounded-full bg-[#1877F2] flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
+                  <span className="text-white font-bold text-xl leading-none">f</span>
+                </span>
+              </SocialIcon>
+              <SocialIcon href="https://www.tiktok.com/@marinerus.infinitur" label="TikTok">
+                <span className="w-12 h-12 rounded-xl bg-black flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
+                  <TikTokGlyph size={20} />
+                </span>
+              </SocialIcon>
+              <SocialIcon href="https://youtube.com/@marinerus.infinitur" label="YouTube">
+                <span className="w-12 h-12 rounded-xl bg-[#FF0000] flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
+                  <Play size={18} className="text-white fill-white ml-0.5" />
+                </span>
+              </SocialIcon>
             </div>
           </div>
         </div>
@@ -241,11 +257,21 @@ function DestinoCard({ trip }) {
   );
 }
 
-function SocialBtn({ href, bg, label }) {
+function SocialIcon({ href, label, children }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" aria-label={label}
-      className={`w-12 h-12 rounded-full ${bg} flex items-center justify-center text-white shadow-floating hover:scale-110 transition-transform`}>
-      <span className="font-bold text-sm">{label[0]}</span>
+    <a href={href} target="_blank" rel="noreferrer" aria-label={label} data-testid={`social-icon-${label.toLowerCase()}`}>
+      {children}
     </a>
+  );
+}
+
+function TikTokGlyph({ size = 20 }) {
+  const d = "M16.5 3c.35 2.15 1.85 3.75 4.1 4v3.05c-1.55.05-3-.4-4.1-1.25v6.75a5.55 5.55 0 1 1-5.55-5.55c.2 0 .45.02.7.05v3.1a2.45 2.45 0 1 0 1.85 2.35V3h3z";
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d={d} fill="#25F4EE" transform="translate(-0.6,-0.35)" />
+      <path d={d} fill="#FE2C55" transform="translate(0.6,0.35)" />
+      <path d={d} fill="#fff" />
+    </svg>
   );
 }
