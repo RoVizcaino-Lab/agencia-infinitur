@@ -102,3 +102,10 @@ Ver `/app/memory/test_credentials.md`.
 - Admin `AdminTrips.jsx`: selects de "Tipo de viaje" y "Destino" (Nacional/Internacional) y campo "Lugares del viaje".
 - Corregida imagen roto del viaje "Cañón del Sumidero" (DB + seed).
 - Validado por testing_agent: iteration_11.json — backend 3/3 y frontend 100%, sin issues.
+
+## 2026-06 Página de detalle de viaje (Destinos_3.png)
+- `TripDetail.jsx` rehecha según maqueta: barra de breadcrumb clara, hero full-bleed con foto de portada + degradado, chips (tipo + Nacional/Internacional), título blanco, fecha "X al Y de mes, año – N días" y tarjeta de precio "desde $X / MXN por persona" arriba a la derecha.
+- Columna izquierda con divisores: Sobre este viaje, Lugares a visitar (pills verdes), ¿Qué incluye? (tarjetas con ícono), **No incluye** (nueva sección con `trip.excluded` y fallback), Itinerario (botón Descargar PDF).
+- Aside sticky dentro de una tarjeta blanca: Cupo limitado (barra naranja), Costo por viajero (precios en oscuro), Formas de pago (pills), botón verde "Reservar por Whatsapp" (rectangular + glifo WhatsApp) y "Compartir este viaje".
+- Cierre con "Otros destinos que te pueden gustar" (3 cards nuevas) y banner oscuro de WhatsApp igual al de Home.
+- Nuevo componente compartido `components/WhatsAppGlyph.jsx`.
