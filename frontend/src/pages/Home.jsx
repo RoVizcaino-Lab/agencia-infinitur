@@ -100,29 +100,29 @@ export default function Home() {
       <section className="bg-white py-20 lg:py-24">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
           <div className="text-center">
-            <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-3">CÓMO VIAJAMOS</div>
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-text-main leading-tight max-w-4xl mx-auto">
+            <div className="text-base uppercase tracking-[0.25em] text-green-700 font-bold mb-3">CÓMO VIAJAMOS</div>
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-text-main leading-tight whitespace-normal sm:whitespace-nowrap">
               No vendemos paquetes. <span className="text-orange-500">Compartimos caminos.</span>
             </h2>
-            <p className="text-text-sec text-lg max-w-3xl mx-auto mt-5 leading-relaxed">
+            <p className="text-text-sec text-lg max-w-4xl mx-auto mt-5 leading-relaxed">
               Cada viaje está diseñado a mano. Visitamos lugares que nos enamoraron, dormimos en hospedajes con alma,
               y conocemos personas que enriquecen el camino. Si buscas conexión, bienvenido/a.
             </p>
             <div className="flex flex-wrap justify-center gap-2.5 mt-8">
               {["GRUPOS PEQUEÑOS", "ITINERARIOS CUIDADOS", "UN GUÍA COMO AMIGO", "CONEXIÓN REAL"].map((p) => (
-                <span key={p} className="px-4 py-1.5 rounded-full border border-green-700 text-green-700 text-xs font-bold tracking-widest">{p}</span>
+                <span key={p} className="px-4 py-1.5 rounded-full border border-green-300 bg-green-100 text-green-700 text-xs font-bold tracking-widest">{p}</span>
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1 mt-12 rounded-2xl overflow-hidden">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 mt-12">
             {MANIFIESTO_GRID.map((src, i) => (
-              <div key={src + i} className="aspect-[3/2] overflow-hidden">
+              <div key={src + i} className="h-[420px] overflow-hidden">
                 <img src={src} alt="" loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               </div>
             ))}
           </div>
           <div className="flex justify-center mt-12">
-            <Link to="/conocenos" className="btn-secondary-ghost inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
+            <Link to="/conocenos" data-testid="como-viajamos-conocenos" className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold border-2 border-green-700 text-green-700 bg-white hover:bg-green-50 transition-all">
               Conócenos <ArrowRight size={16} />
             </Link>
           </div>
