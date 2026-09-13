@@ -205,8 +205,9 @@ export default function Home() {
           </div>
           <div className="md:text-right">
             <a href={waLink(WA_MESSAGES.homeBanner)} target="_blank" rel="noreferrer"
+              data-testid="home-banner-cta-contactanos"
               className="btn-whatsapp inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-base mb-3">
-              <MessageCircle size={18} fill="white" /> Contáctanos
+              <WhatsAppGlyph size={20} /> Contáctanos
             </a>
             <div className="font-display text-3xl text-whatsapp font-bold tracking-wide">{WA_DISPLAY}</div>
             <div className="text-xs text-white/60 mt-1">Lunes a domingo · Respondemos en menos de 24 hrs</div>
@@ -217,8 +218,15 @@ export default function Home() {
   );
 }
 
-function DestinoCard({ trip }) {
+function WhatsAppGlyph({ size = 20 }) {
   return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.01c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.02.07-1.76-.2-.43-.15-.99-.34-1.71-.66-3-1.3-4.96-4.33-5.11-4.53-.15-.2-1.22-1.62-1.22-3.09 0-1.47.77-2.19 1.04-2.49.27-.3.59-.37.79-.37.2 0 .39.01.56.02.18.01.42-.07.66.5.24.58.83 2.02.9 2.17.07.15.12.32.02.52-.1.2-.19.32-.39.54-.2.22-.31.32-.44.52-.13.2-.28.42-.13.68.15.26.66 1.1 1.41 1.78.97.87 1.77 1.15 2.02 1.28.25.13.44.11.61-.07.17-.18.71-.83.9-1.11.19-.28.38-.23.64-.14.26.09 1.64.78 1.92.92.28.14.47.21.54.33.07.12.07.71-.17 1.39Z" />
+    </svg>
+  );
+}
+
+function DestinoCard({ trip }) {  return (
     <Link to={`/destinos/${trip.id}`} data-testid={`destino-card-${trip.id}`}
       className="block bg-white border border-[#E8E6E0] rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-floating transition-all duration-300">
       <div className="aspect-[3/2] overflow-hidden">

@@ -82,3 +82,9 @@ places[], pricing_tiers[{label,price,icon}], itinerary_pdf_url
 
 ## Credenciales
 Ver `/app/memory/test_credentials.md`.
+
+## 2026-06 Footer refinements
+- Textos DM Sans del footer +3px (descripción 19px, links 17px, títulos col 15px, copyright 15px).
+- Logo del footer con misma composición del navbar: marca PNG sin recuadro blanco + "INFINITUR" DM Sans bold blanco + "¡El viaje de los viajes!" en serif italic gris claro.
+- Íconos sociales cuadrados (rounded-md) 48x48 con glifo blanco 24px.
+- Banner WhatsApp (Home): botón rectangular rounded-xl con glifo oficial de WhatsApp (SVG inline `WhatsAppGlyph`).

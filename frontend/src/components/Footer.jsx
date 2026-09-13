@@ -27,13 +27,28 @@ export default function Footer() {
     <footer data-testid="site-footer" className="bg-carbon text-white/90">
       <div className="max-w-[1440px] mx-auto px-5 lg:px-20 py-16 grid md:grid-cols-12 gap-10">
         <div className="md:col-span-5 space-y-5">
-          <div className="flex items-center gap-3">
-            <span className="w-14 h-14 rounded-xl bg-white p-1 flex items-center justify-center">
-              <img src="/infinitur-logo.png" alt="INFINITUR" className="w-full h-full object-contain" />
+          <div data-testid="footer-logo" className="flex items-center gap-3 h-16">
+            <img
+              src="/infinitur-mark.png"
+              alt="INFINITUR"
+              className="h-full w-auto object-contain flex-shrink-0"
+            />
+            <span className="leading-none text-white">
+              <span
+                className="block text-[27px] tracking-wide"
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700 }}
+              >
+                INFINITUR
+              </span>
+              <span
+                className="block text-[14px] mt-1 text-white/60 tracking-[0.02em]"
+                style={{ fontFamily: "'Brygada 1918', Georgia, serif", fontStyle: "italic", fontWeight: 400 }}
+              >
+                ¡El viaje de los viajes!
+              </span>
             </span>
-            <span className="font-display text-2xl tracking-wide text-white font-bold">INFINITUR</span>
           </div>
-          <p className="text-white/70 leading-relaxed max-w-sm">
+          <p className="text-white/70 leading-relaxed max-w-sm text-[19px]">
             Tours en grupos pequeños por México, América y Europa. Con un guía que te trata como amigo.
           </p>
           <div className="flex items-center gap-3 pt-2">
@@ -44,9 +59,10 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={s.label}
-                className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                data-testid={`footer-social-${s.label.toLowerCase()}`}
+                className="w-12 h-12 rounded-md bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
               >
-                <s.icon size={16} className="text-white" />
+                <s.icon size={24} className="text-white" />
               </a>
             ))}
           </div>
@@ -55,7 +71,7 @@ export default function Footer() {
         <FooterCol title="CONÓCENOS" items={conocenos} />
         <FooterCol title="LO QUE DEBES SABER" items={debesSaber} />
       </div>
-      <div className="border-t border-white/10 py-6 text-center text-xs text-white/40">
+      <div className="border-t border-white/10 py-6 text-center text-[15px] text-white/40">
         © {new Date().getFullYear()} INFINITUR · Tours en grupos pequeños · viajesinfinitur.com
       </div>
     </footer>
@@ -65,8 +81,8 @@ export default function Footer() {
 function FooterCol({ title, items }) {
   return (
     <div className="md:col-span-3">
-      <div className="font-ui uppercase text-xs tracking-[0.18em] text-orange-500 font-bold mb-4">{title}</div>
-      <ul className="space-y-2.5 text-sm">
+      <div className="font-ui uppercase text-[15px] tracking-[0.18em] text-orange-500 font-bold mb-4">{title}</div>
+      <ul className="space-y-2.5 text-[17px]">
         {items.map((it) => (
           <li key={it.label}>
             <Link to={it.to} className="text-white/80 hover:text-white">{it.label}</Link>
