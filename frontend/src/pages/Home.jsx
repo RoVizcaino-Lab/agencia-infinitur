@@ -98,32 +98,34 @@ export default function Home() {
 
       {/* CÓMO VIAJAMOS */}
       <section className="bg-white py-20 lg:py-24">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 text-center">
-          <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-3">CÓMO VIAJAMOS</div>
-          <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-text-main leading-tight max-w-4xl mx-auto">
-            No vendemos paquetes. <span className="text-orange-500">Compartimos caminos.</span>
-          </h2>
-          <p className="text-text-sec text-lg max-w-3xl mx-auto mt-5 leading-relaxed">
-            Cada viaje está diseñado a mano. Visitamos lugares que nos enamoraron, dormimos en hospedajes con alma,
-            y conocemos personas que enriquecen el camino. Si buscas conexión, bienvenido/a.
-          </p>
-          <div className="flex flex-wrap justify-center gap-2.5 mt-8">
-            {["GRUPOS PEQUEÑOS", "ITINERARIOS CUIDADOS", "UN GUÍA COMO AMIGO", "CONEXIÓN REAL"].map((p) => (
-              <span key={p} className="px-4 py-1.5 rounded-full border border-green-700 text-green-700 text-xs font-bold tracking-widest">{p}</span>
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
+          <div className="text-center">
+            <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-3">CÓMO VIAJAMOS</div>
+            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-text-main leading-tight max-w-4xl mx-auto">
+              No vendemos paquetes. <span className="text-orange-500">Compartimos caminos.</span>
+            </h2>
+            <p className="text-text-sec text-lg max-w-3xl mx-auto mt-5 leading-relaxed">
+              Cada viaje está diseñado a mano. Visitamos lugares que nos enamoraron, dormimos en hospedajes con alma,
+              y conocemos personas que enriquecen el camino. Si buscas conexión, bienvenido/a.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2.5 mt-8">
+              {["GRUPOS PEQUEÑOS", "ITINERARIOS CUIDADOS", "UN GUÍA COMO AMIGO", "CONEXIÓN REAL"].map((p) => (
+                <span key={p} className="px-4 py-1.5 rounded-full border border-green-700 text-green-700 text-xs font-bold tracking-widest">{p}</span>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1 mt-12 rounded-2xl overflow-hidden">
+            {MANIFIESTO_GRID.map((src, i) => (
+              <div key={src + i} className="aspect-[3/2] overflow-hidden">
+                <img src={src} alt="" loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+              </div>
             ))}
           </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-1 mt-12">
-          {MANIFIESTO_GRID.map((src, i) => (
-            <div key={src + i} className="aspect-[3/2] overflow-hidden">
-              <img src={src} alt="" loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-            </div>
-          ))}
-        </div>
-        <div className="flex justify-center mt-12">
-          <Link to="/conocenos" className="btn-secondary-ghost inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
-            Conócenos <ArrowRight size={16} />
-          </Link>
+          <div className="flex justify-center mt-12">
+            <Link to="/conocenos" className="btn-secondary-ghost inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
+              Conócenos <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
