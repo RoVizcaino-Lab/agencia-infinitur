@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Home from "@/pages/Home";
 import Trips from "@/pages/Trips";
+import AllTrips from "@/pages/AllTrips";
 import TripDetail from "@/pages/TripDetail";
 import Gallery from "@/pages/Gallery";
 import About from "@/pages/About";
@@ -38,6 +39,7 @@ function App() {
 
           {/* New routes per Infinitur briefing */}
           <Route path="/destinos" element={<PublicShell><Trips /></PublicShell>} />
+          <Route path="/todos-los-viajes" element={<PublicShell><AllTrips /></PublicShell>} />
           <Route path="/destinos/:id" element={<PublicShell><TripDetail /></PublicShell>} />
           <Route path="/conocenos" element={<PublicShell><About /></PublicShell>} />
           <Route path="/lo-que-debes-saber" element={<PublicShell><FAQ /></PublicShell>} />

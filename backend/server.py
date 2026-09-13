@@ -154,7 +154,7 @@ class TripBase(BaseModel):
     featured: bool = False
     active: bool = True
     # New (per Figma briefing)
-    trip_type: str = "Clásico"  # Clásico | Explora | Aventura | Bienestar | Mochilero | Confort | Alturismo
+    trip_type: str = "Clásico"  # Clásico | Explora | Mochilero | Infinitur 90° | 4 Elementos | Altruismo | Confort | A la Carta
     region: str = "Nacional"  # Nacional | Internacional
     places: List[str] = []  # ["Maruata", "Palma Sola", ...]
     pricing_tiers: List[dict] = []  # [{label: "Campamento", price: 3900, icon: "tent"}]
@@ -537,12 +537,12 @@ async def _migrate_trip_fields():
     """
     # Title keyword → trip_type heuristic, applied only if still default.
     type_map = [
-        ("machu", "Aventura"),
-        ("patagonia", "Aventura"),
+        ("machu", "Infinitur 90°"),
+        ("patagonia", "Infinitur 90°"),
         ("sumidero", "Explora"),
         ("cañon", "Explora"),
         ("oaxaca", "Explora"),
-        ("tepoztl", "Bienestar"),
+        ("tepoztl", "4 Elementos"),
         ("paris", "Confort"),
         ("parís", "Confort"),
         ("toscana", "Confort"),
@@ -550,6 +550,15 @@ async def _migrate_trip_fields():
         ("cartagena", "Mochilero"),
         ("buenos aires", "Confort"),
     ]
+
+    # Renamed / removed trip types → current catalog taxonomy.
+    renamed_types = {
+        "Aventura": "Infinitur 90°",
+        "Bienestar": "4 Elementos",
+        "Alturismo": "Altruismo",
+    }
+    for old, new in renamed_types.items():
+        await db.trips.update_many({"trip_type": old}, {"$set": {"trip_type": new}})
 
     cursor = db.trips.find({}, {"_id": 0})
     async for t in cursor:
@@ -783,8 +792,8 @@ async def _seed_trips_if_empty():
                 "group_min": 10,
                 "group_max": 15,
                 "spots_left": 15,
-                "cover_image": "https://images.unsplash.com/photo-1568659585041-3a3905e1aa0c?w=1200",
-                "images": ["https://images.unsplash.com/photo-1568659585041-3a3905e1aa0c?w=1200"],
+                "cover_image": "https://images.unsplash.com/photo-1630730040047-ffb3b2877a72?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200",
+                "images": ["https://images.unsplash.com/photo-1630730040047-ffb3b2877a72?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200"],
                 "itinerary": [
                     {"day": 1, "title": "Llegada a Tuxtla", "description": "Cañón del Sumidero en lancha."},
                     {"day": 3, "title": "San Cristóbal", "description": "Pueblos tsotsiles y mercado."},
@@ -840,7 +849,7 @@ async def _seed_gallery_if_empty():
             {"url": "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=1000", "caption": "Machu Picchu mágico", "location": "Cusco"},
             {"url": "https://images.unsplash.com/photo-1667089982108-b934e15bb4fd?w=1000", "caption": "Colores de Oaxaca", "location": "Oaxaca"},
             {"url": "https://images.unsplash.com/photo-1583531352515-8884af319dc1?w=1000", "caption": "Murallas de Cartagena", "location": "Colombia"},
-            {"url": "https://images.unsplash.com/photo-1568659585041-3a3905e1aa0c?w=1000", "caption": "Selva chiapaneca", "location": "Chiapas"},
+            {"url": "https://images.unsplash.com/photo-1630730040047-ffb3b2877a72?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200", "caption": "Selva chiapaneca", "location": "Chiapas"},
             {"url": "https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=1000", "caption": "Trajineras en Xochimilco", "location": "CDMX"},
             {"url": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1000", "caption": "Mercado de artesanías", "location": "México"},
             {"url": "https://images.unsplash.com/photo-1565073624497-7e91b5cc3843?w=1000", "caption": "Playas escondidas", "location": "Oaxaca"},

@@ -92,3 +92,13 @@ Ver `/app/memory/test_credentials.md`.
 ## 2026-06 Chips de filtro "Tipo de viaje" (/destinos)
 - 5 estados implementados en `FilterChip` (Trips.jsx): Default (blanco/borde arena), Hover (bg green-50 + borde green-400 + texto green-800), Activo (green-800 sólido, texto blanco), Activo Hover (green-700), Disabled (count 0: bg #F5F2EC, texto atenuado, no clickeable).
 - Chips de Tipo en estado activo muestran ✕ para limpiar el filtro (testid `filter-{tipo}-clear`); el chip "Todos" no lleva ✕.
+
+## 2026-06 Rediseño de Cards + catálogo completo
+- `TripCard.jsx` rediseñada según maqueta: foto de portada (aspect 16/10), chips de tipo + Nacional/Internacional debajo de la foto, título serif, fecha con ícono naranja, "Lugares:", precio "desde $X MXN" en oscuro y botón verde oscuro rectangular (rounded-lg) con estados hover/active.
+- Estado "Sin cupo": si `spots_left <= 0` la card se atenúa (data-soldout=true) y el CTA se vuelve un span deshabilitado "Sin cupo".
+- Nueva taxonomía de tipos (tripStyle.js): Clásico, Explora, Mochilero, Infinitur 90°, 4 Elementos, Altruismo, Confort, A la Carta. Migración en backend (`renamed_types`): Aventura→Infinitur 90°, Bienestar→4 Elementos, Alturismo→Altruismo.
+- `/destinos`: máximo 8 cards (grid de 4 columnas), orden por defecto "Fecha más próxima" + selector Ordenar por (fecha / precio asc / precio desc) y CTA "Seguir viendo más viajes".
+- Nueva página `/todos-los-viajes` (`AllTrips.jsx`) con los 9 viajes y 3 grupos de filtros combinables: tipo de viaje, Nacional/Internacional y mes de salida, más selector de orden.
+- Admin `AdminTrips.jsx`: selects de "Tipo de viaje" y "Destino" (Nacional/Internacional) y campo "Lugares del viaje".
+- Corregida imagen roto del viaje "Cañón del Sumidero" (DB + seed).
+- Validado por testing_agent: iteration_11.json — backend 3/3 y frontend 100%, sin issues.

@@ -3,22 +3,31 @@ import { useSearchParams, Link } from "react-router-dom";
 import { ArrowRight, MessageCircle, Sparkles } from "lucide-react";
 import api from "@/lib/api";
 import TripCard from "@/components/TripCard";
+import FilterChip from "@/components/FilterChip";
 import MonthCarousel from "@/components/MonthCarousel";
-import { TRIP_TYPES, getTripTypeStyle } from "@/lib/tripStyle";
+import { TRIP_TYPES } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
 
 const MONTH_NAMES = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
+const MAX_CARDS = 8;
+
+export const SORTS = {
+  fecha: { label: "Fecha más próxima", fn: (a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0) },
+  precio_asc: { label: "Precio: menor a mayor", fn: (a, b) => (a.price || 0) - (b.price || 0) },
+  precio_desc: { label: "Precio: mayor a menor", fn: (a, b) => (b.price || 0) - (a.price || 0) },
+};
+
 export default function Trips() {
   const [trips, setTrips] = useState([]);
   const [typeFilter, setTypeFilter] = useState("Todos");
+  const [sort, setSort] = useState("fecha");
   const [params, setParams] = useSearchParams();
   const mes = params.get("mes");
 
   useEffect(() => { api.get("/trips").then((r) => setTrips(r.data)); }, []);
 
-  // Counts per trip type for chip badges
   const counts = useMemo(() => {
     const map = { Todos: trips.length };
     for (const t of TRIP_TYPES) map[t.key] = 0;
@@ -28,15 +37,16 @@ export default function Trips() {
     return map;
   }, [trips]);
 
-  let filtered = typeFilter === "Todos" ? trips : trips.filter((t) => t.trip_type === typeFilter);
-  if (mes) {
-    const m = parseInt(mes, 10);
-    filtered = filtered.filter((t) => {
-      if (!t.start_date) return false;
-      const d = new Date(t.start_date);
-      return d.getMonth() + 1 === m;
-    });
-  }
+  const filtered = useMemo(() => {
+    let list = typeFilter === "Todos" ? [...trips] : trips.filter((t) => t.trip_type === typeFilter);
+    if (mes) {
+      const m = parseInt(mes, 10);
+      list = list.filter((t) => t.start_date && new Date(t.start_date).getMonth() + 1 === m);
+    }
+    return list.sort(SORTS[sort].fn);
+  }, [trips, typeFilter, mes, sort]);
+
+  const visible = filtered.slice(0, MAX_CARDS);
 
   return (
     <div data-testid="trips-page" className="bg-bone">
@@ -48,7 +58,7 @@ export default function Trips() {
             Elige tu próximo viaje
           </h1>
           <p className="text-lg sm:text-xl text-text-sec max-w-3xl">
-            Salidas desde CDMX · Grupos de 10 a 15 personas · Nacionales e Internacionales
+            Salidas desde CDMX · Grupos de 10 a 15 personas · Nacionales e internacionales
           </p>
         </div>
       </section>
@@ -69,13 +79,14 @@ export default function Trips() {
             {TRIP_TYPES.map((t) => (
               <FilterChip
                 key={t.key}
-                testid={`filter-${t.key.toLowerCase()}`}
+                testid={`filter-${t.key.toLowerCase().replace(/[\s°]/g, "-")}`}
                 label={t.key}
                 count={counts[t.key] || 0}
                 active={typeFilter === t.key}
                 onClick={() => setTypeFilter(t.key)}
                 onClear={() => setTypeFilter("Todos")}
-                style={t}
+                icon={t.icon}
+                iconClass={t.fg}
               />
             ))}
           </div>
@@ -90,21 +101,44 @@ export default function Trips() {
       </section>
 
       {/* RESULTS */}
-      <section className="pb-20">
+      <section className="pb-16">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
-          <div className="flex items-end justify-between mb-8">
-            <div className="text-sm text-text-sec">
-              Mostrando <span className="font-bold text-text-main">{filtered.length}</span> destino{filtered.length === 1 ? "" : "s"} – <span className="text-orange-500 font-semibold">Explora</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-7">
+            <div data-testid="results-count" className="text-sm text-text-sec">
+              Mostrando <span className="font-bold text-text-main">{visible.length}</span> destino{visible.length === 1 ? "" : "s"} – <span className="text-orange-500 font-semibold">{typeFilter}</span>
             </div>
+            <label className="flex items-center gap-3 text-sm text-text-sec">
+              Ordenar por
+              <select
+                data-testid="sort-select"
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="bg-carbon text-white font-semibold px-4 py-2.5 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer"
+              >
+                {Object.entries(SORTS).map(([k, v]) => (
+                  <option key={k} value={k}>{v.label}</option>
+                ))}
+              </select>
+            </label>
           </div>
 
-          {filtered.length === 0 ? (
+          {visible.length === 0 ? (
             <p data-testid="no-trips" className="text-text-sec text-center py-20">No hay viajes para esta selección.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
-              {filtered.map((t) => <TripCard key={t.id} trip={t} />)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {visible.map((t) => <TripCard key={t.id} trip={t} />)}
             </div>
           )}
+
+          <div className="text-center mt-12">
+            <Link
+              to="/todos-los-viajes"
+              data-testid="see-all-trips-cta"
+              className="inline-flex items-center gap-2 border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-7 py-3 rounded-xl font-semibold text-sm transition-colors duration-200"
+            >
+              Seguir viendo más viajes <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -137,47 +171,3 @@ export default function Trips() {
     </div>
   );
 }
-
-function FilterChip({ testid, label, count, active, onClick, onClear, primary = false, style }) {
-  const disabled = count === 0 && !active;
-  const base = "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-colors duration-200";
-
-  let state = "bg-white text-text-main border-[#E8E6E0] hover:bg-green-50 hover:border-green-400 hover:text-green-800";
-  if (active) state = "bg-green-800 text-white border-green-800 hover:bg-green-700 hover:border-green-700";
-  if (disabled) state = "bg-[#F5F2EC] text-text-sec/45 border-transparent cursor-not-allowed";
-
-  const Icon = primary ? null : style?.icon;
-  const iconColor = active ? "text-white" : disabled ? "opacity-40" : style?.fg;
-
-  return (
-    <button
-      data-testid={testid}
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      aria-pressed={active}
-      className={`${base} ${state}`}
-    >
-      {Icon && <Icon size={14} className={iconColor} />}
-      <span>{label}</span>
-      <span className={`text-[11px] px-2 py-0.5 rounded-full ${
-        active ? "bg-white/25" : disabled ? "bg-white/60 text-text-sec/45" : "bg-[#F5F2EC]"
-      }`}>{count}</span>
-      {active && !primary && (
-        <span
-          role="button"
-          tabIndex={0}
-          data-testid={`${testid}-clear`}
-          aria-label={`Quitar filtro ${label}`}
-          onClick={(e) => { e.stopPropagation(); onClear?.(); }}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); onClear?.(); } }}
-          className="text-white/70 hover:text-white text-xs leading-none -mr-1 pl-0.5"
-        >
-          ✕
-        </span>
-      )}
-    </button>
-  );
-}
-
-// Linter-friendly: still expose link import even if not used directly
-export { Link };

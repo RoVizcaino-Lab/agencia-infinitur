@@ -4,11 +4,13 @@ import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
 import PdfUploadField from "@/components/PdfUploadField";
+import { TRIP_TYPES } from "@/lib/tripStyle";
 
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
   duration_days: 1, start_date: "", end_date: "", price: 0, currency: "MXN",
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
+  trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
   itinerary_pdf_url: "",
 };
@@ -138,6 +140,25 @@ function TripModal({ data, onClose, onSave }) {
             <Inp label="Min grupo" type="number" v={f.group_min} onChange={(v) => set("group_min", v)} />
             <Inp label="Max grupo" type="number" v={f.group_max} onChange={(v) => set("group_max", v)} />
           </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Tipo de viaje</label>
+              <select data-testid="trip-type" value={f.trip_type || "Clásico"} onChange={(e) => set("trip_type", e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone">
+                {TRIP_TYPES.map((t) => <option key={t.key} value={t.key}>{t.key}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Destino</label>
+              <select data-testid="trip-region" value={f.region || "Nacional"} onChange={(e) => set("region", e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone">
+                <option value="Nacional">Nacional</option>
+                <option value="Internacional">Internacional</option>
+              </select>
+            </div>
+          </div>
+          <Inp label="Lugares del viaje (separados por coma)" v={Array.isArray(f.places) ? f.places.join(", ") : (f.places || "")}
+            onChange={(v) => set("places", v.split(",").map((s) => s.trim()).filter(Boolean))} textarea rows={2} />
           <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
           <PdfUploadField label="Itinerario PDF" value={f.itinerary_pdf_url} onChange={(v) => set("itinerary_pdf_url", v)} testId="trip-pdf" />
