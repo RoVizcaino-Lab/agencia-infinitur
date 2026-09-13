@@ -122,7 +122,7 @@ export default function Home() {
             ))}
           </div>
           <div className="flex justify-center mt-12">
-            <Link to="/conocenos" data-testid="como-viajamos-conocenos" className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold border-2 border-green-700 text-green-700 bg-white hover:bg-green-50 transition-all">
+            <Link to="/conocenos" data-testid="como-viajamos-conocenos" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold border-2 border-green-700 text-green-700 bg-white hover:bg-green-50 transition-all">
               Conócenos <ArrowRight size={16} />
             </Link>
           </div>
