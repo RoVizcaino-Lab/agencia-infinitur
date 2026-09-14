@@ -114,3 +114,11 @@ Ver `/app/memory/test_credentials.md`.
 - Se poblaron `places` de ejemplo en los 9 viajes de la DB → sección "Lugares a visitar" visible con pills verdes (bg-green-100).
 - `excluded` de todos los viajes = Alimentos, Gastos personales, Seguro Médico, Actividades Extras (también DEFAULT_EXCLUDED en TripDetail).
 - El botón "Descargar itinerario PDF" ahora se muestra siempre; si el viaje no tiene PDF cargado queda deshabilitado, y el itinerario día por día se lista debajo.
+
+## 2026-06 Página Conócenos (Conócenos_2.png)
+- `About.jsx` rehecha 1:1 con la maqueta: hero "¡Somos Infinitur!" + H1 "Un colectivo de viajeros de verdad", 2 párrafos, divisor y stats verdes (+10 años viajando / +2,400 viajeros en el camino) con collage de 3 fotos a la derecha.
+- Sección filosofía (fondo #F5F2EC): foto del fundador con tarjeta "Sir Marinerus / Fundador – 10 años guiando", título a dos líneas "No vendemos paquetes." + "Compartimos caminos." (naranja italic), 2 párrafos y blockquote verde con borde izquierdo.
+- "Cómo viajamos → Lo que nos hace diferentes": 4 tarjetas crema (Grupos chicos, Itinerarios a mano, Conexión real, Un guía amigo).
+- "Modalidades → ¿Cómo quieres viajar?": 8 tarjetas (TRIP_TYPES) con descripciones cortas nuevas; "A la Carta" en durazno con borde punteado.
+- CTA oscuro centrado "¿Listo para conocernos en el camino?" con botón WhatsApp y botón outline "Ver todos los destinos".
+- Se eliminó la sección de testimonios (no está en la maqueta).

@@ -24,14 +24,14 @@ export const TRIP_TYPES = [
 ];
 
 export const TRIP_TYPE_DESCRIPTIONS = {
-  "Clásico": "Equilibrio perfecto entre aventura, cultura y descanso. Mezclamos lugares naturales con noches de hotel y campamentos.",
-  "Explora": "Lugares y rincones de México desconocidos por el turismo convencional. Rutas que ninguna otra agencia ofrece.",
-  "Mochilero": "Toda la magia del viaje como antaño. Para universitarios con festivales, playa y buena vibra.",
-  "Infinitur 90°": "Viajes de alto impacto con actividades de aventura: rapel, rafting, tirolesa y espeleología.",
-  "4 Elementos": "Tierra, agua, aire y fuego. Naturaleza, bienestar y rituales para reconectar contigo.",
-  "Altruismo": "Turismo con impacto. Conservación, donaciones canalizadas y aporte a comunidades.",
-  "Confort": "Recorridos por lugares bellos con todas las comodidades. Conoces, disfrutas y descansas.",
-  "A la Carta": "Armamos tu viaje a tu medida: destino, fechas y actividades definidas por ti.",
+  "Clásico": "Equilibrio entre aventura, cultura y descanso. Hotel y campamento incluidos.",
+  "Explora": "Lugares poco conocidos u olvidados por el turismo convencional.",
+  "Mochilero": "Para universitarios. Festivales, playa, buena vibra y diversión.",
+  "Infinitur 90°": "Adrenalina máxima: rapel, rafting, paracaídas, tirolesa.",
+  "4 Elementos": "Yoga, temazcales, meditación y reconexión interior.",
+  "Altruismo": "Turismo con impacto. Comunidades, conservación y donaciones.",
+  "Confort": "Recorridos con todas las comodidades. Hotel, descanso y disfrute.",
+  "A la Carta": "Tú decides destino, fechas y modalidad. Escríbenos y armamos tu viaje.",
 };
 
 export function getTripTypeStyle(type) {

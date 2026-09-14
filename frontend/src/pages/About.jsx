@@ -1,236 +1,205 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "@/lib/api";
-import {
-  Quote, Sparkles, Compass, Heart, MapPin, Calendar, Users,
-  MessageCircle, ArrowRight, Star,
-} from "lucide-react";
+import { ArrowRight, Users, Route, Heart, Star } from "lucide-react";
+import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { TRIP_TYPES, TRIP_TYPE_DESCRIPTIONS } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
 
-const PILLARS = [
+const COLLAGE = [
+  "https://images.unsplash.com/photo-1631615230077-f5bd4e004fd5?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+  "https://images.unsplash.com/photo-1758272959063-ef8a2114f807?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+  "https://images.unsplash.com/photo-1587595431973-160d0d94add1?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+];
+
+const FOUNDER_PHOTO =
+  "https://customer-assets.emergentagent.com/job_grupos-expedicion/artifacts/4rw8xqhn_Infinitur%20Im%C3%A1genes_Con%C3%B3cenos_1.jpg";
+
+const DIFERENCIAS = [
   {
     icon: Users,
-    title: "Grupos chicos",
-    desc: "Sólo 10 a 15 viajeros por salida. Te conocemos por tu nombre y nadie se pierde en la multitud.",
+    title: ["Grupos chicos,", "conexiones grandes"],
+    desc: "Máximo 15 personas por salida. Conoces a todos por nombre antes de llegar. No hay anonimato — hay comunidad real que cambia la experiencia completa.",
   },
   {
-    icon: Compass,
-    title: "Coordinador presente",
-    desc: "Tu guía viaja contigo del primer al último día. Se anticipa, resuelve y arma plan B si hace falta.",
-  },
-  {
-    icon: MapPin,
-    title: "Rutas conocidas",
-    desc: "Cada itinerario lo caminamos primero. Hospedajes, restaurantes y experiencias probadas en persona.",
+    icon: Route,
+    title: ["Itinerarios diseñados", "a mano"],
+    desc: "Cada ruta evita las trampas turísticas. Visitamos lugares que el guía conoce y ama. Sin prisa, sin relleno, sin lo que ya viste en todas las fotos de Instagram.",
   },
   {
     icon: Heart,
-    title: "Comunidad",
-    desc: "Más que un viaje, una familia que se forma. Muchos viajeros regresan año tras año.",
+    title: ["Conexión real con", "el destino"],
+    desc: "Convivimos con familias locales, dormimos en hospedajes con alma y caminamos rutas que no salen en ninguna guía. Auténtico por diseño.",
+  },
+  {
+    icon: Star,
+    title: ["Un guía que te trata", "como amigo"],
+    desc: "No es un empleado de turno. Diseñó el viaje, lo conoce de memoria y estará contigo en cada paso. Responde mensajes y conoce tus intereses antes de salir.",
   },
 ];
 
 export default function About() {
-  const [testimonials, setTestimonials] = useState([]);
-  useEffect(() => { api.get("/testimonials").then((r) => setTestimonials(r.data)); }, []);
-
   return (
-    <div data-testid="about-page" className="bg-bone">
-      {/* HERO */}
-      <section className="pt-32 pb-16 sm:pb-20">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-7">
-            <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-4">Conócenos</div>
-            <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl text-text-main leading-[1.05] tracking-tight mb-6">
-              Somos <span className="text-orange-500">INFINITUR</span>.
-              <br />
-              <em className="italic font-light text-text-sec">El viaje de los viajes.</em>
+    <div data-testid="about-page" className="bg-white">
+      {/* HERO — colectivo de viajeros */}
+      <section className="pt-28 pb-16">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-orange-500 font-bold mb-4">¡Somos Infinitur!</div>
+            <h1 className="font-display text-[42px] sm:text-5xl lg:text-[56px] text-text-main leading-[1.08] tracking-tight mb-6 max-w-md">
+              Un colectivo de viajeros de verdad
             </h1>
-            <p className="text-lg sm:text-xl text-text-sec leading-relaxed max-w-2xl mb-8">
-              Una agencia de viajes mexicana, hecha a la medida y operada por una guía con corazón viajero.
-              Organizamos expediciones en grupos chicos por México, América y Europa.
+            <p className="text-[15px] text-text-sec leading-relaxed max-w-md mb-4">
+              Somos exploradores que buscan conocer, aprender e involucrarse con la riqueza de nuestra naturaleza,
+              cultura y tradiciones. Sentimos un <span className="font-bold text-text-main">fuerte compromiso con México</span> y
+              con cada persona que se suma al camino.
             </p>
-            <div className="flex flex-wrap gap-5">
+            <p className="text-[15px] text-text-sec leading-relaxed max-w-md">
+              Creemos que a través del viaje se puede incrementar la conciencia de nosotros mismos y de la realidad
+              del país que habitamos.
+            </p>
+
+            <div className="border-t border-[#E8E6E0] mt-8 pt-6 flex gap-12">
               <Stat num="+10" label="años viajando" />
-              <Stat num="+2,400" label="viajeros" />
-              <Stat num="+40" label="destinos" />
+              <Stat num="+2,400" label="viajeros en el camino" />
             </div>
           </div>
-          <div className="md:col-span-5">
-            <div className="grid grid-cols-3 grid-rows-3 gap-3 h-[420px]">
-              <div className="col-span-2 row-span-2 rounded-3xl bg-[#D6EDCA] flex items-center justify-center">
-                <Compass className="text-green-800" size={86} strokeWidth={1.2} />
+
+          <div className="grid grid-cols-2 gap-3 h-[340px] sm:h-[420px]">
+            <div className="rounded-xl overflow-hidden">
+              <img src={COLLAGE[0]} alt="Viajeros Infinitur" loading="lazy" className="w-full h-full object-cover" />
+            </div>
+            <div className="grid grid-rows-2 gap-3">
+              <div className="rounded-xl overflow-hidden">
+                <img src={COLLAGE[1]} alt="Grupo Infinitur en ruta" loading="lazy" className="w-full h-full object-cover" />
               </div>
-              <div className="rounded-3xl bg-[#FFE0C8] flex items-center justify-center">
-                <Heart className="text-orange-700" size={42} strokeWidth={1.5} />
-              </div>
-              <div className="rounded-3xl bg-[#F0F7EA] flex items-center justify-center">
-                <Sparkles className="text-green-700" size={42} strokeWidth={1.5} />
-              </div>
-              <div className="col-span-3 rounded-3xl bg-[#1B1B1A] text-white flex items-center justify-center px-5">
-                <div className="font-display text-xl italic">&ldquo;El viaje de los viajes&rdquo;</div>
+              <div className="rounded-xl overflow-hidden">
+                <img src={COLLAGE[2]} alt="Comunidad Infinitur" loading="lazy" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FILOSOFÍA + EL GUÍA */}
-      <section className="py-20 bg-white">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid md:grid-cols-12 gap-12 items-center">
-          <div className="md:col-span-5">
-            <div className="relative aspect-[4/5] rounded-3xl bg-gradient-to-br from-[#FFE0C8] via-[#F0F7EA] to-[#D6EDCA] flex items-end justify-center overflow-hidden">
-              <img
-                src="https://customer-assets.emergentagent.com/job_grupos-expedicion/artifacts/4rw8xqhn_Infinitur%20Im%C3%A1genes_Con%C3%B3cenos_1.jpg"
-                alt="Coordinador Infinitur"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0 pointer-events-none" />
-              <div className="relative w-full bg-white/95 backdrop-blur px-6 py-5 m-4 rounded-2xl shadow-soft">
-                <div className="text-[10px] uppercase tracking-[0.25em] text-orange-500 font-bold mb-1">Coordinador Infinitur</div>
-                <div className="font-display text-2xl text-text-main">Marinerus</div>
-                <div className="text-sm text-text-sec">CDMX · Guía con más de 10 años en ruta</div>
+      {/* FILOSOFÍA Y QUIÉN TE GUÍA */}
+      <section className="bg-[#F5F2EC] py-16 lg:py-20">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          <div className="lg:col-span-4">
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-soft">
+              <img src={FOUNDER_PHOTO} alt="Sir Marinerus, fundador de Infinitur" loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur px-5 py-4 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center flex-shrink-0">
+                  <Star size={15} fill="currentColor" />
+                </span>
+                <div>
+                  <div className="font-display text-[19px] text-text-main font-bold leading-tight">Sir Marinerus</div>
+                  <div className="text-[12px] text-text-sec">Fundador – 10 años guiando</div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="md:col-span-7 space-y-6">
-            <div className="text-xs uppercase tracking-[0.25em] text-green-700 font-bold">Filosofía + el guía</div>
-            <h2 className="font-display text-4xl sm:text-5xl text-text-main leading-tight">
-              Viajar es <em className="italic text-green-700 font-display">conectar</em>
+
+          <div className="lg:col-span-8">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-text-main font-bold mb-4">
+              Nuestra filosofía y quién te guía
+            </div>
+            <h2 className="font-display text-[32px] sm:text-[38px] leading-[1.15] mb-6">
+              <span className="block text-text-main">No vendemos paquetes.</span>
+              <span className="block text-orange-500 italic">Compartimos caminos.</span>
             </h2>
-            <p className="text-lg text-text-sec leading-relaxed">
-              Creemos en el viaje lento, en los grupos chicos y en las conversaciones largas. Cada itinerario nace de
-              haber caminado el lugar primero: probamos los restaurantes, dormimos en los hospedajes y conocimos a las
-              familias locales.
+            <p className="text-[15px] text-text-sec leading-relaxed mb-4 max-w-2xl">
+              Viajar tiene un fuerte impacto dentro de nosotros — antes, durante y después somos personas diferentes.
+              Cada lugar que visitamos, mezclado con el proceso interno de cada uno, genera una experiencia única e inigualable.
             </p>
-            <div className="relative bg-[#F0F7EA] rounded-2xl p-6 pl-12">
-              <Quote className="absolute top-5 left-5 text-green-700" size={20} />
-              <p className="italic text-text-main">
-                &ldquo;Queremos que cada viajero regrese con amigos nuevos y con historias que pueda contar por años.&rdquo;
+            <p className="text-[15px] text-text-sec leading-relaxed mb-7 max-w-2xl">
+              Detrás de cada viaje hay un coordinador que diseñó la ruta a mano, conoce cada destino porque lo ha vivido
+              primero y estará contigo en cada paso del camino. No guía grupos — acompaña personas.
+            </p>
+            <blockquote className="bg-[#EAF5E0] border-l-4 border-green-700 rounded-r-xl px-6 py-5 max-w-3xl">
+              <p className="font-display italic text-[17px] text-green-900 leading-relaxed">
+                &ldquo;El viaje se compone de todos los procesos implícitos en el momento mismo de viajar — desde que el
+                viajero reconoce la situación en la que se encuentra, hasta que regresa transformado.&rdquo;
               </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {["Grupos chicos", "Hospedajes con alma", "Comida local", "Itinerarios probados", "Coordinador siempre presente"].map((c) => (
-                <span key={c} className="bg-white border border-[#E8E6E0] text-text-main text-xs font-semibold px-3 py-1.5 rounded-full">{c}</span>
-              ))}
-            </div>
+            </blockquote>
           </div>
         </div>
       </section>
 
-      {/* CÓMO VIAJAMOS — 4 pilares */}
-      <section className="py-20">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-3">Cómo viajamos</div>
-            <h2 className="font-display text-4xl sm:text-5xl text-text-main leading-tight">
-              Cuatro pilares que nos hacen <em className="italic text-green-700 font-display">diferentes</em>
-            </h2>
+      {/* CÓMO VIAJAMOS */}
+      <section className="py-16 lg:py-20">
+        <div className="max-w-[1140px] mx-auto px-5 lg:px-20">
+          <div className="text-center mb-10">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-text-sec font-bold mb-3">Cómo viajamos</div>
+            <h2 className="font-display text-[32px] sm:text-[38px] text-text-main">Lo que nos hace diferentes</h2>
           </div>
           <div className="grid sm:grid-cols-2 gap-5">
-            {PILLARS.map((p) => (
-              <div key={p.title} className="bg-white border border-[#E8E6E0] rounded-3xl p-7 hover:-translate-y-1 hover:shadow-floating transition-all">
-                <div className="w-12 h-12 rounded-xl bg-[#F0F7EA] text-green-700 flex items-center justify-center mb-5">
-                  <p.icon size={22} />
+            {DIFERENCIAS.map((d) => (
+              <div key={d.title.join(" ")} className="bg-[#F5F2EC] rounded-2xl p-6">
+                <div className="text-green-700 mb-4">
+                  <d.icon size={22} strokeWidth={1.8} />
                 </div>
-                <h3 className="font-display text-2xl text-text-main mb-2">{p.title}</h3>
-                <p className="text-text-sec leading-relaxed">{p.desc}</p>
+                <h3 className="font-display text-[21px] text-text-main leading-tight mb-3">
+                  {d.title[0]}<br />{d.title[1]}
+                </h3>
+                <p className="text-[13px] text-text-sec leading-relaxed">{d.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* MODALIDADES — 7 tipos + A la carta */}
-      <section className="py-20 bg-[#F5F2EC]">
+      {/* MODALIDADES */}
+      <section className="bg-[#F5F2EC] py-16 lg:py-20">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
-          <div className="mb-14 max-w-3xl">
-            <div className="text-xs uppercase tracking-[0.25em] text-green-700 font-bold mb-3">Modalidades</div>
-            <h2 className="font-display text-4xl sm:text-5xl text-text-main leading-tight">
-              Aventuras pensadas para <em className="italic text-orange-500 font-display">distintos viajeros</em>
-            </h2>
+          <div className="mb-10">
+            <div className="text-[11px] uppercase tracking-[0.22em] text-orange-500 font-bold mb-3">Modalidades</div>
+            <h2 className="font-display text-[32px] sm:text-[38px] text-text-main mb-3">¿Cómo quieres viajar?</h2>
+            <p className="text-[14px] text-text-sec">
+              Cada viaje tiene una modalidad pensada para un tipo de viajero. Encuentra la tuya.
+            </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {TRIP_TYPES.map((t) => (
-              <div key={t.key} className={`${t.bg} rounded-3xl p-6 transition-all hover:-translate-y-1`}>
-                <div className={`w-12 h-12 rounded-xl bg-white/70 ${t.fg} flex items-center justify-center mb-4`}>
-                  <t.icon size={22} />
+              <div key={t.key}
+                data-testid={`modalidad-${t.key.toLowerCase().replace(/[\s°]/g, "-")}`}
+                className={`rounded-2xl p-5 transition-transform duration-300 hover:-translate-y-1 ${
+                  t.key === "A la Carta"
+                    ? "bg-[#FFE8D8] border-2 border-dashed border-orange-300"
+                    : "bg-white border border-[#E8E6E0]"
+                }`}>
+                <div className={`mb-4 ${t.key === "A la Carta" ? "text-orange-500" : t.fg}`}>
+                  <t.icon size={22} strokeWidth={1.8} />
                 </div>
-                <h3 className={`font-display text-xl ${t.fg} mb-2`}>{t.key}</h3>
-                <p className="text-text-main/80 text-sm leading-relaxed">{TRIP_TYPE_DESCRIPTIONS[t.key]}</p>
+                <h3 className="font-display text-[19px] text-text-main mb-2">{t.key}</h3>
+                <p className="text-[13px] text-text-sec leading-relaxed">{TRIP_TYPE_DESCRIPTIONS[t.key]}</p>
               </div>
             ))}
-            <div className="bg-[#1B1B1A] text-white rounded-3xl p-6 flex flex-col">
-              <div className="w-12 h-12 rounded-xl bg-orange-500 text-white flex items-center justify-center mb-4">
-                <Sparkles size={22} />
-              </div>
-              <h3 className="font-display text-xl mb-2">A la carta</h3>
-              <p className="text-white/75 text-sm leading-relaxed flex-1">
-                Si tu grupo de amigos, familia o empresa quiere un viaje exclusivo, lo armamos a tu medida.
-              </p>
-              <a href={waLink(WA_MESSAGES.aLaCarta)} target="_blank" rel="noreferrer"
-                data-testid="a-la-carta-cta-about"
-                className="mt-4 btn-whatsapp inline-flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-bold">
-                <MessageCircle size={14} fill="white" /> Cuéntanos tu idea
-              </a>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* TESTIMONIOS */}
-      {testimonials.length > 0 && (
-        <section className="py-20">
-          <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
-            <div className="text-center mb-12 max-w-2xl mx-auto">
-              <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-3">Voces del camino</div>
-              <h2 className="font-display text-4xl sm:text-5xl text-text-main">Lo que dicen quienes ya viajaron</h2>
-            </div>
-            <div className="grid md:grid-cols-3 gap-5">
-              {testimonials.slice(0, 3).map((t) => (
-                <div key={t.id} className="bg-white border border-[#E8E6E0] rounded-3xl p-7">
-                  <div className="flex gap-0.5 text-orange-500 mb-3">
-                    {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                      <Star key={`star-${t.id}-${i}`} size={14} fill="currentColor" />
-                    ))}
-                  </div>
-                  <p className="text-text-main/85 italic leading-relaxed mb-4">&ldquo;{t.text}&rdquo;</p>
-                  <div className="text-sm font-semibold text-text-main">
-                    {t.author} <span className="text-text-sec font-normal">· {t.location}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CTA BANNER */}
-      <section className="py-20 bg-[#1B1B1A] text-white">
-        <div className="max-w-5xl mx-auto px-5 lg:px-20 text-center">
-          <h2 className="font-display text-4xl sm:text-5xl mb-4">
-            ¿Listo para tu próximo <em className="italic text-green-300 font-display">viaje</em>?
+      {/* CTA OSCURO */}
+      <section className="bg-carbon text-white py-20">
+        <div className="max-w-3xl mx-auto px-5 text-center">
+          <h2 className="font-display text-[32px] sm:text-[40px] leading-tight mb-4">
+            ¿Listo para conocernos en el camino?
           </h2>
-          <p className="text-white/75 max-w-2xl mx-auto mb-8">
-            Tenemos calendario abierto. Mira los próximos destinos o escríbenos para resolver dudas.
+          <p className="text-white/70 text-[15px] mb-8">
+            Únete a una de nuestras próximas salidas o escríbenos si tienes dudas.<br />
+            Respondemos en menos de 24 horas.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link to="/destinos" data-testid="about-cta-destinos"
-              className="btn-orange inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-bold">
-              Ver próximos viajes <ArrowRight size={16} />
-            </Link>
             <a href={waLink(WA_MESSAGES.conocenos)} target="_blank" rel="noreferrer"
               data-testid="about-cta-whatsapp"
-              className="btn-whatsapp inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-bold">
-              <MessageCircle size={16} fill="white" /> Contáctanos
+              className="btn-whatsapp inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm">
+              <WhatsAppGlyph size={16} /> Contáctanos
             </a>
+            <Link to="/destinos" data-testid="about-cta-destinos"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/40 hover:bg-white hover:text-carbon font-semibold text-sm transition-colors">
+              Ver todos los destinos <ArrowRight size={15} />
+            </Link>
           </div>
         </div>
       </section>
-
-      <Calendar className="hidden" />
     </div>
   );
 }
@@ -238,8 +207,8 @@ export default function About() {
 function Stat({ num, label }) {
   return (
     <div>
-      <div className="font-display text-4xl text-text-main font-bold leading-none">{num}</div>
-      <div className="text-xs uppercase tracking-wider text-text-sec mt-1">{label}</div>
+      <div className="font-display text-[34px] text-green-700 font-bold leading-none">{num}</div>
+      <div className="text-[12px] text-text-sec mt-1.5">{label}</div>
     </div>
   );
 }
