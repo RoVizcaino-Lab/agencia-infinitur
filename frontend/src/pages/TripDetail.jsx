@@ -215,21 +215,6 @@ export default function TripDetail() {
                   <Download size={16} className="text-orange-500/50" /> Descargar itinerario PDF
                 </span>
               )}
-              {trip.itinerary?.length > 0 && (
-                <div className="space-y-4 mt-6">
-                  {trip.itinerary.map((d, i) => (
-                    <div key={`day-${d.day ?? i}-${d.title}`} className="bg-white border border-[#E8E6E0] rounded-2xl p-5 sm:p-6 flex gap-5">
-                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center font-display text-lg font-bold">
-                        {d.day || i + 1}
-                      </div>
-                      <div>
-                        <h3 className="font-display text-xl text-text-main mb-1">{d.title}</h3>
-                        <p className="text-text-sec">{d.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </Block>
           </div>
 
