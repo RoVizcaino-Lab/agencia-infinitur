@@ -32,10 +32,10 @@ const fmtMoney = (n) => `$${new Intl.NumberFormat("es-MX", { maximumFractionDigi
 const PAYMENT_METHODS = ["Efectivo", "Depósito", "Transferencia", "Visa / Mastercard", "Meses sin intereses", "Paypal"];
 const TIER_ICONS = { tent: Tent, bed: Bed };
 const DEFAULT_EXCLUDED = [
-  "Alimentación",
+  "Alimentos",
   "Gastos personales",
-  "Seguro médico April (opcional, costo adicional)",
-  "Actividades extras no contempladas en el itinerario",
+  "Seguro Médico",
+  "Actividades Extras",
 ];
 
 export default function TripDetail() {
@@ -156,7 +156,7 @@ export default function TripDetail() {
                 <h2 className="font-display text-[30px] text-text-main mb-5">Lugares a visitar</h2>
                 <div className="flex flex-wrap gap-2.5" data-testid="trip-places">
                   {trip.places.map((p) => (
-                    <span key={p} className="inline-flex items-center gap-1.5 bg-[#F0F7EA] text-green-800 px-3.5 py-1.5 rounded-full text-[13px] font-semibold">
+                    <span key={p} className="inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-3.5 py-1.5 rounded-full text-[13px] font-semibold">
                       <MapPin size={13} className="text-green-700" /> {p}
                     </span>
                   ))}
@@ -206,21 +206,29 @@ export default function TripDetail() {
                   <Download size={16} className="text-orange-500" /> Descargar itinerario PDF
                 </a>
               ) : (
-                trip.itinerary?.length > 0 && (
-                  <div className="space-y-4 mt-4">
-                    {trip.itinerary.map((d, i) => (
-                      <div key={`day-${d.day ?? i}-${d.title}`} className="bg-white border border-[#E8E6E0] rounded-2xl p-5 sm:p-6 flex gap-5">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center font-display text-lg font-bold">
-                          {d.day || i + 1}
-                        </div>
-                        <div>
-                          <h3 className="font-display text-xl text-text-main mb-1">{d.title}</h3>
-                          <p className="text-text-sec">{d.description}</p>
-                        </div>
+                <span
+                  data-testid="download-itinerary"
+                  aria-disabled="true"
+                  title="El itinerario PDF estará disponible pronto"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-[#E8E6E0] text-text-sec/60 font-semibold text-sm cursor-not-allowed"
+                >
+                  <Download size={16} className="text-orange-500/50" /> Descargar itinerario PDF
+                </span>
+              )}
+              {trip.itinerary?.length > 0 && (
+                <div className="space-y-4 mt-6">
+                  {trip.itinerary.map((d, i) => (
+                    <div key={`day-${d.day ?? i}-${d.title}`} className="bg-white border border-[#E8E6E0] rounded-2xl p-5 sm:p-6 flex gap-5">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center font-display text-lg font-bold">
+                        {d.day || i + 1}
                       </div>
-                    ))}
-                  </div>
-                )
+                      <div>
+                        <h3 className="font-display text-xl text-text-main mb-1">{d.title}</h3>
+                        <p className="text-text-sec">{d.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </Block>
           </div>

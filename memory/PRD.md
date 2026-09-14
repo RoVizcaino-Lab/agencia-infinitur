@@ -109,3 +109,8 @@ Ver `/app/memory/test_credentials.md`.
 - Aside sticky dentro de una tarjeta blanca: Cupo limitado (barra naranja), Costo por viajero (precios en oscuro), Formas de pago (pills), botón verde "Reservar por Whatsapp" (rectangular + glifo WhatsApp) y "Compartir este viaje".
 - Cierre con "Otros destinos que te pueden gustar" (3 cards nuevas) y banner oscuro de WhatsApp igual al de Home.
 - Nuevo componente compartido `components/WhatsAppGlyph.jsx`.
+
+## 2026-06 Ajustes detalle de viaje (feedback usuario)
+- Se poblaron `places` de ejemplo en los 9 viajes de la DB → sección "Lugares a visitar" visible con pills verdes (bg-green-100).
+- `excluded` de todos los viajes = Alimentos, Gastos personales, Seguro Médico, Actividades Extras (también DEFAULT_EXCLUDED en TripDetail).
+- El botón "Descargar itinerario PDF" ahora se muestra siempre; si el viaje no tiene PDF cargado queda deshabilitado, y el itinerario día por día se lista debajo.
