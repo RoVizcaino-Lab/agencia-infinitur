@@ -150,3 +150,6 @@ Ver `/app/memory/test_credentials.md`.
 
 ## 2026-09 TripCard: campo Destino
 - `TripCard.jsx`: la línea inferior de cada card ahora muestra `trip.destination` ("Destino: ...") en vez de `trip.places`, tal como se edita en Admin → Editar viaje → campo "Destino".
+
+## 2026-09 Home "Cómo viajamos": fotos reales
+- `Home.jsx`: MANIFIESTO_GRID reemplazado por las 4 fotos reales del usuario (Como Viajamos_1/2/3/4.jpg) en orden izquierda→derecha.

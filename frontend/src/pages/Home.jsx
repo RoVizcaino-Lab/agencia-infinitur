@@ -24,10 +24,10 @@ const HERO_PHOTOS = [
 ];
 
 const MANIFIESTO_GRID = [
-  "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg?w=800",
-  "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=800",
-  "https://images.unsplash.com/photo-1521437687640-34c398f4e598?w=800",
-  "https://images.unsplash.com/photo-1629752123286-49a7f60571f3?w=800",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/1rqjcfvv_Como%20Viajamos_1.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/1m3n7mdm_Como%20Viajamos_2.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/dmsqkuk5_Como%20Viajamos_3.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/4jmekd58_Como%20Viajamos_4.jpg",
 ];
 
 export default function Home() {
