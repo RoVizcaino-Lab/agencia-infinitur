@@ -181,7 +181,6 @@ function SeguroPanel() {
 }
 
 function CancelacionPanel() {
-  const [side, setSide] = useState("viajero");
   const viajero = [
     "Si cancelas con más de 10 días naturales antes de la salida, se descuenta el 50% del anticipo.",
     "Durante los últimos 6 días naturales previos a la salida, no hay devolución.",
@@ -201,22 +200,25 @@ function CancelacionPanel() {
 
   return (
     <PanelLayout eyebrow="Cancelaciones y cambios" title="Lee esto antes de reservar" sub="Para que no haya sorpresas. Todo claro y por escrito.">
-      <div className="inline-flex bg-white border border-[#E8E6E0] rounded-full p-1 mb-2">
-        <ToggleBtn active={side === "viajero"} onClick={() => setSide("viajero")} label="Por parte del viajero" />
-        <ToggleBtn active={side === "infinitur"} onClick={() => setSide("infinitur")} label="Por parte de Infinitur" />
-      </div>
-      <div className="bg-[#F2F0EB] rounded-2xl p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-lg bg-[#D6EDCA] text-green-700 flex items-center justify-center">
-            <CalendarX size={18} />
-          </div>
-          <div className="font-bold text-text-main">{side === "viajero" ? "Por parte del viajero" : "Por parte de Infinitur"}</div>
-        </div>
-        <ol className="space-y-2 text-sm text-text-main/90 list-decimal pl-5">
-          {(side === "viajero" ? viajero : infinitur).map((it) => <li key={it}>{it}</li>)}
-        </ol>
-      </div>
+      <CancelBlock title="Por parte del viajero" items={viajero} testid="cancel-viajero" />
+      <CancelBlock title="Por parte de Infinitur" items={infinitur} testid="cancel-infinitur" />
     </PanelLayout>
+  );
+}
+
+function CancelBlock({ title, items, testid }) {
+  return (
+    <div data-testid={testid} className="bg-[#F2F0EB] rounded-2xl p-6 sm:p-7">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-9 h-9 rounded-lg bg-[#D6EDCA] text-green-700 flex items-center justify-center">
+          <CalendarX size={18} />
+        </div>
+        <div className="font-display text-[21px] text-text-main">{title}</div>
+      </div>
+      <ol className="space-y-2 text-[15px] text-text-main/90 list-decimal pl-5">
+        {items.map((it) => <li key={it}>{it}</li>)}
+      </ol>
+    </div>
   );
 }
 
@@ -252,20 +254,6 @@ function PanelLayout({ eyebrow, title, sub, children }) {
       <p className="text-text-sec mb-2">{sub}</p>
       {children}
     </div>
-  );
-}
-
-function ToggleBtn({ active, onClick, label }) {
-  return (
-    <button
-      data-testid={`toggle-${label.toLowerCase().replace(/\s+/g, "-")}`}
-      onClick={onClick}
-      className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
-        active ? "bg-green-700 text-white" : "text-text-main hover:text-green-700"
-      }`}
-    >
-      {label}
-    </button>
   );
 }
 
