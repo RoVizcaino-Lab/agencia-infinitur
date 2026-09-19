@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { MessageCircle } from "lucide-react";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
+import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 
 export default function WhatsAppButton() {
   const [hint, setHint] = useState(false);
@@ -28,7 +28,7 @@ export default function WhatsAppButton() {
       <span className="block relative">
         <span className="absolute inset-0 rounded-full bg-whatsapp animate-ping opacity-25" />
         <span className="relative w-16 h-16 rounded-full bg-whatsapp hover:bg-[#1ebd5b] flex items-center justify-center shadow-[0_10px_30px_rgba(37,211,102,0.45)] transition-all duration-300 group-hover:scale-110">
-          <MessageCircle size={28} className="text-white" strokeWidth={2.2} fill="white" />
+          <WhatsAppGlyph size={30} className="text-white" />
         </span>
       </span>
     </a>

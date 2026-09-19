@@ -153,3 +153,9 @@ Ver `/app/memory/test_credentials.md`.
 
 ## 2026-09 Home "Cómo viajamos": fotos reales
 - `Home.jsx`: MANIFIESTO_GRID reemplazado por las 4 fotos reales del usuario (Como Viajamos_1/2/3/4.jpg) en orden izquierda→derecha.
+
+## 2026-09 Ícono oficial de WhatsApp en todo el sitio
+- `WhatsAppGlyph.jsx` ahora usa el path SVG oficial de la marca WhatsApp (burbuja + teléfono, viewBox 448x512) en vez del glifo genérico anterior.
+- Se sustituyó el ícono `MessageCircle` (lucide, genérico) por `WhatsAppGlyph` en: `Navbar.jsx` (desktop + mobile), `WhatsAppButton.jsx` (botón flotante), `MonthCarousel.jsx`, `Trips.jsx`, `Contact.jsx` (tarjeta hero + item "Otras vías").
+- Se eliminó el `WhatsAppGlyph` local duplicado de `Home.jsx`, ahora importa el componente compartido.
+- Colores/forma se mantienen (verde WhatsApp `--whatsapp` de fondo, glifo blanco via currentColor), consistente en todo el sitio.

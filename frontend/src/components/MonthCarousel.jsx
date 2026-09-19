@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, MapPin, ArrowRight, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, ArrowRight } from "lucide-react";
 import api from "@/lib/api";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
+import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 
 const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -202,7 +203,7 @@ function PanelRow({ trip }) {
         </Link>
         <a href={waLink(WA_MESSAGES.destinosCalendario(trip.title, trip.start_date, trip.end_date || trip.start_date))} target="_blank" rel="noreferrer"
           className="btn-whatsapp inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold" aria-label="Reservar por WhatsApp">
-          <MessageCircle size={14} fill="white" />
+          <WhatsAppGlyph size={14} />
         </a>
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, MessageCircle, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
+import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 
 export default function Contact() {
   const [trips, setTrips] = useState([]);
@@ -51,7 +52,7 @@ export default function Contact() {
             <div className="flex flex-col sm:flex-row items-center gap-6 justify-between">
               <div className="flex items-center gap-5">
                 <div className="w-16 h-16 rounded-2xl bg-whatsapp text-white flex items-center justify-center shadow-soft">
-                  <MessageCircle size={28} fill="white" />
+                  <WhatsAppGlyph size={28} />
                 </div>
                 <div>
                   <div className="font-display text-2xl sm:text-3xl text-text-main leading-tight">Escríbenos por WhatsApp</div>
@@ -71,7 +72,7 @@ export default function Contact() {
         <div className="max-w-[1100px] mx-auto px-5 lg:px-8 grid md:grid-cols-12 gap-10">
           <div className="md:col-span-5 space-y-4">
             <h2 className="font-display text-3xl text-text-main">Otras vías</h2>
-            <Item icon={MessageCircle} label="WhatsApp" value={WA_DISPLAY} href={waLink(WA_MESSAGES.navbar)} />
+            <Item icon={WhatsAppGlyph} label="WhatsApp" value={WA_DISPLAY} href={waLink(WA_MESSAGES.navbar)} />
             <Item icon={Mail} label="Email" value="viajes@infinitur.com" href="mailto:viajes@infinitur.com" />
             <Item icon={Phone} label="Teléfono" value={WA_DISPLAY} href={`tel:+52${WA_DISPLAY.replace(/\s+/g, "")}`} />
             <Item icon={MapPin} label="Base" value="Ciudad de México, México" />

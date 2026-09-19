@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { ArrowRight, MessageCircle, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import api from "@/lib/api";
 import TripCard from "@/components/TripCard";
 import FilterChip from "@/components/FilterChip";
 import MonthCarousel from "@/components/MonthCarousel";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
+import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 
 const MONTH_NAMES = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -164,7 +165,7 @@ export default function Trips() {
             data-testid="a-la-carta-cta"
             className="btn-whatsapp inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold"
           >
-            <MessageCircle size={18} fill="white" /> Escríbenos al {WA_DISPLAY}
+            <WhatsAppGlyph size={18} /> Escríbenos al {WA_DISPLAY}
           </a>
         </div>
       </section>
