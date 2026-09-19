@@ -12,7 +12,7 @@ export default function AdminFAQ() {
 
   const save = async (data) => {
     try {
-      const payload = { question: data.question, answer: data.answer, order: Number(data.order) || 0 };
+      const payload = { question: data.question, answer: data.answer, order: Number(data.order) || 0, category: data.category || "general" };
       if (data.id) await api.put(`/admin/faq/${data.id}`, payload);
       else await api.post("/admin/faq", payload);
       toast.success("FAQ guardado");
@@ -31,7 +31,7 @@ export default function AdminFAQ() {
     <div data-testid="admin-faq">
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-heading text-3xl text-ink">Preguntas frecuentes</h2>
-        <button data-testid="add-faq" onClick={() => setEditing({ question: "", answer: "", order: items.length })}
+        <button data-testid="add-faq" onClick={() => setEditing({ question: "", answer: "", order: items.length, category: "reservar" })}
           className="btn-terracotta inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-sm">
           <Plus size={16} /> Nueva pregunta
         </button>
@@ -41,7 +41,7 @@ export default function AdminFAQ() {
         {items.map((f) => (
           <div key={f.id} className="bg-white border border-[#E5E0D8] rounded-2xl p-5 flex justify-between items-start gap-4">
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-ink/50 mb-1">Orden #{f.order}</div>
+              <div className="text-xs text-ink/50 mb-1">Orden #{f.order} · {CATEGORY_LABELS[f.category] || f.category}</div>
               <div className="font-semibold text-ink">{f.question}</div>
               <div className="text-sm text-ink/70 mt-2 line-clamp-2">{f.answer}</div>
             </div>
@@ -62,6 +62,16 @@ export default function AdminFAQ() {
               <button onClick={() => setEditing(null)}><X size={20} /></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); save(editing); }} className="p-6 space-y-4">
+              <div>
+                <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Sección (dónde aparece en "Lo que debes saber")</label>
+                <select data-testid="faq-category" value={editing.category || "reservar"}
+                  onChange={(e) => setEditing({ ...editing, category: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone">
+                  <option value="reservar">¿Cómo reservar?</option>
+                  <option value="politicas">Políticas de viaje</option>
+                  <option value="general">General (no se muestra en el front)</option>
+                </select>
+              </div>
               <div>
                 <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Pregunta</label>
                 <input data-testid="faq-question" required value={editing.question}
@@ -91,3 +101,9 @@ export default function AdminFAQ() {
     </div>
   );
 }
+
+const CATEGORY_LABELS = {
+  reservar: "¿Cómo reservar?",
+  politicas: "Políticas de viaje",
+  general: "General",
+};

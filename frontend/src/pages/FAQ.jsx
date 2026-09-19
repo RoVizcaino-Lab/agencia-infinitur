@@ -126,15 +126,7 @@ function ReservarPanel() {
           </div>
         ))}
       </div>
-      <CmsFaqList
-        questions={[
-          "¿Cuándo debo liquidar el total del viaje?",
-          "¿Puedo reservar para otra persona?",
-          "¿Son transferibles las reservaciones?",
-          "¿Hay descuentos disponibles?",
-          "¿Cómo confirmo mi reservación?",
-        ]}
-      />
+      <CmsFaqList category="reservar" />
     </PanelLayout>
   );
 }
@@ -225,16 +217,7 @@ function CancelBlock({ title, items, testid }) {
 function PoliticasPanel() {
   return (
     <PanelLayout eyebrow="Políticas del viaje" title="Lo más importante antes de salir" sub="Para que no haya sorpresas. Todo claro y por escrito.">
-      <CmsFaqList
-        questions={[
-          "¿Qué hace el coordinador de viaje?",
-          "¿Cómo funciona el hospedaje?",
-          "¿Qué pasa si el autobús tiene una falla mecánica?",
-          "¿Infinitur es responsable de mis pertenencias?",
-          "¿Qué pasa si tengo una enfermedad o condición médica?",
-          "¿Puedo llevar niños o hay restricciones de edad?",
-        ]}
-      />
+      <CmsFaqList category="politicas" />
       <div className="bg-[#F2F0EB] border border-orange-200 rounded-2xl p-5 flex gap-3 items-start">
         <Sprout size={18} className="text-orange-600 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-text-main leading-relaxed">
@@ -257,26 +240,23 @@ function PanelLayout({ eyebrow, title, sub, children }) {
   );
 }
 
-// Reuses CMS faq for accordion-style questions; falls back to dummy answers.
-function CmsFaqList({ questions }) {
+// Renderiza en vivo las preguntas frecuentes creadas en el panel de administración para esta categoría.
+function CmsFaqList({ category }) {
   const [faqs, setFaqs] = useState([]);
   const [open, setOpen] = useState(null);
 
   useEffect(() => {
-    api.get("/faq").then((r) => setFaqs(r.data || []));
-  }, []);
+    api.get(`/faq?category=${category}`).then((r) => setFaqs(r.data || []));
+  }, [category]);
 
-  const items = questions.map((q) => {
-    const match = faqs.find((f) => f.question.toLowerCase().includes(q.toLowerCase().slice(0, 12)));
-    return { question: q, answer: match?.answer || "Próximamente. Escríbenos por WhatsApp y te resolvemos esta duda al momento." };
-  });
+  if (faqs.length === 0) return null;
 
   return (
-    <div className="space-y-3 mt-4">
-      {items.map((f, i) => (
-        <div key={f.question} className={`bg-[#F2F0EB] rounded-2xl overflow-hidden ${open === i ? "ring-2 ring-orange-300" : ""}`}>
+    <div className="space-y-3 mt-4" data-testid={`cms-faq-${category}`}>
+      {faqs.map((f, i) => (
+        <div key={f.id} className={`bg-[#F2F0EB] rounded-2xl overflow-hidden ${open === i ? "ring-2 ring-orange-300" : ""}`}>
           <button
-            data-testid={`accordion-${i}`}
+            data-testid={`accordion-${category}-${i}`}
             onClick={() => setOpen(open === i ? null : i)}
             className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
           >

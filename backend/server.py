@@ -453,17 +453,20 @@ class FAQItem(BaseModel):
     question: str
     answer: str
     order: int = 0
+    category: str = "general"
 
 
 class FAQInput(BaseModel):
     question: str
     answer: str
     order: int = 0
+    category: str = "general"
 
 
 @api_router.get("/faq", response_model=List[FAQItem])
-async def list_faq():
-    docs = await db.faq.find({}, {"_id": 0}).sort("order", 1).to_list(100)
+async def list_faq(category: Optional[str] = None):
+    query = {"category": category} if category else {}
+    docs = await db.faq.find(query, {"_id": 0}).sort("order", 1).to_list(100)
     return docs
 
 
@@ -885,7 +888,37 @@ async def on_startup():
     await seed_admin()
     await seed_demo_data()
     await seed_faq()
+    await migrate_faq_categories()
     await _migrate_trip_fields()
+
+
+async def migrate_faq_categories():
+    await db.faq.update_many({"category": {"$exists": False}}, {"$set": {"category": "general"}})
+
+    if await db.faq.count_documents({"category": "reservar"}) == 0:
+        reservar_items = [
+            ("¿Cuándo debo liquidar el total del viaje?", "El saldo restante se liquida según lo indicado en el itinerario de cada viaje, generalmente entre 15 y 30 días antes de la salida. La fecha exacta te la confirmamos al reservar."),
+            ("¿Puedo reservar para otra persona?", "Sí, puedes reservar y pagar el lugar de otra persona. Solo necesitamos sus datos completos para el registro del viaje."),
+            ("¿Son transferibles las reservaciones?", "Sí, tu reservación puede transferirse a otra persona antes de la salida, siempre y cuando nos avises con anticipación."),
+            ("¿Hay descuentos disponibles?", "Ofrecemos descuentos para grupos grandes y promociones por temporada. Pregúntanos por WhatsApp por las promociones vigentes."),
+            ("¿Cómo confirmo mi reservación?", "Tu reservación se confirma al recibir tu anticipo. Te enviamos un comprobante y toda la información del viaje por WhatsApp o correo."),
+        ]
+        for i, (q, a) in enumerate(reservar_items):
+            item = FAQItem(question=q, answer=a, order=i, category="reservar")
+            await db.faq.insert_one(item.model_dump())
+
+    if await db.faq.count_documents({"category": "politicas"}) == 0:
+        politicas_items = [
+            ("¿Qué hace el coordinador de viaje?", "Es tu guía en cada momento del viaje: coordina transporte, hospedaje, actividades y resuelve cualquier imprevisto en el camino."),
+            ("¿Cómo funciona el hospedaje?", "El hospedaje varía según el tipo de viaje (campamento, cabaña u hotel) y está sujeto a disponibilidad. Los detalles se especifican en cada viaje."),
+            ("¿Qué pasa si el autobús tiene una falla mecánica?", "Infinitur cuenta con transporte alterno y seguro de viajero para resolver cualquier eventualidad en el camino lo antes posible."),
+            ("¿Infinitur es responsable de mis pertenencias?", "Cada viajero es responsable de sus pertenencias personales. Recomendamos no dejar objetos de valor sin vigilancia."),
+            ("¿Qué pasa si tengo una enfermedad o condición médica?", "Avísanos antes de viajar para tomar las precauciones necesarias. Recomendamos contratar un seguro médico de viaje."),
+            ("¿Puedo llevar niños o hay restricciones de edad?", "Sí, la mayoría de nuestros viajes son familiares. Algunos viajes de aventura tienen una edad mínima, indicada en el detalle del viaje."),
+        ]
+        for i, (q, a) in enumerate(politicas_items):
+            item = FAQItem(question=q, answer=a, order=i, category="politicas")
+            await db.faq.insert_one(item.model_dump())
 
 
 @app.on_event("shutdown")
