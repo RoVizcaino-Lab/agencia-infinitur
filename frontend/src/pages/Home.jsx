@@ -18,9 +18,9 @@ const fmtRange = (s, e) => {
 };
 
 const HERO_PHOTOS = [
-  "https://images.pexels.com/photos/8696263/pexels-photo-8696263.jpeg?w=900",
-  "https://images.unsplash.com/photo-1606403759369-e10299ed5740?w=900&q=80",
-  "https://images.pexels.com/photos/18662531/pexels-photo-18662531.jpeg?w=900",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/hvqau9qy_Hero%20Img_1.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/3cltp27h_Hero%20Img_2.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/wpl21vgg_Hero%20Img_3.jpg",
 ];
 
 const MANIFIESTO_GRID = [

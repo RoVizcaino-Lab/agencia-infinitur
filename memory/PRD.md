@@ -143,3 +143,7 @@ Ver `/app/memory/test_credentials.md`.
 - "Puntos de salida - CDMX" se renderiza como lista con viñetas (se separa por saltos de línea, coma, punto y coma o ·).
 - Home "Próximos destinos" ahora usa el mismo `TripCard` (se eliminó `DestinoCard` de Home.jsx) para que también liste todas las fechas.
 - El banner del detalle lista todas las fechas del viaje (`trip-hero-dates`) y su alto pasó a min-height para crecer sin recortar.
+
+## 2026-09 Home Hero: fotos reales
+- `Home.jsx`: HERO_PHOTOS reemplazadas por las 3 fotos reales del usuario (Hero Img_1/2/3.jpg de customer-assets) en orden izquierda→derecha, sustituyendo los placeholders de Pexels/Unsplash.
+- Verificado vía screenshot.
