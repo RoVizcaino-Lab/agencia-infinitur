@@ -1,29 +1,30 @@
 import { useEffect, useState } from "react";
 import {
   Calendar, Stethoscope, CalendarX, FileText, ChevronDown,
-  MessageCircle, Sprout, AlertCircle, Check,
+  Sprout, AlertCircle, Check,
 } from "lucide-react";
 import api from "@/lib/api";
+import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
 
 const TABS = [
   { key: "reservar", icon: Calendar, title: "¿Cómo reservar?", sub: "Anticipo, formas de pago y tiempos mínimos", iconBg: "bg-[#D6EDCA]", iconFg: "text-green-700" },
   { key: "seguro", icon: Stethoscope, title: "Seguro médico", sub: "Qué cubre y cómo contratarlo", iconBg: "bg-[#D6EDCA]", iconFg: "text-green-700" },
   { key: "cancelacion", icon: CalendarX, title: "Cancelaciones", sub: "Plazos, devoluciones y cambios", iconBg: "bg-[#FFE0C8]", iconFg: "text-orange-600" },
-  { key: "politicas", icon: FileText, title: "Políticas de viaje", sub: "Coordinadores, transporte y hospedaje", iconBg: "bg-[#1B1B1A]", iconFg: "text-white" },
+  { key: "politicas", icon: FileText, title: "Políticas de viaje", sub: "Coordinadores, transporte y hospedaje", iconBg: "bg-[#ECEAE4]", iconFg: "text-text-main" },
 ];
 
 export default function FAQ() {
   const [active, setActive] = useState("reservar");
 
   return (
-    <div data-testid="faq-page" className="bg-bone pb-20">
+    <div data-testid="faq-page" className="bg-white pb-20">
       {/* HERO */}
       <section className="pt-32 pb-10 text-center">
         <div className="max-w-3xl mx-auto px-5">
           <div className="text-xs uppercase tracking-[0.25em] text-orange-500 font-bold mb-4">Tu guía de viaje</div>
           <h1 className="font-display text-5xl sm:text-6xl text-text-main leading-[1.05] tracking-tight mb-5">
-            Todo lo que debes saber antes de <em className="italic text-green-700 font-display">aventurarte</em>
+            Todo lo que debes saber antes de aventurarte
           </h1>
           <p className="text-text-sec text-lg">
             Selecciona el tema que te interesa – te mostramos exactamente lo que necesitas.
@@ -45,7 +46,7 @@ export default function FAQ() {
                   className={`text-center p-5 sm:p-6 rounded-2xl border-2 transition-all ${
                     isActive
                       ? "border-green-700 bg-white shadow-soft"
-                      : "border-transparent bg-[#EFEAE1] hover:bg-white hover:border-[#E8E6E0]"
+                      : "border-transparent bg-[#F2F0EB] hover:bg-white hover:border-[#E8E6E0]"
                   }`}
                 >
                   <div className={`mx-auto w-12 h-12 rounded-lg ${t.iconBg} ${t.iconFg} flex items-center justify-center mb-3`}>
@@ -114,8 +115,8 @@ function ReservarPanel() {
     <PanelLayout eyebrow="Reservaciones" title="¿Cómo reservar?" sub="Para apartar tu lugar hay que entregar el anticipo especificado en el itinerario de cada viaje.">
       <div className="grid sm:grid-cols-2 gap-4">
         {cards.map((c) => (
-          <div key={c.title} className="bg-[#FFE8DC] rounded-2xl p-5 flex gap-3 items-start">
-            <div className="w-9 h-9 rounded-lg bg-white/70 text-orange-600 flex items-center justify-center flex-shrink-0">
+          <div key={c.title} className="bg-[#F2F0EB] rounded-2xl p-5 flex gap-3 items-start">
+            <div className="w-9 h-9 rounded-lg bg-[#D6EDCA] text-green-700 flex items-center justify-center flex-shrink-0">
               <Calendar size={18} />
             </div>
             <div>
@@ -140,10 +141,10 @@ function ReservarPanel() {
 
 function SeguroPanel() {
   return (
-    <PanelLayout eyebrow="Seguro médico" title={<>Viaja tranquilo — <em className="italic text-green-700 font-display">estás cubierto</em></>} sub="Un seguro de viaje te da tranquilidad ante cualquier eventualidad en el camino.">
-      <div className="bg-[#FFE8DC] rounded-2xl p-6">
+    <PanelLayout eyebrow="Seguro médico" title="Viaja tranquilo — estás cubierto" sub="Un seguro de viaje te da tranquilidad ante cualquier eventualidad en el camino.">
+      <div className="bg-[#F2F0EB] rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-lg bg-white/70 text-green-700 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-[#D6EDCA] text-green-700 flex items-center justify-center">
             <Stethoscope size={20} />
           </div>
           <div>
@@ -168,7 +169,7 @@ function SeguroPanel() {
           ))}
         </div>
       </div>
-      <div className="bg-[#FFF3EC] border-2 border-orange-300 rounded-2xl p-5 flex gap-3 items-start">
+      <div className="bg-[#F2F0EB] border border-orange-200 rounded-2xl p-5 flex gap-3 items-start">
         <AlertCircle size={18} className="text-orange-600 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-text-main leading-relaxed">
           <strong>Importante:</strong> El seguro incluido en Infinitur solo ampara accidentes dentro del autobús.
@@ -204,9 +205,9 @@ function CancelacionPanel() {
         <ToggleBtn active={side === "viajero"} onClick={() => setSide("viajero")} label="Por parte del viajero" />
         <ToggleBtn active={side === "infinitur"} onClick={() => setSide("infinitur")} label="Por parte de Infinitur" />
       </div>
-      <div className="bg-[#FFE8DC] rounded-2xl p-6">
+      <div className="bg-[#F2F0EB] rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-lg bg-white/70 text-orange-600 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-[#D6EDCA] text-green-700 flex items-center justify-center">
             <CalendarX size={18} />
           </div>
           <div className="font-bold text-text-main">{side === "viajero" ? "Por parte del viajero" : "Por parte de Infinitur"}</div>
@@ -232,7 +233,7 @@ function PoliticasPanel() {
           "¿Puedo llevar niños o hay restricciones de edad?",
         ]}
       />
-      <div className="bg-[#FFF3EC] border-2 border-orange-300 rounded-2xl p-5 flex gap-3 items-start">
+      <div className="bg-[#F2F0EB] border border-orange-200 rounded-2xl p-5 flex gap-3 items-start">
         <Sprout size={18} className="text-orange-600 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-text-main leading-relaxed">
           <strong>Nuestra promesa:</strong> Infinitur planea y lleva a cabo cada recorrido de buena fe, con la intención de que
@@ -285,7 +286,7 @@ function CmsFaqList({ questions }) {
   return (
     <div className="space-y-3 mt-4">
       {items.map((f, i) => (
-        <div key={f.question} className={`bg-[#FFE8DC] rounded-2xl overflow-hidden ${open === i ? "ring-2 ring-orange-300" : ""}`}>
+        <div key={f.question} className={`bg-[#F2F0EB] rounded-2xl overflow-hidden ${open === i ? "ring-2 ring-orange-300" : ""}`}>
           <button
             data-testid={`accordion-${i}`}
             onClick={() => setOpen(open === i ? null : i)}
@@ -307,20 +308,20 @@ function CmsFaqList({ questions }) {
 
 function WaBanner({ title, sub, message }) {
   return (
-    <div className="bg-[#E8F5DC] rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+    <div className="bg-[#EAF5DC] rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-white text-whatsapp flex items-center justify-center">
-          <MessageCircle size={18} fill="currentColor" />
-        </div>
+        <span className="text-whatsapp flex-shrink-0">
+          <WhatsAppGlyph size={26} />
+        </span>
         <div>
-          <div className="font-bold text-text-main">{title}</div>
+          <div className="font-display text-[19px] text-text-main">{title}</div>
           <div className="text-sm text-text-sec">{sub}</div>
         </div>
       </div>
       <a href={waLink(message)} target="_blank" rel="noreferrer"
         data-testid="faq-wa-cta"
-        className="btn-whatsapp inline-flex items-center gap-2 px-5 py-3 rounded-full font-bold text-sm whitespace-nowrap">
-        <MessageCircle size={16} fill="white" /> {WA_DISPLAY}
+        className="btn-whatsapp inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm whitespace-nowrap">
+        <WhatsAppGlyph size={16} /> {WA_DISPLAY}
       </a>
     </div>
   );

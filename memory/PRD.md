@@ -122,3 +122,8 @@ Ver `/app/memory/test_credentials.md`.
 - "Modalidades → ¿Cómo quieres viajar?": 8 tarjetas (TRIP_TYPES) con descripciones cortas nuevas; "A la Carta" en durazno con borde punteado.
 - CTA oscuro centrado "¿Listo para conocernos en el camino?" con botón WhatsApp y botón outline "Ver todos los destinos".
 - Se eliminó la sección de testimonios (no está en la maqueta).
+
+## 2026-06 Lo que debes saber (Cómo Reservar.png)
+- `FAQ.jsx`: fondo de página blanco, título del hero sin acentos de color (todo oscuro), tabs inactivos en crema #F2F0EB y activo en blanco con borde verde.
+- Todas las secciones (Cómo reservar, Seguro médico, Cancelaciones, Políticas de viaje) usan la misma paleta: tarjetas y acordeones crema #F2F0EB, íconos en cuadro verde claro (#D6EDCA) con glifo verde, chevrones naranjas.
+- Banner final de WhatsApp en verde claro con glifo oficial de WhatsApp y botón rectangular redondeado.
