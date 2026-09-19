@@ -1,7 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 
 const links = [
@@ -57,15 +56,13 @@ export default function Navbar() {
               </NavLink>
             ))}
           </nav>
-          <a
-            href={waLink(WA_MESSAGES.navbar)}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/contactanos"
             data-testid="navbar-cta-contactanos"
             className="hidden sm:inline-flex btn-whatsapp items-center gap-2 px-5 lg:px-6 py-2.5 rounded-full font-semibold text-sm"
           >
             <WhatsAppGlyph size={16} /> Contáctanos
-          </a>
+          </Link>
           <button
             data-testid="mobile-menu-toggle"
             className="lg:hidden text-ink"
@@ -84,10 +81,10 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <a href={waLink(WA_MESSAGES.navbar)} target="_blank" rel="noreferrer"
+          <Link to="/contactanos" data-testid="navbar-cta-contactanos-mobile"
             className="btn-whatsapp inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm">
             <WhatsAppGlyph size={16} /> Contáctanos
-          </a>
+          </Link>
         </div>
       )}
     </header>

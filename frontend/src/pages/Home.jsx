@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calendar, MapPin, Instagram, Play } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import api, { resolveImage } from "@/lib/api";
 import MonthCarousel from "@/components/MonthCarousel";
 import TripCard from "@/components/TripCard";
@@ -25,7 +25,7 @@ const HERO_PHOTOS = [
 ];
 
 const MANIFIESTO_GRID = [
-  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/1rqjcfvv_Como%20Viajamos_1.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/do654mne_Como%20Viajamos_1b.jpg",
   "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/1m3n7mdm_Como%20Viajamos_2.jpg",
   "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/dmsqkuk5_Como%20Viajamos_3.jpg",
   "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/4jmekd58_Como%20Viajamos_4.jpg",
@@ -170,24 +170,16 @@ export default function Home() {
             <p className="text-text-sec mt-1">Síguenos en nuestras redes para no perderte ninguna salida.</p>
             <div className="flex justify-center gap-4 mt-5">
               <SocialIcon href="https://instagram.com/marinerus.infinitur" label="Instagram">
-                <span className="w-12 h-12 rounded-full bg-white border border-[#E8E6E0] flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
-                  <Instagram size={22} strokeWidth={1.8} className="text-text-main" />
-                </span>
+                <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/drdfcdar_Icono%20Instagram.png" alt="Instagram" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
               <SocialIcon href="https://www.facebook.com/marinerus.infinitur" label="Facebook">
-                <span className="w-12 h-12 rounded-full bg-[#1877F2] flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
-                  <span className="text-white font-bold text-xl leading-none">f</span>
-                </span>
+                <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/r0xpxbqw_Icono%20Facebook.png" alt="Facebook" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
               <SocialIcon href="https://www.tiktok.com/@marinerus.infinitur" label="TikTok">
-                <span className="w-12 h-12 rounded-xl bg-black flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
-                  <TikTokGlyph size={20} />
-                </span>
+                <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/sif3hiha_Icono%20Tick-Tock.png" alt="TikTok" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
               <SocialIcon href="https://youtube.com/@marinerus.infinitur" label="YouTube">
-                <span className="w-12 h-12 rounded-xl bg-[#FF0000] flex items-center justify-center shadow-floating hover:scale-110 transition-transform">
-                  <Play size={18} className="text-white fill-white ml-0.5" />
-                </span>
+                <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/vpsvjprh_Icono%20Youtube.png" alt="YouTube" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
             </div>
           </div>
@@ -227,16 +219,5 @@ function SocialIcon({ href, label, children }) {
     <a href={href} target="_blank" rel="noreferrer" aria-label={label} data-testid={`social-icon-${label.toLowerCase()}`}>
       {children}
     </a>
-  );
-}
-
-function TikTokGlyph({ size = 20 }) {
-  const d = "M16.5 3c.35 2.15 1.85 3.75 4.1 4v3.05c-1.55.05-3-.4-4.1-1.25v6.75a5.55 5.55 0 1 1-5.55-5.55c.2 0 .45.02.7.05v3.1a2.45 2.45 0 1 0 1.85 2.35V3h3z";
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <path d={d} fill="#25F4EE" transform="translate(-0.6,-0.35)" />
-      <path d={d} fill="#FE2C55" transform="translate(0.6,0.35)" />
-      <path d={d} fill="#fff" />
-    </svg>
   );
 }

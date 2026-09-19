@@ -1,25 +1,25 @@
 // Visual mapping per trip type (per Figma briefing).
-import {
-  Compass,
-  TreePine,
-  Backpack,
-  Mountain,
-  Leaf,
-  HeartHandshake,
-  Bed,
-  UtensilsCrossed,
-  Flag,
-  Globe2,
-} from "lucide-react";
+import { UtensilsCrossed, Flag, Globe2 } from "lucide-react";
+
+// Wraps an emoji glyph so it can be used as a drop-in icon component (size/strokeWidth compatible).
+export function EmojiIcon(emoji) {
+  return function Emoji({ size = 16, className = "" }) {
+    return (
+      <span className={className} style={{ fontSize: size, lineHeight: 1 }} role="img" aria-hidden="true">
+        {emoji}
+      </span>
+    );
+  };
+}
 
 export const TRIP_TYPES = [
-  { key: "Clásico", icon: Compass, bg: "bg-[#D6EDCA]", fg: "text-green-800", chip: "bg-green-100 text-green-800" },
-  { key: "Explora", icon: TreePine, bg: "bg-[#B8DFA4]", fg: "text-green-900", chip: "bg-green-200 text-green-900" },
-  { key: "Mochilero", icon: Backpack, bg: "bg-[#FFE0C8]", fg: "text-orange-700", chip: "bg-orange-100 text-orange-700" },
-  { key: "Infinitur 90°", icon: Mountain, bg: "bg-[#E8D6BE]", fg: "text-[#7a5a36]", chip: "bg-[#F6E7D6] text-[#7a5a36]" },
-  { key: "4 Elementos", icon: Leaf, bg: "bg-[#D9EFE4]", fg: "text-[#1F5D47]", chip: "bg-[#DCF1E7] text-[#1F5D47]" },
-  { key: "Altruismo", icon: HeartHandshake, bg: "bg-[#D6EDCA]", fg: "text-green-700", chip: "bg-green-50 text-green-700" },
-  { key: "Confort", icon: Bed, bg: "bg-[#FFF3EC]", fg: "text-orange-700", chip: "bg-orange-50 text-orange-700" },
+  { key: "Clásico", icon: EmojiIcon("🏕️"), bg: "bg-[#D6EDCA]", fg: "text-green-800", chip: "bg-green-100 text-green-800" },
+  { key: "Explora", icon: EmojiIcon("🧭"), bg: "bg-[#B8DFA4]", fg: "text-green-900", chip: "bg-green-200 text-green-900" },
+  { key: "Mochilero", icon: EmojiIcon("🎒"), bg: "bg-[#FFE0C8]", fg: "text-orange-700", chip: "bg-orange-100 text-orange-700" },
+  { key: "Infinitur 90°", icon: EmojiIcon("🏔️"), bg: "bg-[#E8D6BE]", fg: "text-[#7a5a36]", chip: "bg-[#F6E7D6] text-[#7a5a36]" },
+  { key: "4 Elementos", icon: EmojiIcon("🌿"), bg: "bg-[#D9EFE4]", fg: "text-[#1F5D47]", chip: "bg-[#DCF1E7] text-[#1F5D47]" },
+  { key: "Altruismo", icon: EmojiIcon("🎖️"), bg: "bg-[#D6EDCA]", fg: "text-green-700", chip: "bg-green-50 text-green-700" },
+  { key: "Confort", icon: EmojiIcon("🏨"), bg: "bg-[#FFF3EC]", fg: "text-orange-700", chip: "bg-orange-50 text-orange-700" },
   { key: "A la Carta", icon: UtensilsCrossed, bg: "bg-[#EFEAE1]", fg: "text-[#6B705C]", chip: "bg-[#F1EEE7] text-[#5C6151]" },
 ];
 

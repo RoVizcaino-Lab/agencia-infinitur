@@ -159,3 +159,17 @@ Ver `/app/memory/test_credentials.md`.
 - Se sustituyó el ícono `MessageCircle` (lucide, genérico) por `WhatsAppGlyph` en: `Navbar.jsx` (desktop + mobile), `WhatsAppButton.jsx` (botón flotante), `MonthCarousel.jsx`, `Trips.jsx`, `Contact.jsx` (tarjeta hero + item "Otras vías").
 - Se eliminó el `WhatsAppGlyph` local duplicado de `Home.jsx`, ahora importa el componente compartido.
 - Colores/forma se mantienen (verde WhatsApp `--whatsapp` de fondo, glifo blanco via currentColor), consistente en todo el sitio.
+
+## 2026-09 Navbar Contáctanos → página interna
+- `Navbar.jsx`: el CTA "Contáctanos" (desktop + mobile) ahora usa `<Link to="/contactanos">` en vez de abrir WhatsApp directo. Se removió el import no usado de `waLink`/`WA_MESSAGES`.
+
+## 2026-09 Home "Cómo viajamos": primera foto actualizada
+- `MANIFIESTO_GRID[0]` ahora usa `Como Viajamos_1b.jpg` (reemplaza la foto anterior); las otras 3 fotos se mantienen sin cambio.
+
+## 2026-09 Íconos de redes sociales reales (sección "¿Te gustó lo que viste?")
+- `Home.jsx`: los círculos de Instagram/Facebook/TikTok/YouTube ahora renderizan las imágenes reales provistas por el usuario (`<img>` con las URLs de customer-assets) en vez de íconos lucide + fondos de color manuales. Se removieron `TikTokGlyph`, imports `Instagram`/`Play`/`MapPin` no usados.
+
+## 2026-09 Íconos de "Tipos de viaje" (chips) en todo el sitio
+- `lib/tripStyle.js`: se agregó helper `EmojiIcon(emoji)` que envuelve un emoji en un componente compatible con `size`/`className` (drop-in replacement de los íconos lucide).
+- `TRIP_TYPES` ahora usa emojis que replican la maqueta "Chips Tipos de Viajes": Clásico 🏕️, Explora 🧭, Mochilero 🎒, Infinitur 90° 🏔️, 4 Elementos 🌿, Altruismo 🎖️, Confort 🏨. "A la Carta" conserva el ícono lucide `UtensilsCrossed` (no estaba en la maqueta).
+- Como todos los consumidores (`TripCard.jsx`, `TripDetail.jsx`, `About.jsx` Modalidades, `FilterChip` en `Trips.jsx`/`AllTrips.jsx`) ya usan `<Icon size={...}>` genérico, el cambio se propaga automáticamente sin tocar esos archivos.
