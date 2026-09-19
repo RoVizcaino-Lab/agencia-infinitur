@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api, { resolveImage } from "@/lib/api";
 import {
   Calendar, Bus, Home, Star, Share2, MapPin,
-  Bed, Tent, Flame, Download, ChevronRight,
+  Bed, Tent, Flame, Download, ChevronRight, Check,
 } from "lucide-react";
 import TripCard, { allDates } from "@/components/TripCard";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
@@ -46,15 +46,31 @@ const rangeDays = (startIso, endIso) => {
   } catch { return 1; }
 };
 
+const DEFAULT_TRANSPORT = [
+  "Autobús o Camioneta Sprinter con seguro de viajero",
+  "A/C, DVD y MP3",
+  "Operadores calificados",
+];
+
+const DEFAULT_LODGING = [
+  "Campamento con baños y regaderas",
+  "Cabaña u Hotel con todos los servicios (sujeto a disponibilidad)",
+];
+
+const DEFAULT_COORDINATOR = [
+  "Tu guía que ya te conoce antes de salir",
+  "Presente en cada momento del viaje",
+];
+
 const DEFAULT_DEPARTURE_POINTS = [
   "Metro Chabacano",
   "Metro Cuatro Caminos",
   "Metro Taxqueña",
 ];
 
-const departurePoints = (raw) => {
-  if (!raw) return DEFAULT_DEPARTURE_POINTS;
-  return raw.split(/\n|·|;|,/).map((s) => s.trim()).filter(Boolean);
+const toList = (raw, fallback = []) => {
+  if (!raw) return fallback;
+  return raw.split(/\n|·|;|,/).map((s) => s.trim().replace(/\.$/, "")).filter(Boolean);
 };
 
 export default function TripDetail() {
@@ -86,6 +102,9 @@ export default function TripDetail() {
   const minTier = tiers.reduce((min, t) => t.price < min.price ? t : min, tiers[0]);
   const fillPct = trip.group_max ? Math.max(8, Math.min(95, 100 - (trip.spots_left / trip.group_max) * 100)) : 50;
   const excluded = (trip.excluded && trip.excluded.length > 0) ? trip.excluded : DEFAULT_EXCLUDED;
+  const extras = (trip.included || []).filter(
+    (it) => !["transporte", "hospedaje", "guía", "guia", "coordinador"].some((k) => it.toLowerCase().includes(k))
+  );
 
   const waMsg = `Hola! Me interesa reservar el viaje "${trip.title}" (${fmtDateRange(trip.start_date, trip.end_date, trip.duration_days)}). ¿Me ayudan con los detalles?`;
   const shareTrip = async () => {
@@ -207,16 +226,16 @@ export default function TripDetail() {
               <h2 className="font-display text-[30px] text-text-main mb-5">¿Qué incluye?</h2>
               <div className="space-y-3">
                 <IncludeRow icon={Bus} title="Transporte"
-                  desc={trip.included_transport || "Autobús o Camioneta Sprinter con seguro de viajero, A/C, DVD, MP3 y operadores calificados."} />
+                  items={toList(trip.included_transport, DEFAULT_TRANSPORT)} />
                 <IncludeRow icon={Home} title="Hospedaje"
-                  desc={trip.included_lodging || "Campamento con baños y regaderas. Cabaña u Hotel con todos los servicios (sujeto a disponibilidad)."} />
+                  items={toList(trip.included_lodging, DEFAULT_LODGING)} />
                 <IncludeRow icon={Star} title="Coordinador Infinitur"
-                  desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje." />
+                  items={DEFAULT_COORDINATOR} />
                 <IncludeRow icon={MapPin} title="Puntos de salida - CDMX"
-                  items={departurePoints(trip.departure_points)} />
-                {(trip.included || []).filter((it) => !["transporte", "hospedaje", "guía", "guia"].some((k) => it.toLowerCase().includes(k))).map((extra) => (
-                  <IncludeRow key={extra} icon={Star} title={extra} desc="" small />
-                ))}
+                  items={toList(trip.departure_points, DEFAULT_DEPARTURE_POINTS)} />
+                {extras.length > 0 && (
+                  <IncludeRow icon={Check} title="También incluye" items={extras} />
+                )}
               </div>
             </Block>
 
