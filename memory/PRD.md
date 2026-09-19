@@ -147,3 +147,6 @@ Ver `/app/memory/test_credentials.md`.
 ## 2026-09 Home Hero: fotos reales
 - `Home.jsx`: HERO_PHOTOS reemplazadas por las 3 fotos reales del usuario (Hero Img_1/2/3.jpg de customer-assets) en orden izquierda→derecha, sustituyendo los placeholders de Pexels/Unsplash.
 - Verificado vía screenshot.
+
+## 2026-09 TripCard: campo Destino
+- `TripCard.jsx`: la línea inferior de cada card ahora muestra `trip.destination` ("Destino: ...") en vez de `trip.places`, tal como se edita en Admin → Editar viaje → campo "Destino".

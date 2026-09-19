@@ -80,9 +80,9 @@ export default function TripCard({ trip }) {
           )}
         </div>
 
-        {trip.places?.length > 0 ? (
-          <p className="text-[12px] text-text-sec leading-relaxed line-clamp-3 mb-4">
-            <span className="font-bold text-text-main">Lugares:</span> {trip.places.slice(0, 8).join(", ")}
+        {trip.destination ? (
+          <p className="text-[12px] text-text-sec leading-relaxed line-clamp-3 mb-4" data-testid={`trip-card-destination-${trip.id}`}>
+            <span className="font-bold text-text-main">Destino:</span> {trip.destination}
           </p>
         ) : (
           <p className="text-[12px] text-text-sec leading-relaxed line-clamp-3 mb-4">{trip.description}</p>
