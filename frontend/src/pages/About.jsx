@@ -5,9 +5,9 @@ import { TRIP_TYPES, TRIP_TYPE_DESCRIPTIONS } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
 
 const COLLAGE = [
-  "https://images.unsplash.com/photo-1631615230077-f5bd4e004fd5?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
-  "https://images.unsplash.com/photo-1758272959063-ef8a2114f807?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
-  "https://images.unsplash.com/photo-1587595431973-160d0d94add1?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/oh5y7bg7_Conocenos_1.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/drny2p54_Conocenos_2.jpg",
+  "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/rbp3latd_Conocenos_3.jpg",
 ];
 
 const FOUNDER_PHOTO =

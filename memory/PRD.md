@@ -177,3 +177,6 @@ Ver `/app/memory/test_credentials.md`.
 - `lib/tripStyle.js`: se agregó helper `EmojiIcon(emoji)` que envuelve un emoji en un componente compatible con `size`/`className` (drop-in replacement de los íconos lucide).
 - `TRIP_TYPES` ahora usa emojis que replican la maqueta "Chips Tipos de Viajes": Clásico 🏕️, Explora 🧭, Mochilero 🎒, Infinitur 90° 🏔️, 4 Elementos 🌿, Altruismo 🎖️, Confort 🏨. "A la Carta" conserva el ícono lucide `UtensilsCrossed` (no estaba en la maqueta).
 - Como todos los consumidores (`TripCard.jsx`, `TripDetail.jsx`, `About.jsx` Modalidades, `FilterChip` en `Trips.jsx`/`AllTrips.jsx`) ya usan `<Icon size={...}>` genérico, el cambio se propaga automáticamente sin tocar esos archivos.
+
+## 2026-09 Conócenos Hero: fotos reales
+- `About.jsx`: `COLLAGE` reemplazado por las 3 fotos reales (Conocenos_1/2/3.jpg): izquierda completa, derecha-arriba, derecha-abajo.
