@@ -188,3 +188,8 @@ Ver `/app/memory/test_credentials.md`.
 - Las imágenes originales tenían fondo blanco opaco + cuadro verde claro (no transparente), generando un "halo" blanco sobre la card crema (#F5F2EC).
 - Se procesaron las 4 imágenes con un chroma-key por luminancia (Python/PIL) para dejar solo el glifo verde oscuro con canal alfa transparente, guardadas en `/app/frontend/public/icons/` (grupos-chicos.png, itinerarios.png, conexion.png, un-guia.png).
 - `About.jsx` ahora referencia estos assets locales sin caja de fondo (`object-contain`), por lo que el glifo se funde directamente con el color de la card.
+
+## 2026-09 BUG FIX: FAQ admin no se reflejaba en "Lo que debes saber"
+- **Causa raíz**: `FAQ.jsx` usaba arreglos de preguntas hardcodeadas (fijas en el código) para los tabs "¿Cómo reservar?" y "Políticas de viaje", con un fuzzy-match débil (primeros 12 caracteres) contra `/api/faq` que casi nunca emparejaba con las preguntas reales del admin (datos sembrados totalmente distintos). Por eso editar en el panel no cambiaba nada visible.
+- **Fix**: se agregó campo `category` (reservar/politicas/general) a `FAQItem`/`FAQInput` en el backend; `GET /api/faq` acepta `?category=`; se migraron/sembraron 5 FAQs "reservar" + 6 "politicas" reales (`migrate_faq_categories()`, idempotente en startup). `CmsFaqList` en `FAQ.jsx` ahora consume `/faq?category=X` directamente y renderiza la pregunta/respuesta real de la DB (sin arreglos hardcodeados). `AdminFAQ.jsx` agrega selector de categoría (`data-testid="faq-category"`) con las 3 opciones.
+- **Validado por testing_agent** (iteration_13.json): 100% backend y frontend, edición en admin se refleja en vivo en ambos tabs públicos, flujo de alta/borrado de FAQ probado, regresión en otros tabs/secciones admin sin issues.

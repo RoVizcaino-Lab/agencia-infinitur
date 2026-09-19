@@ -1,0 +1,38 @@
+{
+  "summary": "Verified FAQ category linkage bug fix end-to-end. Backend GET /api/faq?category=reservar|politicas returns correctly seeded/categorized items; admin FAQ CRUD honours the new `category` field. On the frontend, admin FAQ modal exposes the 3-option `faq-category` select with labels ¿Cómo reservar?/Políticas de viaje/General; edits made in admin now propagate live to /lo-que-debes-saber → ¿Cómo reservar? and → Políticas de viaje tabs (previous bug fixed). Regression checks on other FAQ tabs (seguro, cancelacion) and other admin tabs (Viajes, Reservas, Galería, Videos, Testimonios) also pass with no errors.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "tests_performed": {
+    "TEST1_reservar_edit_propagates": "PASS - Edited FAQ 'Cuándo debo liquidar' Q+A appear live on public reservar tab; restored after.",
+    "TEST2_politicas_edit_propagates": "PASS - Edited 'coordinador de viaje' Q+A appear live on public politicas tab; restored after.",
+    "TEST3_new_faq_flow": "PASS - Created 'Pregunta de prueba QA' with category=reservar; visible in admin list with '¿Cómo reservar?' label and in public reservar tab. Cleaned up.",
+    "TEST4_regression_static_tabs": "PASS - faq-tab-seguro and faq-tab-cancelacion render without error.",
+    "TEST5_admin_sections_regression": "PASS - trips/reservations/gallery/videos/testimonials admin tabs load without error nodes.",
+    "backend_pytest": "6/6 PASS (test_faq_category.py: list, filter reservar, filter politicas, filter unknown empty, CRUD with category move, public endpoints healthy)"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_faq_category.py",
+    "/app/test_reports/pytest/iteration_13.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AdminFAQ.jsx (line 44): interpolates {CATEGORY_LABELS[f.category] || f.category} — works, but consider using shared constants module rather than duplicating labels between backend seed strings, AdminFAQ, and FAQ.jsx.",
+    "backend/server.py migrate_faq_categories: idempotent guard uses `count_documents({category:'reservar'}) == 0` — safe for now, but if admin later deletes all reservar FAQs they will be silently re-seeded on next restart. Consider a one-time flag document instead.",
+    "FAQ.jsx CmsFaqList returns null when faqs empty (line 252) — for admins who delete all category items this will hide the whole section silently on the public page. Consider a friendly empty state.",
+    "AdminFAQ.jsx uses window.confirm for delete; consider a proper confirmation dialog for consistency with other admin sections."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_faq_category.py (new)"
+  ],
+  "success_rate": { "backend": "100%", "frontend": "100%" },
+  "test_credentials": "admin@viajes.mx / Aventura2026! (already documented in /app/memory/test_credentials.md)",
+  "seed_data_creation": "Backend startup seeds 5 'reservar' + 6 'politicas' FAQs via migrate_faq_categories(). No manual seed needed. Test FAQ 'Pregunta de prueba QA' was created and cleaned up.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "FAQ category feature is fully working. Any future edit in admin FAQ that keeps category='reservar' or 'politicas' will show live on /lo-que-debes-saber under the corresponding tab. Accordion answer content is always in the DOM (CSS-collapsed), so text_content of cms-faq-{category} container includes both question and answer strings.",
+  "rca of the issue": "Original bug: FAQ.jsx used hardcoded question arrays fuzzy-matched against /api/faq answers, causing admin edits to never reflect publicly. Fix (validated): (a) added `category` field to FAQItem/FAQInput models with default 'general'; (b) GET /api/faq accepts ?category= filter; (c) migrate_faq_categories() seeds proper reservar/politicas FAQs on startup; (d) CmsFaqList in FAQ.jsx now fetches /faq?category=X and renders live DB question/answer directly. Verified via pytest CRUD + Playwright end-to-end edit→public visibility."
+}
