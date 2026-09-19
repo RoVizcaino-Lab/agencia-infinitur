@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api, { resolveImage } from "@/lib/api";
 import {
-  Calendar, Bus, Home, Star, Share2, MapPin,
+  Calendar, Share2, MapPin,
   Bed, Tent, Flame, Download, ChevronRight, Check,
 } from "lucide-react";
 import TripCard, { allDates } from "@/components/TripCard";
@@ -220,11 +220,11 @@ export default function TripDetail() {
             <Block divider>
               <h2 className="font-display text-[30px] text-text-main mb-5">¿Qué incluye?</h2>
               <div className="space-y-3">
-                <IncludeRow icon={Bus} title="Transporte" noBullet
+                <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/botu28q4_Icono%20Transporte.png" title="Transporte" noBullet
                   items={toList(trip.included_transport, DEFAULT_TRANSPORT)} />
-                <IncludeRow icon={Home} title="Hospedaje" noBullet
+                <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/vw0le6de_Icono%20Hospedaje.png" title="Hospedaje" noBullet
                   items={toList(trip.included_lodging, DEFAULT_LODGING)} />
-                <IncludeRow icon={Star} title="Coordinador Infinitur"
+                <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/ai6y54ch_Icono%20Coordinador.png" title="Coordinador Infinitur"
                   desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje" />
                 <IncludeRow icon={MapPin} title="Puntos de salida - CDMX" noBullet
                   items={toList(trip.departure_points, DEFAULT_DEPARTURE_POINTS)} />
@@ -387,12 +387,18 @@ function Block({ children, divider = false }) {
   );
 }
 
-function IncludeRow({ icon: Icon, title, desc, items, small = false, noBullet = false }) {
+function IncludeRow({ icon, title, desc, items, small = false, noBullet = false }) {
+  const isImg = typeof icon === "string";
+  const Icon = isImg ? null : icon;
   return (
     <div className="bg-white border border-[#E8E6E0] rounded-2xl p-5 flex gap-4 items-start">
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F0F7EA] text-green-700 flex items-center justify-center">
-        <Icon size={18} />
-      </div>
+      {isImg ? (
+        <img src={icon} alt="" className="flex-shrink-0 w-10 h-10 rounded-lg object-cover" />
+      ) : (
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F0F7EA] text-green-700 flex items-center justify-center">
+          <Icon size={18} />
+        </div>
+      )}
       <div>
         <div className={`font-display text-text-main ${small ? "text-base" : "text-[19px]"}`}>{title}</div>
         {desc && <div className="text-[13px] text-text-sec mt-1 leading-relaxed">{desc}</div>}

@@ -169,6 +169,10 @@ Ver `/app/memory/test_credentials.md`.
 ## 2026-09 Íconos de redes sociales reales (sección "¿Te gustó lo que viste?")
 - `Home.jsx`: los círculos de Instagram/Facebook/TikTok/YouTube ahora renderizan las imágenes reales provistas por el usuario (`<img>` con las URLs de customer-assets) en vez de íconos lucide + fondos de color manuales. Se removieron `TikTokGlyph`, imports `Instagram`/`Play`/`MapPin` no usados.
 
+## 2026-09 Íconos de "¿Qué incluye?": Transporte, Hospedaje, Coordinador
+- `TripDetail.jsx`: `IncludeRow` ahora acepta `icon` como URL de imagen (además de componente lucide) y renderiza `<img>` en vez de la caja de color + ícono lucide cuando es string.
+- Transporte, Hospedaje y "Coordinador Infinitur" usan las imágenes reales del usuario (Icono Transporte/Hospedaje/Coordinador.png). "Puntos de salida - CDMX" y "También incluye" conservan sus íconos lucide (MapPin/Check), no se solicitó cambiarlos.
+
 ## 2026-09 Íconos de "Tipos de viaje" (chips) en todo el sitio
 - `lib/tripStyle.js`: se agregó helper `EmojiIcon(emoji)` que envuelve un emoji en un componente compatible con `size`/`className` (drop-in replacement de los íconos lucide).
 - `TRIP_TYPES` ahora usa emojis que replican la maqueta "Chips Tipos de Viajes": Clásico 🏕️, Explora 🧭, Mochilero 🎒, Infinitur 90° 🏔️, 4 Elementos 🌿, Altruismo 🎖️, Confort 🏨. "A la Carta" conserva el ícono lucide `UtensilsCrossed` (no estaba en la maqueta).
