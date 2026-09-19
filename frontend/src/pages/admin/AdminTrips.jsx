@@ -142,7 +142,9 @@ function TripModal({ data, onClose, onSave }) {
             <Inp label="Fecha fin" type="date" v={f.end_date} onChange={(v) => set("end_date", v)} />
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Inp label="Precio base (desde)" type="number" v={f.price} onChange={(v) => set("price", v)} />
+            {(f.pricing_tiers || []).length === 0 && (
+              <Inp label="Precio base (desde)" type="number" v={f.price} onChange={(v) => set("price", v)} />
+            )}
             <Inp label="Min grupo" type="number" v={f.group_min} onChange={(v) => set("group_min", v)} />
             <Inp label="Max grupo" type="number" v={f.group_max} onChange={(v) => set("group_max", v)} />
           </div>

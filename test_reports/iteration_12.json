@@ -1,0 +1,22 @@
+{
+  "summary": "E2E test of AdminTrips form + public detail + Home featured. Created TEST_Viaje_Auto with 3 pricing tiers (Campamento 3900, Cabaña 4900, Hotel 5900) via admin UI, dates 2026-02-05..2026-02-08, transport/lodging texts, Featured+Active. Verified: (1) no 'Días' field in form, no 'Días' column in admin table; (2) backend stored duration_days=4 auto-calculated, price=3900 (min tier), 3 pricing_tiers, included_transport/included_lodging as entered, featured=true; (3) public /destinos/:id shows all 3 tier labels and prices in 'Costo por viajero', hero 'desde $3,900', ¿Qué incluye? Transporte/Hospedaje cards render captured texts; (4) Home 'Próximos destinos' shows TEST trip at position 0 (soonest date 2026-02-05); (5) edit removed Hotel tier and public detail updates ($5,900 no longer visible, 2 tiers remain); (6) delete removed trip (GET returns 404). Catalog restored to original 10 trips.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Minor observation (not in scope): after navigating from /admin to /destinos/:id and back to /admin, the AdminDashboard shows the login screen again. Auth token is stored in localStorage (not the httpOnly cookie) and may be lost/read incorrectly on remount. Non-blocking, but worth verifying in AdminDashboard.jsx auth-guard.",
+    "AdminTrips.jsx still exposes 'Precio base (desde)' input in the form; when tiers are provided it is ignored (recomputed to min tier). Consider hiding/disabling this input when tiers.length>0 to avoid admin confusion (current behavior is correct, just UX)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin@viajes.mx / Aventura2026!",
+  "seed_data_creation": "None retained. TEST_Viaje_Auto created & fully deleted.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 4 requested feature areas verified end-to-end (pricing_tiers, no Días field, included_transport/included_lodging on detail, featured ordering on Home). Cleanup verified via API 404. Only side observation: admin session appears to be lost after visiting public routes; if reported in the future, inspect AdminDashboard auth-guard (localStorage token handling)."
+}

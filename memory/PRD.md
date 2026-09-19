@@ -127,3 +127,10 @@ Ver `/app/memory/test_credentials.md`.
 - `FAQ.jsx`: fondo de página blanco, título del hero sin acentos de color (todo oscuro), tabs inactivos en crema #F2F0EB y activo en blanco con borde verde.
 - Todas las secciones (Cómo reservar, Seguro médico, Cancelaciones, Políticas de viaje) usan la misma paleta: tarjetas y acordeones crema #F2F0EB, íconos en cuadro verde claro (#D6EDCA) con glifo verde, chevrones naranjas.
 - Banner final de WhatsApp en verde claro con glifo oficial de WhatsApp y botón rectangular redondeado.
+
+## 2026-06 Admin: tarifas por hospedaje y campos editables
+- `AdminTrips.jsx`: nuevo `PricingTiersField` (filas Tipo de hospedaje + Precio + ícono) que alimenta `pricing_tiers`; el precio "desde" se calcula como el menor tier (el input de precio base solo aparece si no hay tiers).
+- Se eliminó el campo "Días" del formulario y la columna "Días" de la tabla; `duration_days` se calcula de fecha inicio/fin.
+- Nuevos campos por viaje `included_transport` e `included_lodging` (backend TripBase + admin) que alimentan las tarjetas Transporte/Hospedaje de "¿Qué incluye?" en el detalle.
+- Home: los destacados de "Próximos destinos" se ordenan por fecha más próxima (así un viaje recién marcado como Destacado aparece).
+- Validado por testing_agent: iteration_12.json — backend y frontend 100%, sin issues.
