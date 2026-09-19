@@ -24,6 +24,11 @@ const fmtDateRange = (startIso, endIso) => {
 
 const fmtMoney = (n) => new Intl.NumberFormat("es-MX", { maximumFractionDigits: 0 }).format(n || 0);
 
+export const allDates = (trip) => [
+  { start_date: trip.start_date, end_date: trip.end_date },
+  ...(trip.extra_dates || []),
+].filter((d) => d.start_date).sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+
 export default function TripCard({ trip }) {
   const style = getTripTypeStyle(trip.trip_type);
   const Icon = style.icon;
@@ -61,9 +66,18 @@ export default function TripCard({ trip }) {
         </div>
 
         <h3 className="font-display text-[21px] leading-tight text-text-main mb-1.5">{trip.title}</h3>
-        <div className="flex items-center gap-1.5 text-[11px] text-text-sec mb-2.5">
-          <Calendar size={11} className="text-orange-500" />
-          <span>{fmtDateRange(trip.start_date, trip.end_date)}</span>
+        <div className="space-y-0.5 mb-2.5" data-testid={`trip-card-dates-${trip.id}`}>
+          {allDates(trip).slice(0, 3).map((d, i) => (
+            <div key={`${d.start_date}-${i}`} className="flex items-center gap-1.5 text-[11px] text-text-sec">
+              <Calendar size={11} className={i === 0 ? "text-orange-500" : "text-orange-500/50"} />
+              <span>{fmtDateRange(d.start_date, d.end_date)}</span>
+            </div>
+          ))}
+          {allDates(trip).length > 3 && (
+            <div className="text-[11px] text-green-700 font-semibold pl-[18px]">
+              +{allDates(trip).length - 3} fechas más
+            </div>
+          )}
         </div>
 
         {trip.places?.length > 0 ? (

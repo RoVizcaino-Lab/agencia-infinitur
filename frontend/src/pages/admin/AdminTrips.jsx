@@ -8,7 +8,7 @@ import { TRIP_TYPES } from "@/lib/tripStyle";
 
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
-  start_date: "", end_date: "", price: 0, currency: "MXN", pricing_tiers: [],
+  start_date: "", end_date: "", price: 0, currency: "MXN", pricing_tiers: [], extra_dates: [],
   included_transport: "", included_lodging: "", departure_points: "",
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
   trip_type: "Clásico", region: "Nacional",
@@ -34,6 +34,7 @@ export default function AdminTrips() {
       const basePrice = tiers.length > 0 ? Math.min(...tiers.map((t) => t.price)) : Number(data.price);
       const payload = {
         ...data,
+        extra_dates: (data.extra_dates || []).filter((d) => d.start_date && d.end_date),
         pricing_tiers: tiers,
         duration_days: days,
         price: basePrice,
@@ -137,10 +138,15 @@ function TripModal({ data, onClose, onSave }) {
           </div>
           <Inp label="Descripción corta" v={f.description} onChange={(v) => set("description", v)} required textarea />
           <Inp label="Descripción larga" v={f.long_description} onChange={(v) => set("long_description", v)} textarea rows={4} />
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Inp label="Fecha inicio" type="date" v={f.start_date} onChange={(v) => set("start_date", v)} />
-            <Inp label="Fecha fin" type="date" v={f.end_date} onChange={(v) => set("end_date", v)} />
-          </div>
+          <DatesField
+            dates={[{ start_date: f.start_date || "", end_date: f.end_date || "" }, ...(f.extra_dates || [])]}
+            onChange={(list) => setF({
+              ...f,
+              start_date: list[0]?.start_date || "",
+              end_date: list[0]?.end_date || "",
+              extra_dates: list.slice(1),
+            })}
+          />
           <div className="grid sm:grid-cols-3 gap-4">
             {(f.pricing_tiers || []).length === 0 && (
               <Inp label="Precio base (desde)" type="number" v={f.price} onChange={(v) => set("price", v)} />
@@ -188,6 +194,49 @@ function TripModal({ data, onClose, onSave }) {
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function DatesField({ dates, onChange }) {
+  const update = (i, key, value) => onChange(dates.map((d, idx) => idx === i ? { ...d, [key]: value } : d));
+  const add = () => onChange([...dates, { start_date: "", end_date: "" }]);
+  const remove = (i) => onChange(dates.filter((_, idx) => idx !== i));
+
+  return (
+    <div data-testid="dates-field" className="border border-[#E5E0D8] rounded-xl p-4 bg-bone/40">
+      <div className="flex items-center justify-between mb-3">
+        <label className="text-xs uppercase tracking-wider text-ink/60">Fechas de salida</label>
+        <button type="button" onClick={add} data-testid="add-trip-date"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-terracotta">
+          <Plus size={14} /> Agregar fecha
+        </button>
+      </div>
+      <div className="space-y-3">
+        {dates.map((d, i) => (
+          <div key={`date-${i}`} className="grid sm:grid-cols-[1fr_1fr_40px] gap-2 items-end">
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">Fecha inicio</label>
+              <input data-testid={`date-start-${i}`} type="date" value={d.start_date || ""}
+                required={i === 0}
+                onChange={(e) => update(i, "start_date", e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-[#E5E0D8] bg-white text-sm" />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">Fecha fin</label>
+              <input data-testid={`date-end-${i}`} type="date" value={d.end_date || ""}
+                required={i === 0}
+                onChange={(e) => update(i, "end_date", e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-[#E5E0D8] bg-white text-sm" />
+            </div>
+            {i > 0 ? (
+              <button type="button" onClick={() => remove(i)} data-testid={`remove-date-${i}`}
+                className="p-2 text-ink/50 hover:text-destructive"><Trash2 size={16} /></button>
+            ) : <span />}
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-ink/50 mt-3">La primera fecha es la salida principal (se usa para orden y filtros).</p>
     </div>
   );
 }

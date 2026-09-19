@@ -5,7 +5,7 @@ import {
   Calendar, Bus, Home, Star, Share2, MapPin,
   Bed, Tent, Flame, Download, ChevronRight,
 } from "lucide-react";
-import TripCard from "@/components/TripCard";
+import TripCard, { allDates } from "@/components/TripCard";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { getTripTypeStyle, getRegionStyle } from "@/lib/tripStyle";
 import { waLink, WA_DISPLAY } from "@/lib/whatsapp";
@@ -37,6 +37,25 @@ const DEFAULT_EXCLUDED = [
   "Seguro Médico",
   "Actividades Extras",
 ];
+
+const rangeDays = (startIso, endIso) => {
+  try {
+    const s = new Date(startIso);
+    const e = endIso ? new Date(endIso) : s;
+    return Math.max(1, Math.round((e - s) / 86400000) + 1);
+  } catch { return 1; }
+};
+
+const DEFAULT_DEPARTURE_POINTS = [
+  "Metro Chabacano",
+  "Metro Cuatro Caminos",
+  "Metro Taxqueña",
+];
+
+const departurePoints = (raw) => {
+  if (!raw) return DEFAULT_DEPARTURE_POINTS;
+  return raw.split(/\n|·|;|,/).map((s) => s.trim()).filter(Boolean);
+};
 
 export default function TripDetail() {
   const { id } = useParams();
@@ -132,7 +151,7 @@ export default function TripDetail() {
           </h1>
           <div className="inline-flex items-center gap-2 text-sm text-white/90">
             <Calendar size={14} className="text-orange-400" />
-            <span className="font-medium">{fmtDateRange(trip.start_date, trip.end_date, trip.duration_days)}</span>
+            <span className="font-medium">{fmtDateRange(trip.start_date, trip.end_date, rangeDays(trip.start_date, trip.end_date))}</span>
           </div>
         </div>
       </section>
@@ -148,6 +167,21 @@ export default function TripDetail() {
               <p className="text-text-sec leading-relaxed whitespace-pre-line">
                 {trip.long_description || trip.description}
               </p>
+            </Block>
+
+            {/* Fechas de salida */}
+            <Block divider>
+              <h2 className="font-display text-[30px] text-text-main mb-5">Fechas de salida</h2>
+              <ul className="space-y-2.5" data-testid="trip-dates-list">
+                {allDates(trip).map((d, i) => (
+                  <li key={`${d.start_date}-${i}`} className="flex items-center gap-3 bg-white border border-[#E8E6E0] rounded-xl px-4 py-3">
+                    <Calendar size={15} className="text-orange-500 flex-shrink-0" />
+                    <span className="text-[15px] text-text-main font-medium">
+                      {fmtDateRange(d.start_date, d.end_date, rangeDays(d.start_date, d.end_date))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </Block>
 
             {/* Lugares */}
@@ -175,7 +209,7 @@ export default function TripDetail() {
                 <IncludeRow icon={Star} title="Coordinador Infinitur"
                   desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje." />
                 <IncludeRow icon={MapPin} title="Puntos de salida - CDMX"
-                  desc={trip.departure_points || "Metro Chabacano, Metro Cuatro Caminos y Metro Taxqueña. Confirmamos el punto y la hora exacta antes de la salida."} />
+                  items={departurePoints(trip.departure_points)} />
                 {(trip.included || []).filter((it) => !["transporte", "hospedaje", "guía", "guia"].some((k) => it.toLowerCase().includes(k))).map((extra) => (
                   <IncludeRow key={extra} icon={Star} title={extra} desc="" small />
                 ))}
@@ -335,7 +369,7 @@ function Block({ children, divider = false }) {
   );
 }
 
-function IncludeRow({ icon: Icon, title, desc, small = false }) {
+function IncludeRow({ icon: Icon, title, desc, items, small = false }) {
   return (
     <div className="bg-white border border-[#E8E6E0] rounded-2xl p-5 flex gap-4 items-start">
       <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F0F7EA] text-green-700 flex items-center justify-center">
@@ -344,6 +378,16 @@ function IncludeRow({ icon: Icon, title, desc, small = false }) {
       <div>
         <div className={`font-display text-text-main ${small ? "text-base" : "text-[19px]"}`}>{title}</div>
         {desc && <div className="text-[13px] text-text-sec mt-1 leading-relaxed">{desc}</div>}
+        {items?.length > 0 && (
+          <ul className="mt-2 space-y-1.5">
+            {items.map((it) => (
+              <li key={it} className="flex items-start gap-2 text-[13px] text-text-sec leading-relaxed">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-600 mt-1.5 flex-shrink-0" />
+                {it}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

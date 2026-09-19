@@ -135,3 +135,9 @@ Ver `/app/memory/test_credentials.md`.
 - Home: los destacados de "Próximos destinos" se ordenan por fecha más próxima (así un viaje recién marcado como Destacado aparece).
 - Validado por testing_agent: iteration_12.json — backend y frontend 100%, sin issues.
 - Nuevo campo `departure_points` (backend + admin "Incluye · Puntos de salida CDMX (descripción)") que se renderiza como tarjeta "Puntos de salida - CDMX" en ¿Qué incluye? del detalle.
+
+## 2026-06 Múltiples fechas de salida y puntos de salida en lista
+- Backend: nuevo campo `extra_dates: [{start_date, end_date}]` en TripBase.
+- Admin: componente `DatesField` con botón "+ Agregar fecha" (filas Fecha inicio/Fecha fin, la primera es la salida principal usada para orden y filtros; testids add-trip-date, date-start-{i}, date-end-{i}, remove-date-{i}).
+- Front: `TripCard` lista hasta 3 fechas (+N fechas más) y el detalle tiene sección "Fechas de salida" con todas, cada una con su duración calculada del rango.
+- "Puntos de salida - CDMX" se renderiza como lista con viñetas (se separa por saltos de línea, coma, punto y coma o ·).

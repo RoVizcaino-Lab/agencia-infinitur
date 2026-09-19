@@ -161,6 +161,7 @@ class TripBase(BaseModel):
     included_transport: Optional[str] = ""
     included_lodging: Optional[str] = ""
     departure_points: Optional[str] = ""
+    extra_dates: List[dict] = []  # [{start_date: "2026-07-10", end_date: "2026-07-13"}]
     itinerary_pdf_url: Optional[str] = ""
 
 
