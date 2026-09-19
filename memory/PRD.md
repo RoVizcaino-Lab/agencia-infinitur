@@ -183,3 +183,8 @@ Ver `/app/memory/test_credentials.md`.
 
 ## 2026-09 Íconos "Lo que nos hace diferentes"
 - `About.jsx`: `DIFERENCIAS` ahora usa imágenes reales (Icono Grupos chicos/Itinerarios/Conexión/Un guia.png) en vez de íconos lucide (Users/Route/Heart/Star). Se removieron los imports no usados.
+
+## 2026-09 Fix: contorno blanco en íconos de "Lo que nos hace diferentes"
+- Las imágenes originales tenían fondo blanco opaco + cuadro verde claro (no transparente), generando un "halo" blanco sobre la card crema (#F5F2EC).
+- Se procesaron las 4 imágenes con un chroma-key por luminancia (Python/PIL) para dejar solo el glifo verde oscuro con canal alfa transparente, guardadas en `/app/frontend/public/icons/` (grupos-chicos.png, itinerarios.png, conexion.png, un-guia.png).
+- `About.jsx` ahora referencia estos assets locales sin caja de fondo (`object-contain`), por lo que el glifo se funde directamente con el color de la card.
