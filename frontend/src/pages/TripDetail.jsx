@@ -120,14 +120,14 @@ export default function TripDetail() {
       </div>
 
       {/* PHOTO HERO */}
-      <section data-testid="trip-hero" className="relative h-[300px] sm:h-[380px] lg:h-[420px] overflow-hidden">
+      <section data-testid="trip-hero" className="relative min-h-[320px] sm:min-h-[400px] lg:min-h-[440px] overflow-hidden">
         <img
           src={resolveImage(trip.cover_image)}
           alt={trip.title}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" />
-        <div className="relative h-full max-w-[1440px] mx-auto px-5 lg:px-20 flex flex-col justify-end pb-8">
+        <div className="relative min-h-[320px] sm:min-h-[400px] lg:min-h-[440px] max-w-[1440px] mx-auto px-5 lg:px-20 flex flex-col justify-end pt-24 pb-10">
           <div className="absolute top-6 right-5 lg:right-20">
             <div className="bg-[#F5F2EC] rounded-2xl px-6 py-4 text-center shadow-floating">
               <div className="text-[11px] text-text-sec">desde</div>
@@ -149,9 +149,13 @@ export default function TripDetail() {
           <h1 className="font-display text-4xl sm:text-5xl lg:text-[52px] text-white leading-[1.05] tracking-tight mb-2.5 max-w-3xl">
             {trip.title}
           </h1>
-          <div className="inline-flex items-center gap-2 text-sm text-white/90">
-            <Calendar size={14} className="text-orange-400" />
-            <span className="font-medium">{fmtDateRange(trip.start_date, trip.end_date, rangeDays(trip.start_date, trip.end_date))}</span>
+          <div className="space-y-1" data-testid="trip-hero-dates">
+            {allDates(trip).map((d, i) => (
+              <div key={`hero-${d.start_date}-${i}`} className="flex items-center gap-2 text-sm text-white/90">
+                <Calendar size={14} className="text-orange-400 flex-shrink-0" />
+                <span className="font-medium">{fmtDateRange(d.start_date, d.end_date, rangeDays(d.start_date, d.end_date))}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>

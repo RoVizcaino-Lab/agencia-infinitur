@@ -141,3 +141,5 @@ Ver `/app/memory/test_credentials.md`.
 - Admin: componente `DatesField` con botón "+ Agregar fecha" (filas Fecha inicio/Fecha fin, la primera es la salida principal usada para orden y filtros; testids add-trip-date, date-start-{i}, date-end-{i}, remove-date-{i}).
 - Front: `TripCard` lista hasta 3 fechas (+N fechas más) y el detalle tiene sección "Fechas de salida" con todas, cada una con su duración calculada del rango.
 - "Puntos de salida - CDMX" se renderiza como lista con viñetas (se separa por saltos de línea, coma, punto y coma o ·).
+- Home "Próximos destinos" ahora usa el mismo `TripCard` (se eliminó `DestinoCard` de Home.jsx) para que también liste todas las fechas.
+- El banner del detalle lista todas las fechas del viaje (`trip-hero-dates`) y su alto pasó a min-height para crecer sin recortar.

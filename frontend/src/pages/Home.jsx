@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Calendar, MapPin, MessageCircle, Instagram, Play } from "lucide-react";
 import api, { resolveImage } from "@/lib/api";
 import MonthCarousel from "@/components/MonthCarousel";
+import TripCard from "@/components/TripCard";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
 
 const fmtMoney = (n) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
@@ -78,7 +79,7 @@ export default function Home() {
             <span className="w-2 h-2 rounded-full bg-orange-500" /> Salidas desde CDMX
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {destacados.map((t) => <DestinoCard key={t.id} trip={t} />)}
+            {destacados.map((t) => <TripCard key={t.id} trip={t} />)}
           </div>
           <div className="flex justify-center mt-10">
             <Link to="/destinos" data-testid="ver-todos-destinos" className="btn-orange-outline inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">
@@ -225,45 +226,6 @@ function WhatsAppGlyph({ size = 20 }) {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.01c-.24.68-1.4 1.3-1.93 1.35-.53.05-1.02.07-1.76-.2-.43-.15-.99-.34-1.71-.66-3-1.3-4.96-4.33-5.11-4.53-.15-.2-1.22-1.62-1.22-3.09 0-1.47.77-2.19 1.04-2.49.27-.3.59-.37.79-.37.2 0 .39.01.56.02.18.01.42-.07.66.5.24.58.83 2.02.9 2.17.07.15.12.32.02.52-.1.2-.19.32-.39.54-.2.22-.31.32-.44.52-.13.2-.28.42-.13.68.15.26.66 1.1 1.41 1.78.97.87 1.77 1.15 2.02 1.28.25.13.44.11.61-.07.17-.18.71-.83.9-1.11.19-.28.38-.23.64-.14.26.09 1.64.78 1.92.92.28.14.47.21.54.33.07.12.07.71-.17 1.39Z" />
     </svg>
-  );
-}
-
-function DestinoCard({ trip }) {  return (
-    <Link to={`/destinos/${trip.id}`} data-testid={`destino-card-${trip.id}`}
-      className="block bg-white border border-[#E8E6E0] rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-floating transition-all duration-300">
-      <div className="aspect-[3/2] overflow-hidden">
-        <img src={resolveImage(trip.cover_image)} alt={trip.title} loading="lazy"
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-      </div>
-      <div className="p-5">
-        <div className="flex gap-2 mb-3 flex-wrap">
-          <span className="tag-orange px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-            Infinitur 90°
-          </span>
-          <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-            trip.country === "México" ? "bg-green-100 text-green-700" : "bg-blue-50 text-blue-700"
-          }`}>
-            {trip.country === "México" ? "Nacional" : "Internacional"}
-          </span>
-        </div>
-        <h3 className="font-display text-2xl text-text-main leading-tight">{trip.title}</h3>
-        <div className="text-xs text-text-sec flex items-center gap-1 mt-1.5">
-          <Calendar size={11} /> {fmtRange(trip.start_date, trip.end_date)}
-        </div>
-        <div className="text-sm text-text-sec mt-3 line-clamp-2">
-          <span className="font-semibold text-text-main">Lugares:</span> {trip.destination}
-        </div>
-        <div className="flex items-end justify-between mt-4 pt-4 border-t border-[#E8E6E0]">
-          <div>
-            <div className="text-[10px] uppercase tracking-widest text-text-sec">desde</div>
-            <div className="font-display text-2xl text-green-700 font-bold">{fmtMoney(trip.price)}<span className="text-xs text-text-sec ml-1">MXN</span></div>
-          </div>
-          <span className="btn-orange-outline inline-flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-bold">
-            Ver más <ArrowRight size={12} />
-          </span>
-        </div>
-      </div>
-    </Link>
   );
 }
 
