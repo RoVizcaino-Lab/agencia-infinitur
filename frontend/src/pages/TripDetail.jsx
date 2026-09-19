@@ -57,11 +57,6 @@ const DEFAULT_LODGING = [
   "Cabaña u Hotel con todos los servicios (sujeto a disponibilidad)",
 ];
 
-const DEFAULT_COORDINATOR = [
-  "Tu guía que ya te conoce antes de salir",
-  "Presente en cada momento del viaje",
-];
-
 const DEFAULT_DEPARTURE_POINTS = [
   "Metro Chabacano",
   "Metro Cuatro Caminos",
@@ -225,16 +220,16 @@ export default function TripDetail() {
             <Block divider>
               <h2 className="font-display text-[30px] text-text-main mb-5">¿Qué incluye?</h2>
               <div className="space-y-3">
-                <IncludeRow icon={Bus} title="Transporte"
+                <IncludeRow icon={Bus} title="Transporte" noBullet
                   items={toList(trip.included_transport, DEFAULT_TRANSPORT)} />
-                <IncludeRow icon={Home} title="Hospedaje"
+                <IncludeRow icon={Home} title="Hospedaje" noBullet
                   items={toList(trip.included_lodging, DEFAULT_LODGING)} />
                 <IncludeRow icon={Star} title="Coordinador Infinitur"
-                  items={DEFAULT_COORDINATOR} />
-                <IncludeRow icon={MapPin} title="Puntos de salida - CDMX"
+                  desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje" />
+                <IncludeRow icon={MapPin} title="Puntos de salida - CDMX" noBullet
                   items={toList(trip.departure_points, DEFAULT_DEPARTURE_POINTS)} />
                 {extras.length > 0 && (
-                  <IncludeRow icon={Check} title="También incluye" items={extras} />
+                  <IncludeRow icon={Check} title="También incluye" noBullet items={extras} />
                 )}
               </div>
             </Block>
@@ -392,7 +387,7 @@ function Block({ children, divider = false }) {
   );
 }
 
-function IncludeRow({ icon: Icon, title, desc, items, small = false }) {
+function IncludeRow({ icon: Icon, title, desc, items, small = false, noBullet = false }) {
   return (
     <div className="bg-white border border-[#E8E6E0] rounded-2xl p-5 flex gap-4 items-start">
       <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F0F7EA] text-green-700 flex items-center justify-center">
@@ -405,7 +400,7 @@ function IncludeRow({ icon: Icon, title, desc, items, small = false }) {
           <ul className="mt-2 space-y-1.5">
             {items.map((it) => (
               <li key={it} className="flex items-start gap-2 text-[13px] text-text-sec leading-relaxed">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-600 mt-1.5 flex-shrink-0" />
+                {!noBullet && <span className="w-1.5 h-1.5 rounded-full bg-green-600 mt-1.5 flex-shrink-0" />}
                 {it}
               </li>
             ))}
