@@ -169,9 +169,9 @@ export default function TripDetail() {
               <h2 className="font-display text-[30px] text-text-main mb-5">¿Qué incluye?</h2>
               <div className="space-y-3">
                 <IncludeRow icon={Bus} title="Transporte"
-                  desc="Autobús o Camioneta Sprinter con seguro de viajero, A/C, DVD, MP3 y operadores calificados." />
+                  desc={trip.included_transport || "Autobús o Camioneta Sprinter con seguro de viajero, A/C, DVD, MP3 y operadores calificados."} />
                 <IncludeRow icon={Home} title="Hospedaje"
-                  desc="Campamento con baños y regaderas. Cabaña u Hotel con todos los servicios (sujeto a disponibilidad)." />
+                  desc={trip.included_lodging || "Campamento con baños y regaderas. Cabaña u Hotel con todos los servicios (sujeto a disponibilidad)."} />
                 <IncludeRow icon={Star} title="Coordinador Infinitur"
                   desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje." />
                 {(trip.included || []).filter((it) => !["transporte", "hospedaje", "guía", "guia"].some((k) => it.toLowerCase().includes(k))).map((extra) => (

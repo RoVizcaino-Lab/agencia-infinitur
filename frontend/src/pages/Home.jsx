@@ -34,7 +34,9 @@ export default function Home() {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
-    api.get("/trips?featured=true").then((r) => setDestacados(r.data.slice(0, 4)));
+    api.get("/trips?featured=true").then((r) => setDestacados(
+      [...r.data].sort((a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0)).slice(0, 4)
+    ));
     api.get("/videos").then((r) => setVideos(r.data.slice(0, 3))).catch(() => setVideos([]));
   }, []);
 

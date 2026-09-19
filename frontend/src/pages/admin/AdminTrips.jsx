@@ -8,7 +8,8 @@ import { TRIP_TYPES } from "@/lib/tripStyle";
 
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
-  duration_days: 1, start_date: "", end_date: "", price: 0, currency: "MXN",
+  start_date: "", end_date: "", price: 0, currency: "MXN", pricing_tiers: [],
+  included_transport: "", included_lodging: "",
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
   trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
@@ -24,10 +25,18 @@ export default function AdminTrips() {
 
   const save = async (data) => {
     try {
+      const tiers = (data.pricing_tiers || [])
+        .filter((t) => t.label && Number(t.price) > 0)
+        .map((t) => ({ label: t.label, price: Number(t.price), icon: t.icon || "bed" }));
+      const days = (data.start_date && data.end_date)
+        ? Math.max(1, Math.round((new Date(data.end_date) - new Date(data.start_date)) / 86400000) + 1)
+        : Number(data.duration_days) || 1;
+      const basePrice = tiers.length > 0 ? Math.min(...tiers.map((t) => t.price)) : Number(data.price);
       const payload = {
         ...data,
-        duration_days: Number(data.duration_days),
-        price: Number(data.price),
+        pricing_tiers: tiers,
+        duration_days: days,
+        price: basePrice,
         group_min: Number(data.group_min),
         group_max: Number(data.group_max),
         spots_left: Number(data.spots_left),
@@ -67,7 +76,6 @@ export default function AdminTrips() {
               <th className="px-5 py-3 font-medium">Título</th>
               <th className="px-5 py-3 font-medium">Destino</th>
               <th className="px-5 py-3 font-medium">Salida</th>
-              <th className="px-5 py-3 font-medium">Días</th>
               <th className="px-5 py-3 font-medium">Precio</th>
               <th className="px-5 py-3 font-medium">Estado</th>
               <th className="px-5 py-3"></th>
@@ -79,7 +87,6 @@ export default function AdminTrips() {
                 <td className="px-5 py-3 font-medium text-ink">{t.title}</td>
                 <td className="px-5 py-3 text-ink/70">{t.destination}</td>
                 <td className="px-5 py-3 text-ink/70">{t.start_date}</td>
-                <td className="px-5 py-3">{t.duration_days}</td>
                 <td className="px-5 py-3">${t.price}</td>
                 <td className="px-5 py-3">
                   {t.featured && <span className="text-xs px-2 py-0.5 rounded bg-terracotta/10 text-terracotta mr-1">Destacado</span>}
@@ -91,7 +98,7 @@ export default function AdminTrips() {
                 </td>
               </tr>
             ))}
-            {trips.length === 0 && <tr><td colSpan="7" className="text-center py-10 text-ink/50">No hay viajes</td></tr>}
+            {trips.length === 0 && <tr><td colSpan="6" className="text-center py-10 text-ink/50">No hay viajes</td></tr>}
           </tbody>
         </table>
       </div>
@@ -130,16 +137,17 @@ function TripModal({ data, onClose, onSave }) {
           </div>
           <Inp label="Descripción corta" v={f.description} onChange={(v) => set("description", v)} required textarea />
           <Inp label="Descripción larga" v={f.long_description} onChange={(v) => set("long_description", v)} textarea rows={4} />
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Inp label="Días" type="number" v={f.duration_days} onChange={(v) => set("duration_days", v)} />
+          <div className="grid sm:grid-cols-2 gap-4">
             <Inp label="Fecha inicio" type="date" v={f.start_date} onChange={(v) => set("start_date", v)} />
             <Inp label="Fecha fin" type="date" v={f.end_date} onChange={(v) => set("end_date", v)} />
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Inp label="Precio" type="number" v={f.price} onChange={(v) => set("price", v)} />
+            <Inp label="Precio base (desde)" type="number" v={f.price} onChange={(v) => set("price", v)} />
             <Inp label="Min grupo" type="number" v={f.group_min} onChange={(v) => set("group_min", v)} />
             <Inp label="Max grupo" type="number" v={f.group_max} onChange={(v) => set("group_max", v)} />
           </div>
+
+          <PricingTiersField tiers={f.pricing_tiers || []} onChange={(v) => set("pricing_tiers", v)} />
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Tipo de viaje</label>
@@ -163,7 +171,9 @@ function TripModal({ data, onClose, onSave }) {
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
           <PdfUploadField label="Itinerario PDF" value={f.itinerary_pdf_url} onChange={(v) => set("itinerary_pdf_url", v)} testId="trip-pdf" />
           <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
-          <Inp label="Incluye (una por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} />
+          <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport" />
+          <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging" />
+          <Inp label="Incluye · otros (uno por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} />
           <Inp label="No incluye (una por línea)" v={f.excluded} onChange={(v) => set("excluded", v)} textarea rows={2} />
           <div className="flex gap-6">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.featured} onChange={(e) => set("featured", e.target.checked)} /> Destacado</label>
@@ -174,6 +184,60 @@ function TripModal({ data, onClose, onSave }) {
             <button type="button" onClick={onClose} className="px-6 py-2.5 rounded-full border border-[#E5E0D8]">Cancelar</button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function PricingTiersField({ tiers, onChange }) {
+  const update = (i, key, value) => {
+    const next = tiers.map((t, idx) => idx === i ? { ...t, [key]: value } : t);
+    onChange(next);
+  };
+  const add = () => onChange([...tiers, { label: "", price: 0, icon: "bed" }]);
+  const remove = (i) => onChange(tiers.filter((_, idx) => idx !== i));
+
+  return (
+    <div data-testid="pricing-tiers-field" className="border border-[#E5E0D8] rounded-xl p-4 bg-bone/40">
+      <div className="flex items-center justify-between mb-3">
+        <label className="text-xs uppercase tracking-wider text-ink/60">Costo por viajero (tipos de hospedaje)</label>
+        <button type="button" onClick={add} data-testid="add-pricing-tier"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-terracotta">
+          <Plus size={14} /> Agregar hospedaje
+        </button>
+      </div>
+      {tiers.length === 0 && (
+        <p className="text-xs text-ink/50">Sin tipos de hospedaje. Se mostrará el precio base como "Por persona".</p>
+      )}
+      <div className="space-y-3">
+        {tiers.map((t, i) => (
+          <div key={`tier-${i}`} className="grid sm:grid-cols-[1fr_140px_130px_40px] gap-2 items-end">
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">Tipo de hospedaje</label>
+              <input data-testid={`tier-label-${i}`} value={t.label || ""}
+                onChange={(e) => update(i, "label", e.target.value)}
+                placeholder="Campamento / Cabaña / Hotel"
+                className="w-full px-3 py-2 rounded-lg border border-[#E5E0D8] bg-white text-sm" />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">Precio</label>
+              <input data-testid={`tier-price-${i}`} type="number" value={t.price ?? 0}
+                onChange={(e) => update(i, "price", Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg border border-[#E5E0D8] bg-white text-sm" />
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">Ícono</label>
+              <select data-testid={`tier-icon-${i}`} value={t.icon || "bed"}
+                onChange={(e) => update(i, "icon", e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-[#E5E0D8] bg-white text-sm">
+                <option value="bed">Hotel / Cabaña</option>
+                <option value="tent">Campamento</option>
+              </select>
+            </div>
+            <button type="button" onClick={() => remove(i)} data-testid={`remove-tier-${i}`}
+              className="p-2 text-ink/50 hover:text-destructive"><Trash2 size={16} /></button>
+          </div>
+        ))}
       </div>
     </div>
   );

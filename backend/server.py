@@ -158,6 +158,8 @@ class TripBase(BaseModel):
     region: str = "Nacional"  # Nacional | Internacional
     places: List[str] = []  # ["Maruata", "Palma Sola", ...]
     pricing_tiers: List[dict] = []  # [{label: "Campamento", price: 3900, icon: "tent"}]
+    included_transport: Optional[str] = ""
+    included_lodging: Optional[str] = ""
     itinerary_pdf_url: Optional[str] = ""
 
 
