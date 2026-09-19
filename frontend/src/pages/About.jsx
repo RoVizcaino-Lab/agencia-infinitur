@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Users, Route, Heart, Star } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { TRIP_TYPES, TRIP_TYPE_DESCRIPTIONS } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
@@ -15,22 +15,22 @@ const FOUNDER_PHOTO =
 
 const DIFERENCIAS = [
   {
-    icon: Users,
+    icon: "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/b3gc5dpd_Icono%20Grupos%20chicos.png",
     title: ["Grupos chicos,", "conexiones grandes"],
     desc: "Máximo 15 personas por salida. Conoces a todos por nombre antes de llegar. No hay anonimato — hay comunidad real que cambia la experiencia completa.",
   },
   {
-    icon: Route,
+    icon: "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/r51k8t6q_Icono%20Itinerarios.png",
     title: ["Itinerarios diseñados", "a mano"],
     desc: "Cada ruta evita las trampas turísticas. Visitamos lugares que el guía conoce y ama. Sin prisa, sin relleno, sin lo que ya viste en todas las fotos de Instagram.",
   },
   {
-    icon: Heart,
+    icon: "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/5utmr1sj_Icono%20Conexi%C3%B3n.png",
     title: ["Conexión real con", "el destino"],
     desc: "Convivimos con familias locales, dormimos en hospedajes con alma y caminamos rutas que no salen en ninguna guía. Auténtico por diseño.",
   },
   {
-    icon: Star,
+    icon: "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/s8hidh1r_Icono%20Un%20guia.png",
     title: ["Un guía que te trata", "como amigo"],
     desc: "No es un empleado de turno. Diseñó el viaje, lo conoce de memoria y estará contigo en cada paso. Responde mensajes y conoce tus intereses antes de salir.",
   },
@@ -134,8 +134,8 @@ export default function About() {
           <div className="grid sm:grid-cols-2 gap-5">
             {DIFERENCIAS.map((d) => (
               <div key={d.title.join(" ")} className="bg-[#F5F2EC] rounded-2xl p-6">
-                <div className="text-green-700 mb-4">
-                  <d.icon size={22} strokeWidth={1.8} />
+                <div className="mb-4">
+                  <img src={d.icon} alt="" className="w-11 h-11 rounded-lg object-cover" />
                 </div>
                 <h3 className="font-display text-[21px] text-text-main leading-tight mb-3">
                   {d.title[0]}<br />{d.title[1]}

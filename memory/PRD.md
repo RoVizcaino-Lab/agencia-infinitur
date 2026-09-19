@@ -180,3 +180,6 @@ Ver `/app/memory/test_credentials.md`.
 
 ## 2026-09 Conócenos Hero: fotos reales
 - `About.jsx`: `COLLAGE` reemplazado por las 3 fotos reales (Conocenos_1/2/3.jpg): izquierda completa, derecha-arriba, derecha-abajo.
+
+## 2026-09 Íconos "Lo que nos hace diferentes"
+- `About.jsx`: `DIFERENCIAS` ahora usa imágenes reales (Icono Grupos chicos/Itinerarios/Conexión/Un guia.png) en vez de íconos lucide (Users/Route/Heart/Star). Se removieron los imports no usados.
