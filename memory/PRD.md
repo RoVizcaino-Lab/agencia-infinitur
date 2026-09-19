@@ -134,3 +134,4 @@ Ver `/app/memory/test_credentials.md`.
 - Nuevos campos por viaje `included_transport` e `included_lodging` (backend TripBase + admin) que alimentan las tarjetas Transporte/Hospedaje de "¿Qué incluye?" en el detalle.
 - Home: los destacados de "Próximos destinos" se ordenan por fecha más próxima (así un viaje recién marcado como Destacado aparece).
 - Validado por testing_agent: iteration_12.json — backend y frontend 100%, sin issues.
+- Nuevo campo `departure_points` (backend + admin "Incluye · Puntos de salida CDMX (descripción)") que se renderiza como tarjeta "Puntos de salida - CDMX" en ¿Qué incluye? del detalle.

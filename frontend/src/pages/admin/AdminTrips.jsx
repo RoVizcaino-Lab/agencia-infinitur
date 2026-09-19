@@ -9,7 +9,7 @@ import { TRIP_TYPES } from "@/lib/tripStyle";
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
   start_date: "", end_date: "", price: 0, currency: "MXN", pricing_tiers: [],
-  included_transport: "", included_lodging: "",
+  included_transport: "", included_lodging: "", departure_points: "",
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
   trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
@@ -175,6 +175,7 @@ function TripModal({ data, onClose, onSave }) {
           <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
           <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport" />
           <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging" />
+          <Inp label="Incluye · Puntos de salida CDMX (descripción)" v={f.departure_points} onChange={(v) => set("departure_points", v)} textarea rows={2} testId="trip-departure-points" />
           <Inp label="Incluye · otros (uno por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} />
           <Inp label="No incluye (una por línea)" v={f.excluded} onChange={(v) => set("excluded", v)} textarea rows={2} />
           <div className="flex gap-6">

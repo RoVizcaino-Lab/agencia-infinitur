@@ -160,6 +160,7 @@ class TripBase(BaseModel):
     pricing_tiers: List[dict] = []  # [{label: "Campamento", price: 3900, icon: "tent"}]
     included_transport: Optional[str] = ""
     included_lodging: Optional[str] = ""
+    departure_points: Optional[str] = ""
     itinerary_pdf_url: Optional[str] = ""
 
 

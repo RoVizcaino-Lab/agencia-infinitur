@@ -174,6 +174,8 @@ export default function TripDetail() {
                   desc={trip.included_lodging || "Campamento con baños y regaderas. Cabaña u Hotel con todos los servicios (sujeto a disponibilidad)."} />
                 <IncludeRow icon={Star} title="Coordinador Infinitur"
                   desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje." />
+                <IncludeRow icon={MapPin} title="Puntos de salida - CDMX"
+                  desc={trip.departure_points || "Metro Chabacano, Metro Cuatro Caminos y Metro Taxqueña. Confirmamos el punto y la hora exacta antes de la salida."} />
                 {(trip.included || []).filter((it) => !["transporte", "hospedaje", "guía", "guia"].some((k) => it.toLowerCase().includes(k))).map((extra) => (
                   <IncludeRow key={extra} icon={Star} title={extra} desc="" small />
                 ))}
