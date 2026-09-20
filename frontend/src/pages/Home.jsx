@@ -169,16 +169,16 @@ export default function Home() {
             <p className="font-display text-3xl font-bold text-text-main">¿Te gustó lo que viste?</p>
             <p className="text-text-sec mt-1">Síguenos en nuestras redes para no perderte ninguna salida.</p>
             <div className="flex justify-center gap-4 mt-5">
-              <SocialIcon href="https://instagram.com/marinerus.infinitur" label="Instagram">
+              <SocialIcon href="https://www.instagram.com/viaja_con_marinerus" label="Instagram">
                 <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/drdfcdar_Icono%20Instagram.png" alt="Instagram" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
               <SocialIcon href="https://www.facebook.com/marinerus.infinitur" label="Facebook">
                 <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/r0xpxbqw_Icono%20Facebook.png" alt="Facebook" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
-              <SocialIcon href="https://www.tiktok.com/@marinerus.infinitur" label="TikTok">
+              <SocialIcon href="https://www.tiktok.com/@viaja_con_marinerus" label="TikTok">
                 <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/sif3hiha_Icono%20Tick-Tock.png" alt="TikTok" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
-              <SocialIcon href="https://youtube.com/@marinerus.infinitur" label="YouTube">
+              <SocialIcon href="https://www.youtube.com/@viaja_con_marinerus" label="YouTube">
                 <img src="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/vpsvjprh_Icono%20Youtube.png" alt="YouTube" className="w-12 h-12 rounded-full shadow-floating hover:scale-110 transition-transform" />
               </SocialIcon>
             </div>

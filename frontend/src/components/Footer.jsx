@@ -16,10 +16,10 @@ const debesSaber = [
 ];
 
 const socials = [
-  { href: "https://instagram.com/marinerus.infinitur", icon: Instagram, label: "Instagram" },
+  { href: "https://www.instagram.com/viaja_con_marinerus", icon: Instagram, label: "Instagram" },
   { href: "https://www.facebook.com/marinerus.infinitur", icon: Facebook, label: "Facebook" },
-  { href: "https://www.tiktok.com/@marinerus.infinitur", icon: TikTokIcon, label: "TikTok" },
-  { href: "https://youtube.com/@marinerus.infinitur", icon: Youtube, label: "YouTube" },
+  { href: "https://www.tiktok.com/@viaja_con_marinerus", icon: TikTokIcon, label: "TikTok" },
+  { href: "https://www.youtube.com/@viaja_con_marinerus", icon: Youtube, label: "YouTube" },
 ];
 
 export default function Footer() {
