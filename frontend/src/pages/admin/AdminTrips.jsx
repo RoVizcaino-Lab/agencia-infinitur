@@ -3,7 +3,6 @@ import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
-import PdfUploadField from "@/components/PdfUploadField";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 
 const empty = {
@@ -13,7 +12,7 @@ const empty = {
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
   trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
-  itinerary_pdf_url: "",
+  itinerary_pdf_url: "", itinerary_text: "",
 };
 
 export default function AdminTrips() {
@@ -177,7 +176,7 @@ function TripModal({ data, onClose, onSave }) {
             onChange={(v) => set("places", v.split(",").map((s) => s.trim()).filter(Boolean))} textarea rows={2} />
           <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
-          <PdfUploadField label="Itinerario PDF" value={f.itinerary_pdf_url} onChange={(v) => set("itinerary_pdf_url", v)} testId="trip-pdf" />
+          <Inp label="Itinerario (texto; respeta los saltos de línea)" v={f.itinerary_text} onChange={(v) => set("itinerary_text", v)} textarea rows={8} testId="trip-itinerary-text" />
           <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
           <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport" />
           <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging" />

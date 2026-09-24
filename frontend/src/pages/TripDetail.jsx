@@ -3,8 +3,9 @@ import { useParams, Link } from "react-router-dom";
 import api, { resolveImage } from "@/lib/api";
 import {
   Calendar, Share2, MapPin,
-  Bed, Tent, Flame, Download, ChevronRight, Check,
+  Bed, Tent, Flame, ChevronRight, Check, ClipboardList,
 } from "lucide-react";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import TripCard, { allDates } from "@/components/TripCard";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { getTripTypeStyle, getRegionStyle } from "@/lib/tripStyle";
@@ -249,25 +250,28 @@ export default function TripDetail() {
 
             {/* Itinerario */}
             <Block divider>
-              <h2 className="font-display text-[30px] text-text-main mb-3">Itinerario</h2>
-              <p className="text-text-sec mb-5">
-                El itinerario completo con todos los detalles del viaje está disponible para descargar.
-              </p>
-              {trip.itinerary_pdf_url ? (
-                <a href={resolveImage(trip.itinerary_pdf_url)} target="_blank" rel="noreferrer"
-                  data-testid="download-itinerary"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-[#E8E6E0] hover:border-green-700 hover:text-green-700 font-semibold text-sm transition-colors">
-                  <Download size={16} className="text-orange-500" /> Descargar itinerario PDF
-                </a>
+              <h2 className="font-display text-[30px] text-text-main mb-5">Itinerario</h2>
+              {trip.itinerary_text?.trim() ? (
+                <Accordion type="single" collapsible data-testid="trip-itinerary"
+                  className="bg-white border border-[#E8E6E0] rounded-2xl px-5">
+                  <AccordionItem value="itinerary" className="border-b-0">
+                    <AccordionTrigger className="text-[15px] font-semibold text-text-main hover:no-underline hover:text-green-700">
+                      <span className="flex items-center gap-3">
+                        <span className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F0F7EA] text-green-700 flex items-center justify-center">
+                          <ClipboardList size={18} />
+                        </span>
+                        Ver itinerario del viaje
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-text-sec text-[15px] leading-relaxed whitespace-pre-line">
+                      {trip.itinerary_text}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               ) : (
-                <span
-                  data-testid="download-itinerary"
-                  aria-disabled="true"
-                  title="El itinerario PDF estará disponible pronto"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-[#E8E6E0] text-text-sec/60 font-semibold text-sm cursor-not-allowed"
-                >
-                  <Download size={16} className="text-orange-500/50" /> Descargar itinerario PDF
-                </span>
+                <p className="text-text-sec" data-testid="trip-itinerary-empty">
+                  El itinerario detallado estará disponible pronto.
+                </p>
               )}
             </Block>
           </div>

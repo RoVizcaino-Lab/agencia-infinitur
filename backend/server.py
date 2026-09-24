@@ -163,6 +163,7 @@ class TripBase(BaseModel):
     departure_points: Optional[str] = ""
     extra_dates: List[dict] = []  # [{start_date: "2026-07-10", end_date: "2026-07-13"}]
     itinerary_pdf_url: Optional[str] = ""
+    itinerary_text: Optional[str] = ""  # itinerario en texto libre (desplegable en el detalle)
 
 
 class Trip(TripBase):
@@ -593,6 +594,8 @@ async def _migrate_trip_fields():
             ]
         if "itinerary_pdf_url" not in t:
             update["itinerary_pdf_url"] = ""
+        if "itinerary_text" not in t:
+            update["itinerary_text"] = ""
         if update:
             await db.trips.update_one({"id": t["id"]}, {"$set": update})
 

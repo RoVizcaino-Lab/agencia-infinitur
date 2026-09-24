@@ -19,9 +19,9 @@ export default function Navbar() {
       <div className="max-w-[1440px] mx-auto px-5 lg:px-20 flex items-center justify-between h-20">
         <Link to="/" data-testid="logo-link" className="flex items-center gap-3 h-full py-2">
           <img
-            src="/infinitur-mark.png"
+            src="/infinitur-logo-color.jpg"
             alt="INFINITUR"
-            className="h-full w-auto object-contain flex-shrink-0"
+            className="h-full w-auto object-contain flex-shrink-0 bg-white rounded-xl p-0.5"
           />
           <span className="leading-none text-orange-500">
             <span

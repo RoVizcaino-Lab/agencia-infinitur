@@ -29,9 +29,9 @@ export default function Footer() {
         <div className="md:col-span-5 space-y-5">
           <div data-testid="footer-logo" className="flex items-center gap-3 h-16">
             <img
-              src="/infinitur-mark.png"
+              src="/infinitur-logo-color.jpg"
               alt="INFINITUR"
-              className="h-full w-auto object-contain flex-shrink-0"
+              className="h-full w-auto object-contain flex-shrink-0 bg-white rounded-xl p-0.5"
             />
             <span className="leading-none text-white">
               <span
