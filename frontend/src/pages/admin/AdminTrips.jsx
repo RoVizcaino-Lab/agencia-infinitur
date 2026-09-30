@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
 import ItineraryDaysEditor from "@/components/ItineraryDaysEditor";
+import { Switch } from "@/components/ui/switch";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 
 const empty = {
@@ -14,6 +15,8 @@ const empty = {
   trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
   itinerary_pdf_url: "", itinerary_text: "", itinerary_days: [],
+  show_transport: true, show_lodging: true, show_coordinator: true, show_departure_points: true,
+  show_included_extras: true, know_before: "", show_know_before: true, reservation_price: null,
 };
 
 export default function AdminTrips() {
@@ -41,6 +44,7 @@ export default function AdminTrips() {
         group_min: Number(data.group_min),
         group_max: Number(data.group_max),
         spots_left: Number(data.spots_left),
+        reservation_price: data.reservation_price === "" || data.reservation_price == null ? null : Number(data.reservation_price),
         included: typeof data.included === "string" ? data.included.split("\n").filter(Boolean) : data.included,
         excluded: typeof data.excluded === "string" ? data.excluded.split("\n").filter(Boolean) : data.excluded,
         images: typeof data.images === "string" ? data.images.split("\n").filter(Boolean) : data.images,
@@ -160,6 +164,8 @@ function TripModal({ data, onClose, onSave }) {
           </div>
 
           <PricingTiersField tiers={f.pricing_tiers || []} onChange={(v) => set("pricing_tiers", v)} />
+          <Inp label='Precio de reservación ("Reserva con:"; vacío = no se muestra)' type="number" v={f.reservation_price ?? ""}
+            onChange={(v) => set("reservation_price", v)} testId="trip-reservation-price" />
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Tipo de viaje</label>
@@ -187,10 +193,18 @@ function TripModal({ data, onClose, onSave }) {
           />
           <Inp label="Itinerario en texto (solo se muestra si el viaje no tiene días)" v={f.itinerary_text} onChange={(v) => set("itinerary_text", v)} textarea rows={5} testId="trip-itinerary-text" />
           <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
-          <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport" />
-          <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging" />
-          <Inp label="Incluye · Puntos de salida CDMX (descripción)" v={f.departure_points} onChange={(v) => set("departure_points", v)} textarea rows={2} testId="trip-departure-points" />
-          <Inp label="Incluye · otros (uno por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} />
+          <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport"
+            toggle={{ checked: f.show_transport !== false, onChange: (c) => set("show_transport", c), testId: "toggle-transport" }} />
+          <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging"
+            toggle={{ checked: f.show_lodging !== false, onChange: (c) => set("show_lodging", c), testId: "toggle-lodging" }} />
+          <ToggleRow label="Incluye · Coordinador Infinitur (texto fijo)" checked={f.show_coordinator !== false}
+            onChange={(c) => set("show_coordinator", c)} testId="toggle-coordinator" />
+          <Inp label="Incluye · Puntos de salida CDMX (descripción)" v={f.departure_points} onChange={(v) => set("departure_points", v)} textarea rows={2} testId="trip-departure-points"
+            toggle={{ checked: f.show_departure_points !== false, onChange: (c) => set("show_departure_points", c), testId: "toggle-departure-points" }} />
+          <Inp label="Incluye · También incluye (uno por línea)" v={f.included} onChange={(v) => set("included", v)} textarea rows={3} testId="trip-included"
+            toggle={{ checked: f.show_included_extras !== false, onChange: (c) => set("show_included_extras", c), testId: "toggle-included" }} />
+          <Inp label="Incluye · Lo que debes de saber (uno por línea)" v={f.know_before} onChange={(v) => set("know_before", v)} textarea rows={3} testId="trip-know-before"
+            toggle={{ checked: f.show_know_before !== false, onChange: (c) => set("show_know_before", c), testId: "toggle-know-before" }} />
           <Inp label="No incluye (una por línea)" v={f.excluded} onChange={(v) => set("excluded", v)} textarea rows={2} />
           <div className="flex gap-6">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={f.featured} onChange={(e) => set("featured", e.target.checked)} /> Destacado</label>
@@ -303,10 +317,36 @@ function PricingTiersField({ tiers, onChange }) {
   );
 }
 
-function Inp({ label, v, onChange, type = "text", textarea = false, rows = 2, required, testId }) {
+// On/off switch shown next to a field label ("Visible" / "Oculto")
+function VisibilitySwitch({ checked, onChange, testId }) {
   return (
-    <div>
-      <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">{label}</label>
+    <label className="inline-flex items-center gap-2 text-xs text-ink/60 cursor-pointer">
+      {checked ? "Visible" : "Oculto"}
+      <Switch checked={checked} onCheckedChange={onChange} data-testid={testId}
+        className="data-[state=checked]:bg-terracotta" />
+    </label>
+  );
+}
+
+// A block with no editable text, only the visibility switch
+function ToggleRow({ label, checked, onChange, testId }) {
+  return (
+    <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-[#E5E0D8] bg-bone/40 ${checked ? "" : "opacity-60"}`}>
+      <span className="text-xs uppercase tracking-wider text-ink/60">{label}</span>
+      <VisibilitySwitch checked={checked} onChange={onChange} testId={testId} />
+    </div>
+  );
+}
+
+// `toggle` (optional): { checked, onChange, testId } adds a "Visible/Oculto" switch next to the label
+// to show/hide this block on the trip page.
+function Inp({ label, v, onChange, type = "text", textarea = false, rows = 2, required, testId, toggle }) {
+  return (
+    <div className={toggle && !toggle.checked ? "opacity-60" : ""}>
+      <div className="flex items-center justify-between gap-3 mb-1">
+        <label className="text-xs uppercase tracking-wider text-ink/60 block">{label}</label>
+        {toggle && <VisibilitySwitch checked={toggle.checked} onChange={toggle.onChange} testId={toggle.testId} />}
+      </div>
       {textarea ? (
         <textarea data-testid={testId} value={v || ""} required={required} rows={rows}
           onChange={(e) => onChange(e.target.value)}

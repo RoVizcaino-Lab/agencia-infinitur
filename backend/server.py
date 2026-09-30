@@ -184,6 +184,7 @@ class TripBase(BaseModel):
     start_date: str  # ISO date string
     end_date: str
     price: float
+    reservation_price: Optional[float] = Field(None, ge=0)  # "Reserva con:" box; hidden when empty
     currency: str = "MXN"
     group_min: int = 10
     group_max: int = 15
@@ -202,6 +203,14 @@ class TripBase(BaseModel):
     pricing_tiers: List[dict] = []  # [{label: "Campamento", price: 3900, icon: "tent"}]
     included_transport: Optional[str] = ""
     included_lodging: Optional[str] = ""
+    # "¿Qué incluye?" section toggles. Default True so existing trips look the same.
+    show_transport: bool = True
+    show_lodging: bool = True
+    show_coordinator: bool = True  # "Coordinador Infinitur" (fixed text)
+    show_departure_points: bool = True
+    show_included_extras: bool = True  # "También incluye" (from `included`)
+    know_before: Optional[str] = ""  # "Lo que debes de saber", one item per line
+    show_know_before: bool = True
     departure_points: Optional[str] = ""
     extra_dates: List[dict] = []  # [{start_date: "2026-07-10", end_date: "2026-07-13"}]
     itinerary_pdf_url: Optional[str] = ""

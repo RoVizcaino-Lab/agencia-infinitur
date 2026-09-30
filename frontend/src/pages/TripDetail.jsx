@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api, { resolveImage } from "@/lib/api";
 import {
   Calendar, Share2, MapPin,
-  Bed, Tent, Flame, ChevronRight, Check,
+  Bed, Tent, Flame, ChevronRight, Check, Info,
 } from "lucide-react";
 import TripCard, { allDates } from "@/components/TripCard";
 import TripItinerary from "@/components/TripItinerary";
@@ -101,6 +101,8 @@ export default function TripDetail() {
   const extras = (trip.included || []).filter(
     (it) => !["transporte", "hospedaje", "guía", "guia", "coordinador"].some((k) => it.toLowerCase().includes(k))
   );
+  // One item per line only (not commas), so sentences with commas stay whole
+  const knowBefore = (trip.know_before || "").split("\n").map((s) => s.trim()).filter(Boolean);
 
   const waMsg = `Hola! Me interesa reservar el viaje "${trip.title}" (${fmtDateRange(trip.start_date, trip.end_date, trip.duration_days)}). ¿Me ayudan con los detalles?`;
   const shareTrip = async () => {
@@ -221,16 +223,27 @@ export default function TripDetail() {
             <Block divider>
               <h2 className="font-display text-[30px] text-text-main mb-5">¿Qué incluye?</h2>
               <div className="space-y-3">
-                <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/botu28q4_Icono%20Transporte.png" title="Transporte" noBullet
-                  items={toList(trip.included_transport, DEFAULT_TRANSPORT)} />
-                <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/vw0le6de_Icono%20Hospedaje.png" title="Hospedaje" noBullet
-                  items={toList(trip.included_lodging, DEFAULT_LODGING)} />
-                <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/ai6y54ch_Icono%20Coordinador.png" title="Coordinador Infinitur"
-                  desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje" />
-                <IncludeRow icon={MapPin} title="Puntos de salida - CDMX" noBullet
-                  items={toList(trip.departure_points, DEFAULT_DEPARTURE_POINTS)} />
-                {extras.length > 0 && (
+                {trip.show_transport !== false && (
+                  <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/botu28q4_Icono%20Transporte.png" title="Transporte" noBullet
+                    items={toList(trip.included_transport, DEFAULT_TRANSPORT)} />
+                )}
+                {trip.show_lodging !== false && (
+                  <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/vw0le6de_Icono%20Hospedaje.png" title="Hospedaje" noBullet
+                    items={toList(trip.included_lodging, DEFAULT_LODGING)} />
+                )}
+                {trip.show_coordinator !== false && (
+                  <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/ai6y54ch_Icono%20Coordinador.png" title="Coordinador Infinitur"
+                    desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje" />
+                )}
+                {trip.show_departure_points !== false && (
+                  <IncludeRow icon={MapPin} title="Puntos de salida - CDMX" noBullet
+                    items={toList(trip.departure_points, DEFAULT_DEPARTURE_POINTS)} />
+                )}
+                {trip.show_included_extras !== false && extras.length > 0 && (
                   <IncludeRow icon={Check} title="También incluye" noBullet items={extras} />
+                )}
+                {trip.show_know_before !== false && knowBefore.length > 0 && (
+                  <IncludeRow icon={Info} title="Lo que debes de saber" noBullet items={knowBefore} />
                 )}
               </div>
             </Block>
@@ -302,6 +315,16 @@ export default function TripDetail() {
                   Hospedaje en hotel o cabaña sujeto a disponibilidad. Todos los precios en {trip.currency || "MXN"}.
                 </p>
               </div>
+
+              {/* Reserva con */}
+              {trip.reservation_price > 0 && (
+                <div className="border border-[#E8E6E0] rounded-2xl p-5 flex items-center justify-between gap-3" data-testid="trip-reservation">
+                  <span className="font-display text-[19px] text-text-main font-bold">Reserva con:</span>
+                  <span className="font-display text-[19px] text-text-main font-bold whitespace-nowrap">
+                    {fmtMoney(trip.reservation_price)} <span className="text-[13px] font-sans font-semibold text-text-sec">{trip.currency || "MXN"}</span>
+                  </span>
+                </div>
+              )}
 
               {/* Formas de pago */}
               <div className="border border-[#E8E6E0] rounded-2xl p-5">
