@@ -10,8 +10,9 @@ import { toast } from "sonner";
  *  - onChange: (url) => void
  *  - label: optional label
  *  - testId: optional data-testid prefix
+ *  - allowUrl: show the "paste a URL" input (default true); false = upload only
  */
-export default function ImageUploadField({ value, onChange, label = "Imagen", testId = "img-upload" }) {
+export default function ImageUploadField({ value, onChange, label = "Imagen", testId = "img-upload", allowUrl = true }) {
   const ref = useRef(null);
   const [busy, setBusy] = useState(false);
 
@@ -36,7 +37,7 @@ export default function ImageUploadField({ value, onChange, label = "Imagen", te
 
   return (
     <div>
-      <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">{label}</label>
+      {label && <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">{label}</label>}
       <div className="flex items-start gap-3 flex-wrap">
         {fullUrl && (
           <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-[#E5E0D8] bg-bone flex-shrink-0">
@@ -53,14 +54,16 @@ export default function ImageUploadField({ value, onChange, label = "Imagen", te
           </div>
         )}
         <div className="flex-1 min-w-0 space-y-2">
-          <input
-            type="text"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="Pega una URL o sube un archivo"
-            data-testid={`${testId}-url`}
-            className="w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone focus:outline-none focus:border-orange-400 text-sm"
-          />
+          {allowUrl && (
+            <input
+              type="text"
+              value={value || ""}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder="Pega una URL o sube un archivo"
+              data-testid={`${testId}-url`}
+              className="w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone focus:outline-none focus:border-orange-400 text-sm"
+            />
+          )}
           <input
             ref={ref}
             type="file"

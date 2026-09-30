@@ -3,6 +3,7 @@ import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
+import ItineraryDaysEditor from "@/components/ItineraryDaysEditor";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 
 const empty = {
@@ -12,7 +13,7 @@ const empty = {
   group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
   trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
-  itinerary_pdf_url: "", itinerary_text: "",
+  itinerary_pdf_url: "", itinerary_text: "", itinerary_days: [],
 };
 
 export default function AdminTrips() {
@@ -43,6 +44,10 @@ export default function AdminTrips() {
         included: typeof data.included === "string" ? data.included.split("\n").filter(Boolean) : data.included,
         excluded: typeof data.excluded === "string" ? data.excluded.split("\n").filter(Boolean) : data.excluded,
         images: typeof data.images === "string" ? data.images.split("\n").filter(Boolean) : data.images,
+        itinerary_days: (data.itinerary_days || []).map((d) => ({
+          ...d,
+          stops: (d.stops || []).map((s) => ({ ...s, images: (s.images || []).filter(Boolean) })),
+        })),
       };
       if (data.id) await api.put(`/admin/trips/${data.id}`, payload);
       else await api.post("/admin/trips", payload);
@@ -176,7 +181,11 @@ function TripModal({ data, onClose, onSave }) {
             onChange={(v) => set("places", v.split(",").map((s) => s.trim()).filter(Boolean))} textarea rows={2} />
           <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
-          <Inp label="Itinerario (texto; respeta los saltos de línea)" v={f.itinerary_text} onChange={(v) => set("itinerary_text", v)} textarea rows={8} testId="trip-itinerary-text" />
+          <ItineraryDaysEditor
+            days={f.itinerary_days || []}
+            update={(fn) => setF((prev) => ({ ...prev, itinerary_days: fn(prev.itinerary_days || []) }))}
+          />
+          <Inp label="Itinerario en texto (solo se muestra si el viaje no tiene días)" v={f.itinerary_text} onChange={(v) => set("itinerary_text", v)} textarea rows={5} testId="trip-itinerary-text" />
           <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
           <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport" />
           <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging" />

@@ -157,6 +157,20 @@ class LoginInput(BaseModel):
     password: str
 
 
+class ItineraryStop(BaseModel):
+    title: str = ""
+    description: str = ""
+    images: List[str] = []  # /api/files/<id> URLs from /admin/upload
+
+
+class ItineraryDay(BaseModel):
+    # Day and stop numbers come from their position in the list, so they are not stored.
+    title: str = ""
+    description: str = ""
+    note: str = ""  # optional footnote, e.g. "El itinerario puede cambiar por el clima"
+    stops: List[ItineraryStop] = []
+
+
 class TripBase(BaseModel):
     title: str
     destination: str
@@ -173,7 +187,7 @@ class TripBase(BaseModel):
     spots_left: int = 15
     cover_image: str
     images: List[str] = []
-    itinerary: List[dict] = []  # [{day: 1, title, description}]
+    itinerary: List[dict] = []  # DEPRECATED: leftover seed data (wrong for real trips); not shown or edited. Use itinerary_days.
     included: List[str] = []
     excluded: List[str] = []
     featured: bool = False
@@ -188,7 +202,8 @@ class TripBase(BaseModel):
     departure_points: Optional[str] = ""
     extra_dates: List[dict] = []  # [{start_date: "2026-07-10", end_date: "2026-07-13"}]
     itinerary_pdf_url: Optional[str] = ""
-    itinerary_text: Optional[str] = ""  # itinerario en texto libre (desplegable en el detalle)
+    itinerary_text: Optional[str] = ""  # fallback: free text shown only when itinerary_days is empty
+    itinerary_days: List[ItineraryDay] = []
 
 
 class Trip(TripBase):

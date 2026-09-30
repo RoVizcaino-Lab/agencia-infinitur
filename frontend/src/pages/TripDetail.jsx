@@ -3,10 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import api, { resolveImage } from "@/lib/api";
 import {
   Calendar, Share2, MapPin,
-  Bed, Tent, Flame, ChevronRight, Check, ClipboardList,
+  Bed, Tent, Flame, ChevronRight, Check,
 } from "lucide-react";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import TripCard, { allDates } from "@/components/TripCard";
+import TripItinerary from "@/components/TripItinerary";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { getTripTypeStyle, getRegionStyle } from "@/lib/tripStyle";
 import { waLink, WA_DISPLAY } from "@/lib/whatsapp";
@@ -251,23 +251,13 @@ export default function TripDetail() {
             {/* Itinerario */}
             <Block divider>
               <h2 className="font-display text-[30px] text-text-main mb-5">Itinerario</h2>
-              {trip.itinerary_text?.trim() ? (
-                <Accordion type="single" collapsible data-testid="trip-itinerary"
-                  className="bg-white border border-[#E8E6E0] rounded-2xl px-5">
-                  <AccordionItem value="itinerary" className="border-b-0">
-                    <AccordionTrigger className="text-[15px] font-semibold text-text-main hover:no-underline hover:text-green-700">
-                      <span className="flex items-center gap-3">
-                        <span className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F0F7EA] text-green-700 flex items-center justify-center">
-                          <ClipboardList size={18} />
-                        </span>
-                        Ver itinerario del viaje
-                      </span>
-                    </AccordionTrigger>
-                    <AccordionContent className="text-text-sec text-[15px] leading-relaxed whitespace-pre-line">
-                      {trip.itinerary_text}
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+              {trip.itinerary_days?.length > 0 ? (
+                <TripItinerary days={trip.itinerary_days} />
+              ) : trip.itinerary_text?.trim() ? (
+                <div data-testid="trip-itinerary"
+                  className="bg-white border border-[#E8E6E0] rounded-2xl p-5 sm:p-6 text-text-sec text-[15px] leading-relaxed whitespace-pre-line">
+                  {trip.itinerary_text}
+                </div>
               ) : (
                 <p className="text-text-sec" data-testid="trip-itinerary-empty">
                   El itinerario detallado estará disponible pronto.
