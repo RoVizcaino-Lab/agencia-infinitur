@@ -1,8 +1,12 @@
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Info, Expand } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { resolveImage } from "@/lib/api";
+import { hasCoords } from "@/lib/geo";
 import PhotoLightbox from "@/components/PhotoLightbox";
+
+// Leaflet is only downloaded for trips that actually have coordinates
+const ItineraryMap = lazy(() => import("@/components/ItineraryMap"));
 
 /**
  * Day-by-day itinerary: one tab per day, numbered stops with photos,
@@ -19,8 +23,19 @@ export default function TripItinerary({ days }) {
     if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // Map shows only the active day's stops; hidden when none of them has coordinates
+  const dayStops = days[Number(active)]?.stops || [];
+  const showMap = dayStops.some(hasCoords);
+
   return (
     <Tabs ref={topRef} value={active} onValueChange={setActive} data-testid="trip-itinerary-days" className="scroll-mt-28">
+      {showMap && (
+        <div className="mb-5">
+          <Suspense fallback={<div className="h-[260px] sm:h-[340px] rounded-2xl bg-[#EFEAE1]" />}>
+            <ItineraryMap stops={dayStops} />
+          </Suspense>
+        </div>
+      )}
       <div className="overflow-x-auto -mx-1 px-1 pb-1">
         <TabsList className="h-auto bg-transparent p-0 gap-2 justify-start">
           {days.map((_, i) => (

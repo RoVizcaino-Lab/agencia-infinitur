@@ -1,9 +1,21 @@
 import { Plus, Trash2, ArrowUp, ArrowDown, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
 import { resolveImage } from "@/lib/api";
+import { hasCoords } from "@/lib/geo";
+import StopLocationField from "@/components/StopLocationField";
 
 const emptyDay = () => ({ title: "", description: "", note: "", stops: [] });
-const emptyStop = () => ({ title: "", description: "", images: [] });
+const emptyStop = () => ({ title: "", description: "", images: [], lat: null, lng: null });
+
+// Closest stop of the same day that already has a location (previous ones first):
+// the location map starts there instead of showing all of Mexico.
+const nearestLocated = (stops, j) => {
+  for (let d = 1; d < stops.length; d++) {
+    if (hasCoords(stops[j - d])) return stops[j - d];
+    if (hasCoords(stops[j + d])) return stops[j + d];
+  }
+  return null;
+};
 
 const move = (list, from, to) => {
   if (to < 0 || to >= list.length) return list;
@@ -80,6 +92,12 @@ export default function ItineraryDaysEditor({ days, update }) {
                       images={stop.images || []}
                       update={(fn) => setStop(i, j, (s) => ({ ...s, images: fn(s.images || []) }))}
                       testId={`stop-img-${i}-${j}`}
+                    />
+                    <StopLocationField
+                      value={{ lat: stop.lat, lng: stop.lng }}
+                      hint={nearestLocated(day.stops, j)}
+                      onChange={({ lat, lng }) => setStop(i, j, (s) => ({ ...s, lat, lng }))}
+                      testId={`stop-loc-${i}-${j}`}
                     />
                   </div>
                 </div>

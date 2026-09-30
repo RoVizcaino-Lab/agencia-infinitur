@@ -161,6 +161,9 @@ class ItineraryStop(BaseModel):
     title: str = ""
     description: str = ""
     images: List[str] = []  # /api/files/<id> URLs from /admin/upload
+    # Map location (optional). A stop is shown on the map only when both are set.
+    lat: Optional[float] = Field(None, ge=-90, le=90)
+    lng: Optional[float] = Field(None, ge=-180, le=180)
 
 
 class ItineraryDay(BaseModel):
