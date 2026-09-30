@@ -85,3 +85,6 @@ android-sdk/
 .env
 .env.*
 !.env.example
+
+# Local file uploads (in production they live on the Railway volume)
+backend/uploads/

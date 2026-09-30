@@ -5,6 +5,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 import os
+import asyncio
 import uuid
 import logging
 import bcrypt
@@ -13,6 +14,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depends, UploadFile, File
+from fastapi.responses import FileResponse
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, EmailStr
@@ -26,57 +28,80 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI(title="INFINITUR API")
 api_router = APIRouter(prefix="/api")
 
-# --- Object storage (Emergent) ---
-STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
-EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY", "")
-APP_NAME = os.environ.get("APP_NAME", "infinitur-mx")
+# --- File storage (local disk; on Railway, a persistent volume) ---
+# UPLOAD_DIR > RAILWAY_VOLUME_MOUNT_PATH (set by Railway when a volume is attached) > backend/uploads (local dev)
+UPLOAD_DIR = Path(
+    os.environ.get("UPLOAD_DIR")
+    or os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
+    or (ROOT_DIR / "uploads")
+).resolve()
 MIME_TYPES = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp", "gif": "image/gif", "pdf": "application/pdf"}
-_storage_key = None
+
+# Legacy Emergent storage: read-only, used only to copy old files onto the volume.
+# Once every file is migrated, EMERGENT_LLM_KEY can be removed and this path goes dormant.
+LEGACY_STORAGE_URL = "https://integrations.emergentagent.com/objstore/api/v1/storage"
+LEGACY_KEY = os.environ.get("EMERGENT_LLM_KEY", "")
 
 
 def init_storage():
-    global _storage_key
-    if _storage_key:
-        return _storage_key
-    if not EMERGENT_KEY:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    log = logging.getLogger(__name__)
+    log.info(f"File storage at {UPLOAD_DIR}")
+    if os.environ.get("RAILWAY_ENVIRONMENT") and not os.environ.get("RAILWAY_VOLUME_MOUNT_PATH"):
+        log.warning("⚠️  No hay volumen de Railway montado: los archivos subidos se PERDERÁN en el próximo deploy.")
+
+
+def _local_path(rel_path: str) -> Path:
+    p = (UPLOAD_DIR / rel_path).resolve()
+    if UPLOAD_DIR not in p.parents:
+        raise HTTPException(400, "Ruta inválida")
+    return p
+
+
+def put_object(rel_path: str, data: bytes) -> Path:
+    dest = _local_path(rel_path)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = dest.with_name(f"{dest.name}.{uuid.uuid4().hex}.tmp")
+    tmp.write_bytes(data)
+    os.replace(tmp, dest)  # atomic: never leaves a half-written file
+    return dest
+
+
+def get_object(rel_path: str) -> Optional[Path]:
+    p = _local_path(rel_path)
+    return p if p.is_file() else None
+
+
+def fetch_legacy_object(storage_path: str) -> Optional[bytes]:
+    """Download a file from the old Emergent storage. Returns None if unavailable."""
+    if not LEGACY_KEY:
         return None
     try:
-        r = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+        r = requests.post(f"{LEGACY_STORAGE_URL}/init", json={"emergent_key": LEGACY_KEY}, timeout=30)
         r.raise_for_status()
-        _storage_key = r.json()["storage_key"]
-        return _storage_key
+        key = r.json()["storage_key"]
+        r = requests.get(f"{LEGACY_STORAGE_URL}/objects/{storage_path}", headers={"X-Storage-Key": key}, timeout=60)
+        r.raise_for_status()
+        return r.content
     except Exception as e:
-        logging.getLogger(__name__).error(f"Storage init failed: {e}")
+        logging.getLogger(__name__).warning(f"Legacy fetch failed for {storage_path}: {e}")
         return None
 
 
-def put_object(path: str, data: bytes, content_type: str) -> dict:
-    key = init_storage()
-    if not key:
-        raise HTTPException(500, "Storage no inicializado")
-    r = requests.put(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": key, "Content-Type": content_type},
-        data=data, timeout=120,
+async def migrate_legacy_file(record: dict) -> Optional[Path]:
+    """Copy a legacy (Emergent) file onto local storage and mark its record as local."""
+    data = await asyncio.to_thread(fetch_legacy_object, record["storage_path"])
+    if data is None:
+        return None
+    ext = record["storage_path"].rsplit(".", 1)[-1].lower()
+    rel_path = f"uploads/{record['id']}.{ext}"
+    dest = put_object(rel_path, data)
+    await db.files.update_one(
+        {"id": record["id"]},
+        {"$set": {"storage": "local", "storage_path": rel_path, "legacy_storage_path": record["storage_path"],
+                  "size": len(data), "migrated_at": datetime.now(timezone.utc).isoformat()}},
     )
-    if r.status_code == 403:
-        global _storage_key
-        _storage_key = None
-        key = init_storage()
-        r = requests.put(
-            f"{STORAGE_URL}/objects/{path}",
-            headers={"X-Storage-Key": key, "Content-Type": content_type},
-            data=data, timeout=120,
-        )
-    r.raise_for_status()
-    return r.json()
-
-
-def get_object(path: str):
-    key = init_storage()
-    r = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
-    r.raise_for_status()
-    return r.content, r.headers.get("Content-Type", "application/octet-stream")
+    return dest
 
 # --- JWT / auth helpers ---
 JWT_ALGORITHM = "HS256"
@@ -418,19 +443,24 @@ async def admin_upload(file: UploadFile = File(...), user: dict = Depends(get_cu
     if ext not in MIME_TYPES:
         raise HTTPException(400, "Formato no permitido (usa jpg, png, webp, gif o pdf)")
     content_type = MIME_TYPES[ext]
-    path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
     data = await file.read()
     max_size = 16 * 1024 * 1024 if ext == "pdf" else 8 * 1024 * 1024
     if len(data) > max_size:
         raise HTTPException(400, f"Archivo demasiado grande (máx {max_size // (1024*1024)}MB)")
-    result = put_object(path, data, content_type)
     file_id = str(uuid.uuid4())
+    rel_path = f"uploads/{file_id}.{ext}"
+    try:
+        put_object(rel_path, data)
+    except OSError as e:
+        logging.getLogger(__name__).error(f"Upload write failed: {e}")
+        raise HTTPException(500, "No se pudo guardar el archivo")
     await db.files.insert_one({
         "id": file_id,
-        "storage_path": result["path"],
+        "storage": "local",
+        "storage_path": rel_path,
         "original_filename": file.filename,
         "content_type": content_type,
-        "size": result.get("size", len(data)),
+        "size": len(data),
         "is_deleted": False,
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
@@ -444,8 +474,15 @@ async def serve_file(file_id: str):
     record = await db.files.find_one({"id": file_id, "is_deleted": False}, {"_id": 0})
     if not record:
         raise HTTPException(404, "Archivo no encontrado")
-    data, ct = get_object(record["storage_path"])
-    return Response(content=data, media_type=record.get("content_type", ct), headers={"Cache-Control": "public, max-age=86400"})
+    if record.get("storage") == "local":
+        path = get_object(record["storage_path"])
+    else:
+        # Legacy Emergent file: copy it onto the volume on first access
+        path = await migrate_legacy_file(record)
+    if not path:
+        raise HTTPException(404, "Archivo no disponible")
+    return FileResponse(path, media_type=record.get("content_type", "application/octet-stream"),
+                        headers={"Cache-Control": "public, max-age=86400"})
 
 
 # --- FAQ ---
