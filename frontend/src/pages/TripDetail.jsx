@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import TripCard, { allDates } from "@/components/TripCard";
 import TripItinerary from "@/components/TripItinerary";
+import PhotoThumbs from "@/components/PhotoThumbs";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { getTripTypeStyle, getRegionStyle } from "@/lib/tripStyle";
 import { waLink, WA_DISPLAY } from "@/lib/whatsapp";
@@ -206,15 +207,22 @@ export default function TripDetail() {
             </Block>
 
             {/* Lugares */}
-            {trip.places?.length > 0 && (
+            {(trip.places?.length > 0 || trip.places_photos?.length > 0) && (
               <Block divider>
                 <h2 className="font-display text-[30px] text-text-main mb-5">Lugares a visitar</h2>
-                <div className="flex flex-wrap gap-2.5" data-testid="trip-places">
-                  {trip.places.map((p) => (
-                    <span key={p} className="inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-3.5 py-1.5 rounded-full text-[13px] font-semibold">
-                      <MapPin size={13} className="text-green-700" /> {p}
-                    </span>
-                  ))}
+                {trip.places?.length > 0 && (
+                  <div className="flex flex-wrap gap-2.5" data-testid="trip-places">
+                    {trip.places.map((p) => (
+                      <span key={p} className="inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-3.5 py-1.5 rounded-full text-[13px] font-semibold">
+                        <MapPin size={13} className="text-green-700" /> {p}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {/* Up to 4 photos: one row on desktop, 2x2 on phones; click opens the viewer */}
+                <div className={trip.places?.length > 0 ? "mt-2" : ""} data-testid="trip-places-photos">
+                  <PhotoThumbs images={trip.places_photos} alt="Lugares a visitar"
+                    gridClassName="grid-cols-2 sm:grid-cols-4" testId="places-photo" />
                 </div>
               </Block>
             )}

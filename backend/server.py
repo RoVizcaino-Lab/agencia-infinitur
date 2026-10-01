@@ -200,6 +200,7 @@ class TripBase(BaseModel):
     trip_type: str = "Clásico"  # Clásico | Explora | Mochilero | Infinitur 90° | 4 Elementos | Altruismo | Confort | A la Carta
     region: str = "Nacional"  # Nacional | Internacional
     places: List[str] = []  # ["Maruata", "Palma Sola", ...]
+    places_photos: List[str] = Field(default_factory=list, max_length=4)  # "Lugares a visitar" photos (/api/files URLs)
     pricing_tiers: List[dict] = []  # [{label: "Campamento", price: 3900, icon: "tent"}]
     included_transport: Optional[str] = ""
     included_lodging: Optional[str] = ""

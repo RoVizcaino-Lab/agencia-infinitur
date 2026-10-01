@@ -3,7 +3,7 @@ import api, { formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
-import ItineraryDaysEditor from "@/components/ItineraryDaysEditor";
+import ItineraryDaysEditor, { StopImagesField } from "@/components/ItineraryDaysEditor";
 import { Switch } from "@/components/ui/switch";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 
@@ -16,7 +16,7 @@ const empty = {
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
   itinerary_pdf_url: "", itinerary_text: "", itinerary_days: [],
   show_transport: true, show_lodging: true, show_coordinator: true, show_departure_points: true,
-  show_included_extras: true, know_before: "", show_know_before: true, reservation_price: null,
+  show_included_extras: true, know_before: "", show_know_before: true, reservation_price: null, places_photos: [],
 };
 
 export default function AdminTrips() {
@@ -48,6 +48,7 @@ export default function AdminTrips() {
         included: typeof data.included === "string" ? data.included.split("\n").filter(Boolean) : data.included,
         excluded: typeof data.excluded === "string" ? data.excluded.split("\n").filter(Boolean) : data.excluded,
         images: typeof data.images === "string" ? data.images.split("\n").filter(Boolean) : data.images,
+        places_photos: (data.places_photos || []).filter(Boolean).slice(0, 4),
         itinerary_days: (data.itinerary_days || []).map((d) => ({
           ...d,
           stops: (d.stops || []).map((s) => ({ ...s, images: (s.images || []).filter(Boolean) })),
@@ -185,6 +186,11 @@ function TripModal({ data, onClose, onSave }) {
           </div>
           <Inp label="Lugares del viaje (separados por coma)" v={Array.isArray(f.places) ? f.places.join(", ") : (f.places || "")}
             onChange={(v) => set("places", v.split(",").map((s) => s.trim()).filter(Boolean))} textarea rows={2} />
+          <div className="border border-[#E5E0D8] rounded-xl p-4 bg-bone/40">
+            <StopImagesField label="Fotos de lugares a visitar" max={4} testId="places-photos"
+              images={f.places_photos || []}
+              update={(fn) => setF((prev) => ({ ...prev, places_photos: fn(prev.places_photos || []) }))} />
+          </div>
           <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
           <ItineraryDaysEditor

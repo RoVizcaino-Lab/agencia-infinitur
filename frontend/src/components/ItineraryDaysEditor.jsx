@@ -122,10 +122,15 @@ export default function ItineraryDaysEditor({ days, update }) {
   );
 }
 
-function StopImagesField({ images, update, testId }) {
+// Photo list uploaded from the computer. `max` (optional) caps how many: the upload
+// button disappears once reached. Also used for "Lugares a visitar" (max 4).
+export function StopImagesField({ images, update, testId, label = "Fotos", max }) {
+  const full = max != null && images.length >= max;
   return (
     <div>
-      <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">Fotos</label>
+      <label className="text-[10px] uppercase tracking-wider text-ink/50 mb-1 block">
+        {label}{max != null && ` (${images.length}/${max})`}
+      </label>
       <div className="flex flex-wrap gap-3 items-center">
         {images.map((url, k) => (
           <div key={`${k}-${url}`} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[#E5E0D8] bg-bone">
@@ -138,8 +143,10 @@ function StopImagesField({ images, update, testId }) {
           </div>
         ))}
         {/* Empty upload field = "add a photo": each upload appends to the list */}
-        <ImageUploadField key={`new-${images.length}`} label="" allowUrl={false} value="" testId={`${testId}-new`}
-          onChange={(v) => v && update((imgs) => [...imgs, v])} />
+        {!full && (
+          <ImageUploadField key={`new-${images.length}`} label="" allowUrl={false} value="" testId={`${testId}-new`}
+            onChange={(v) => v && update((imgs) => (max != null && imgs.length >= max ? imgs : [...imgs, v]))} />
+        )}
       </div>
     </div>
   );

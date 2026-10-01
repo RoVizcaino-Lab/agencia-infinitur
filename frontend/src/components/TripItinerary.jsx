@@ -1,9 +1,8 @@
 import { lazy, Suspense, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Info, Expand } from "lucide-react";
+import { ChevronLeft, ChevronRight, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { resolveImage } from "@/lib/api";
 import { hasCoords } from "@/lib/geo";
-import PhotoLightbox from "@/components/PhotoLightbox";
+import PhotoThumbs from "@/components/PhotoThumbs";
 
 // Leaflet is only downloaded for trips that actually have coordinates
 const ItineraryMap = lazy(() => import("@/components/ItineraryMap"));
@@ -78,7 +77,7 @@ export default function TripItinerary({ days }) {
                       {stop.description && (
                         <p className="text-[14px] text-text-sec leading-relaxed mt-1.5 whitespace-pre-line">{stop.description}</p>
                       )}
-                      <StopImages images={(stop.images || []).filter(Boolean)} alt={stop.title} />
+                      <PhotoThumbs images={stop.images} alt={stop.title} />
                     </div>
                   </li>
                 ))}
@@ -106,35 +105,6 @@ export default function TripItinerary({ days }) {
         </TabsContent>
       ))}
     </Tabs>
-  );
-}
-
-// Same small thumbnail size for every stop, even with a single photo; click opens the viewer.
-function StopImages({ images, alt }) {
-  const [openAt, setOpenAt] = useState(null);
-  if (images.length === 0) return null;
-  return (
-    <>
-      <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {images.map((src, k) => (
-          <button key={k} type="button" onClick={() => setOpenAt(k)} data-testid="stop-photo"
-            aria-label={`Ver foto ${k + 1} de ${images.length}${alt ? `: ${alt}` : ""}`}
-            className="group relative block w-full aspect-[4/3] overflow-hidden rounded-xl bg-[#EFEAE1] cursor-zoom-in
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-green-600">
-            <img src={resolveImage(src)} alt={alt} loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            <span className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-white/90 text-text-main flex items-center justify-center
-              opacity-0 group-hover:opacity-100 transition-opacity">
-              <Expand size={14} />
-            </span>
-          </button>
-        ))}
-      </div>
-      {openAt !== null && (
-        <PhotoLightbox images={images} startIndex={openAt} title={alt}
-          open onOpenChange={(o) => !o && setOpenAt(null)} />
-      )}
-    </>
   );
 }
 
