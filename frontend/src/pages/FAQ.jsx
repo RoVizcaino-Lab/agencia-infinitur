@@ -3,7 +3,9 @@ import {
   Calendar, Stethoscope, CalendarX, FileText, ChevronDown,
   Sprout, AlertCircle, Check,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import api from "@/lib/api";
+import useScrollToHash from "@/lib/useScrollToHash";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
 
@@ -14,8 +16,19 @@ const TABS = [
   { key: "politicas", icon: FileText, title: "Políticas de viaje", sub: "Coordinadores, transporte y hospedaje", iconBg: "bg-[#ECEAE4]", iconFg: "text-text-main" },
 ];
 
+// Footer links: /lo-que-debes-saber#reservar, #seguro, #cancelaciones, #politicas
+const HASH_TO_TAB = { reservar: "reservar", seguro: "seguro", cancelaciones: "cancelacion", politicas: "politicas" };
+
 export default function FAQ() {
   const [active, setActive] = useState("reservar");
+  const loc = useLocation();
+
+  // The hash picks the tab; then scroll to the tabs block so the chosen tab and its content show
+  useEffect(() => {
+    const tab = HASH_TO_TAB[loc.hash.slice(1)];
+    if (tab) setActive(tab);
+  }, [loc.hash, loc.key]);
+  useScrollToHash({ targetId: "secciones" });
 
   return (
     <div data-testid="faq-page" className="bg-white pb-20">
@@ -33,7 +46,7 @@ export default function FAQ() {
       </section>
 
       {/* 4 TABS */}
-      <section className="pb-10">
+      <section id="secciones" className="pb-10 scroll-mt-24">
         <div className="max-w-[1100px] mx-auto px-5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {TABS.map((t) => {

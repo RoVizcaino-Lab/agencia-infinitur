@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import useScrollToHash from "@/lib/useScrollToHash";
 import { ArrowRight, Calendar } from "lucide-react";
 import api, { resolveImage } from "@/lib/api";
 import MonthCarousel from "@/components/MonthCarousel";
@@ -33,14 +34,19 @@ const MANIFIESTO_GRID = [
 
 export default function Home() {
   const [destacados, setDestacados] = useState([]);
+  const [featuredLoaded, setFeaturedLoaded] = useState(false);
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     api.get("/trips?featured=true").then((r) => setDestacados(
       [...r.data].sort((a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0)).slice(0, 4)
-    ));
+    )).finally(() => setFeaturedLoaded(true));
     api.get("/videos").then((r) => setVideos(r.data.slice(0, 3))).catch(() => setVideos([]));
   }, []);
+
+  // "Calendario" in the menu links to /#calendario. Scroll once the featured trips above
+  // have loaded (they change the page height).
+  useScrollToHash({ ready: featuredLoaded });
 
   return (
     <div data-testid="home-page">
@@ -90,8 +96,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CALENDARIO DE AVENTURAS */}
-      <MonthCarousel />
+      {/* CALENDARIO DE AVENTURAS (menu "Calendario" → /#calendario; scroll-mt clears the sticky navbar) */}
+      <div id="calendario" className="scroll-mt-20">
+        <MonthCarousel />
+      </div>
       <div className="bg-white pb-12 -mt-8">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20 flex justify-center">
           <Link to="/destinos" className="btn-orange-outline inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold">

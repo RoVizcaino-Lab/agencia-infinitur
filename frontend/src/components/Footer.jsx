@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, Youtube } from "lucide-react";
 
+// Each link scrolls to its section (see useScrollToHash in About.jsx / FAQ.jsx)
 const conocenos = [
-  { to: "/conocenos", label: "Nuestra historia" },
-  { to: "/conocenos#filosofia", label: "Filosofía" },
-  { to: "/conocenos#logo", label: "Nuestro logo" },
-  { to: "/conocenos#blog", label: "Blog" },
+  { to: "/conocenos#modalidades", label: "Tipos de viajes" },
+  { to: "/conocenos#historia", label: "Nuestra historia" }, // "¡Somos Infinitur!"
+  { to: "/conocenos#filosofia", label: "Filosofía" }, // "Nuestra filosofía y quién te guía"
 ];
 
+// Each one opens its tab on "Lo que debes saber"
 const debesSaber = [
+  { to: "/lo-que-debes-saber#reservar", label: "¿Cómo reservar?" },
   { to: "/lo-que-debes-saber#seguro", label: "Seguro médico" },
-  { to: "/lo-que-debes-saber#politicas", label: "Políticas del viajero" },
-  { to: "/lo-que-debes-saber#tipos", label: "Tipos de viaje" },
   { to: "/lo-que-debes-saber#cancelaciones", label: "Cancelaciones" },
+  { to: "/lo-que-debes-saber#politicas", label: "Políticas de viaje" },
 ];
 
 const socials = [

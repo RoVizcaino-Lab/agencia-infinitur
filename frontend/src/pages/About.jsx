@@ -3,6 +3,7 @@ import { ArrowRight, Star } from "lucide-react";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { TRIP_TYPES, TRIP_TYPE_DESCRIPTIONS } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
+import useScrollToHash from "@/lib/useScrollToHash";
 
 const COLLAGE = [
   "https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/oh5y7bg7_Conocenos_1.jpg",
@@ -37,10 +38,13 @@ const DIFERENCIAS = [
 ];
 
 export default function About() {
+  // Footer links: /conocenos#historia, #filosofia, #modalidades
+  useScrollToHash();
+
   return (
     <div data-testid="about-page" className="bg-white">
-      {/* HERO — colectivo de viajeros */}
-      <section className="pt-28 pb-16">
+      {/* HERO — colectivo de viajeros ("¡Somos Infinitur!") */}
+      <section id="historia" className="pt-28 pb-16 scroll-mt-20">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           <div>
             <div className="text-[11px] uppercase tracking-[0.22em] text-orange-500 font-bold mb-4">¡Somos Infinitur!</div>
@@ -80,7 +84,7 @@ export default function About() {
       </section>
 
       {/* FILOSOFÍA Y QUIÉN TE GUÍA */}
-      <section className="bg-[#F5F2EC] py-16 lg:py-20">
+      <section id="filosofia" className="bg-[#F5F2EC] py-16 lg:py-20 scroll-mt-20">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           <div className="lg:col-span-4">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-soft">
@@ -148,7 +152,7 @@ export default function About() {
       </section>
 
       {/* MODALIDADES */}
-      <section className="bg-[#F5F2EC] py-16 lg:py-20">
+      <section id="modalidades" className="bg-[#F5F2EC] py-16 lg:py-20 scroll-mt-20">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
           <div className="mb-10">
             <div className="text-[11px] uppercase tracking-[0.22em] text-orange-500 font-bold mb-3">Modalidades</div>
