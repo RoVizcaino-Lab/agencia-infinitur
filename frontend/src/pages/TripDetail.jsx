@@ -241,7 +241,7 @@ export default function TripDetail() {
                 )}
                 {trip.show_coordinator !== false && (
                   <IncludeRow icon="https://customer-assets-gfyr7b9c.emergentagent.net/job_grupos-expedicion/artifacts/ai6y54ch_Icono%20Coordinador.png" title="Coordinador Infinitur"
-                    desc="Tu guía que ya te conoce antes de salir. Presente en cada momento del viaje" />
+                    desc="¡No viajas solo! Tu coordinador te acompañará paso a paso asegurando que disfrutes al máximo cada momento." />
                 )}
                 {trip.show_departure_points !== false && (
                   <IncludeRow icon={MapPin} title="Puntos de salida - CDMX" noBullet

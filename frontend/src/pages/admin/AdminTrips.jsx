@@ -198,7 +198,6 @@ function TripModal({ data, onClose, onSave }) {
             update={(fn) => setF((prev) => ({ ...prev, itinerary_days: fn(prev.itinerary_days || []) }))}
           />
           <Inp label="Itinerario en texto (solo se muestra si el viaje no tiene días)" v={f.itinerary_text} onChange={(v) => set("itinerary_text", v)} textarea rows={5} testId="trip-itinerary-text" />
-          <Inp label="Imágenes adicionales (una URL por línea)" v={f.images} onChange={(v) => set("images", v)} textarea rows={3} />
           <Inp label="Incluye · Transporte (descripción)" v={f.included_transport} onChange={(v) => set("included_transport", v)} textarea rows={2} testId="trip-transport"
             toggle={{ checked: f.show_transport !== false, onChange: (c) => set("show_transport", c), testId: "toggle-transport" }} />
           <Inp label="Incluye · Hospedaje (descripción)" v={f.included_lodging} onChange={(v) => set("included_lodging", v)} textarea rows={2} testId="trip-lodging"
