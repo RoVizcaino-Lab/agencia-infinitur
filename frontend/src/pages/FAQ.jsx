@@ -97,6 +97,15 @@ export default function FAQ() {
           />
         </div>
       </section>
+
+      {/* PREGUNTAS FRECUENTES GENERALES (Admin → FAQ, sección "General"); visible en todos los tabs */}
+      <section className="pt-16" data-testid="faq-general">
+        <div className="max-w-[1100px] mx-auto px-5">
+          <PanelLayout eyebrow="FAQ" title="Preguntas frecuentes" sub="Las dudas más comunes de nuestros viajeros.">
+            <CmsFaqList category="general" />
+          </PanelLayout>
+        </div>
+      </section>
     </div>
   );
 }

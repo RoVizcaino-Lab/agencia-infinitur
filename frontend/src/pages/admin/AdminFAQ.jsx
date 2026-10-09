@@ -69,7 +69,7 @@ export default function AdminFAQ() {
                   className="w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-bone">
                   <option value="reservar">¿Cómo reservar?</option>
                   <option value="politicas">Políticas de viaje</option>
-                  <option value="general">General (no se muestra en el front)</option>
+                  <option value="general">General (Preguntas frecuentes, al final de la página)</option>
                 </select>
               </div>
               <div>
