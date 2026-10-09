@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 
 const links = [
+  { to: "/", label: "Inicio" },
   { to: "/destinos", label: "Destinos" },
   { to: "/#calendario", label: "Calendario" }, // home page section "Calendario de aventuras"
   { to: "/conocenos", label: "Conócenos" },
@@ -11,10 +12,13 @@ const links = [
   { to: "/lo-que-debes-saber", label: "Lo que debes saber" },
 ];
 
-// NavLink only compares paths, so "/#calendario" would look active on the whole home page
+// NavLink only compares paths, so "/#calendario" would look active on the whole home page.
+// "/" (Inicio) must match exactly — every path starts with it — and yields to "Calendario".
 const isLinkActive = (to, loc) => {
   const [path, hash] = to.split("#");
-  return hash ? loc.pathname === path && loc.hash === `#${hash}` : loc.pathname.startsWith(path);
+  if (hash) return loc.pathname === path && loc.hash === `#${hash}`;
+  if (path === "/") return loc.pathname === "/" && loc.hash !== "#calendario";
+  return loc.pathname.startsWith(path);
 };
 
 export default function Navbar() {
@@ -48,14 +52,14 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-5 xl:gap-8">
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-8">
+        <div className="flex items-center gap-5 lg:gap-3 xl:gap-8">
+          <nav className="hidden lg:flex items-center gap-3 xl:gap-8">
             {links.map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
                 data-testid={`nav-${l.label.toLowerCase().replace(/\s/g, "-")}`}
-                className={`text-sm font-medium tracking-wide whitespace-nowrap transition-colors ${
+                className={`text-[13px] xl:text-sm font-medium tracking-wide whitespace-nowrap transition-colors ${
                   isLinkActive(l.to, loc) ? "text-green-700" : "text-text-main hover:text-green-700"
                 }`}
               >
@@ -66,7 +70,7 @@ export default function Navbar() {
           <Link
             to="/contactanos"
             data-testid="navbar-cta-contactanos"
-            className="hidden sm:inline-flex btn-whatsapp items-center gap-2 whitespace-nowrap px-5 xl:px-6 py-2.5 rounded-full font-semibold text-sm"
+            className="hidden sm:inline-flex btn-whatsapp items-center gap-2 whitespace-nowrap px-4 xl:px-6 py-2.5 rounded-full font-semibold text-sm"
           >
             <WhatsAppGlyph size={16} /> Contáctanos
           </Link>

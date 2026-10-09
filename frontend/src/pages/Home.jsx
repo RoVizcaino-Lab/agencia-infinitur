@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useScrollToHash from "@/lib/useScrollToHash";
-import { ArrowRight, Calendar } from "lucide-react";
+import { ArrowRight, Calendar, Star } from "lucide-react";
 import api, { resolveImage } from "@/lib/api";
 import MonthCarousel from "@/components/MonthCarousel";
 import TripCard from "@/components/TripCard";
@@ -36,12 +36,14 @@ export default function Home() {
   const [destacados, setDestacados] = useState([]);
   const [featuredLoaded, setFeaturedLoaded] = useState(false);
   const [videos, setVideos] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
 
   useEffect(() => {
     api.get("/trips?featured=true").then((r) => setDestacados(
       [...r.data].sort((a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0)).slice(0, 4)
     )).finally(() => setFeaturedLoaded(true));
     api.get("/videos").then((r) => setVideos(r.data.slice(0, 3))).catch(() => setVideos([]));
+    api.get("/testimonials").then((r) => setTestimonials(r.data)).catch(() => setTestimonials([]));
   }, []);
 
   // "Calendario" in the menu links to /#calendario. Scroll once the featured trips above
@@ -194,6 +196,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* TESTIMONIALES (se gestionan en Admin → Testimonios; se oculta si no hay ninguno) */}
+      {testimonials.length > 0 && (
+        <section className="bg-white py-20 lg:py-24" data-testid="home-testimonials">
+          <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
+            <div className="text-center">
+              <div className="text-base uppercase tracking-[0.25em] text-green-700 font-bold mb-3">TESTIMONIALES</div>
+              <h2 className="font-display text-4xl sm:text-5xl text-text-main">
+                Lo que dicen nuestros <span className="italic text-orange-500">viajeros</span>
+              </h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 max-w-[900px] mx-auto">
+              {testimonials.map((t) => <TestimonialCard key={t.id} t={t} />)}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* BANNER WHATSAPP */}
       <section className="bg-carbon text-white py-14">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid md:grid-cols-2 gap-8 items-center">
@@ -219,6 +238,31 @@ export default function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+function TestimonialCard({ t }) {
+  const rating = Math.min(Math.max(t.rating || 5, 1), 5);
+  return (
+    <figure className="bg-[#F5F2EC] rounded-xl p-5 flex flex-col" data-testid={`testimonial-${t.id}`}>
+      <div className="flex gap-1 text-orange-500" aria-label={`${rating} de 5 estrellas`}>
+        {Array.from({ length: rating }).map((_, i) => <Star key={i} size={13} fill="currentColor" />)}
+      </div>
+      <blockquote className="text-text-main text-sm leading-relaxed italic mt-3 flex-1">&ldquo;{t.text}&rdquo;</blockquote>
+      <figcaption className="flex items-center gap-2.5 mt-4 pt-3.5 border-t border-[#E5E0D8]">
+        {t.avatar ? (
+          <img src={resolveImage(t.avatar)} alt="" className="w-8 h-8 rounded-full object-cover" />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-green-700 text-white flex items-center justify-center font-bold text-sm">
+            {(t.author || "?").trim().charAt(0).toUpperCase()}
+          </div>
+        )}
+        <div>
+          <div className="font-semibold text-sm text-text-main">{t.author}</div>
+          {t.location && <div className="text-xs text-text-sec">{t.location}</div>}
+        </div>
+      </figcaption>
+    </figure>
   );
 }
 
