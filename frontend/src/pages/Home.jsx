@@ -54,8 +54,8 @@ export default function Home() {
     <div data-testid="home-page">
       {/* HERO */}
       <section className="bg-bone pt-12 pb-16 lg:pt-16 lg:pb-20">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid grid-cols-1 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 items-stretch">
-          <div className="fade-in flex flex-col justify-center">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 items-stretch">
+          <div className="fade-in flex flex-col justify-center col-span-2 lg:col-span-1">
             <div className="text-orange-500 font-bold uppercase tracking-[0.2em] text-sm mb-5">¡SOMOS INFINITUR!</div>
             <h1 className="font-display text-5xl xl:text-6xl text-text-main leading-[0.95] tracking-tight mb-5">
               ¡El viaje<br />de los viajes!
@@ -72,8 +72,11 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          {HERO_PHOTOS.map((src) => (
-            <div key={src} className="rounded-2xl overflow-hidden shadow-floating min-h-[420px] lg:min-h-full">
+          {/* Below lg: 2 columns at half height (¼ of the old full-width photo); the 3rd photo is centered on its own row */}
+          {HERO_PHOTOS.map((src, i) => (
+            <div key={src} className={`rounded-2xl overflow-hidden shadow-floating h-[210px] lg:h-auto lg:min-h-full ${
+              i === 2 ? "col-span-2 justify-self-center w-[calc(50%-0.5rem)] lg:col-span-1 lg:w-auto lg:justify-self-stretch" : ""
+            }`}>
               <img src={src} alt="" loading="lazy" className="w-full h-full object-cover" />
             </div>
           ))}
@@ -158,7 +161,7 @@ export default function Home() {
               <p className="text-text-sec">El administrador puede agregar URLs de videos de Facebook desde el panel para reproducirlos aquí.</p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 w-[70%] mx-auto">
               {videos.map((v) => (
                 <div key={v.id} className="bg-black aspect-[9/16] rounded-2xl overflow-hidden shadow-floating">
                   <iframe
