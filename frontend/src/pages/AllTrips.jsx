@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import api from "@/lib/api";
 import TripCard from "@/components/TripCard";
 import FilterChip from "@/components/FilterChip";
@@ -121,16 +121,20 @@ export default function AllTrips() {
             </div>
             <label className="flex items-center gap-3 text-sm text-text-sec">
               Ordenar por
-              <select
-                data-testid="all-sort-select"
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="bg-carbon text-white font-semibold px-4 py-2.5 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer"
-              >
-                {Object.entries(SORTS).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
-                ))}
-              </select>
+              {/* Same look and size as the active "Todos" filter chip */}
+              <span className="relative inline-flex items-center">
+                <select
+                  data-testid="all-sort-select"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="appearance-none bg-green-800 hover:bg-green-700 text-white font-semibold text-[11px] leading-4 pl-3 pr-7 py-1 rounded-full border-2 border-green-800 hover:border-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer"
+                >
+                  {Object.entries(SORTS).map(([k, v]) => (
+                    <option key={k} value={k} className="bg-white text-black">{v.label}</option>
+                  ))}
+                </select>
+                <ChevronDown size={11} className="pointer-events-none absolute right-2.5 text-white" />
+              </span>
             </label>
           </div>
 
