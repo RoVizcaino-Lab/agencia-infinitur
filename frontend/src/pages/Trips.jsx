@@ -68,7 +68,7 @@ export default function Trips() {
       <section className="pb-8">
         <div className="max-w-[1440px] mx-auto px-5 lg:px-20">
           <div className="text-[10px] uppercase tracking-[0.25em] text-text-sec font-bold mb-4">Tipo de viaje</div>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
             <FilterChip
               testid="filter-todos"
               label="Todos"

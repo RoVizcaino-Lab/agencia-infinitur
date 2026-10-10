@@ -151,7 +151,7 @@ function FilterGroup({ title, children }) {
   return (
     <div>
       <div className="text-[10px] uppercase tracking-[0.25em] text-text-sec font-bold mb-4">{title}</div>
-      <div className="flex flex-wrap gap-3">{children}</div>
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">{children}</div>
     </div>
   );
 }
