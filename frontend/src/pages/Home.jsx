@@ -54,7 +54,7 @@ export default function Home() {
     <div data-testid="home-page">
       {/* HERO */}
       <section className="bg-bone pt-12 pb-16 lg:pt-16 lg:pb-20">
-        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-4 items-stretch">
+        <div className="max-w-[1440px] mx-auto px-5 lg:px-20 grid grid-cols-2 lg:grid-cols-[44fr_27fr_27fr_27fr] gap-4 items-stretch lg:items-center">
           <div className="fade-in flex flex-col justify-center col-span-2 lg:col-span-1">
             <div className="text-orange-500 font-bold uppercase tracking-[0.2em] text-sm mb-5">¡SOMOS INFINITUR!</div>
             <h1 className="font-display text-5xl xl:text-6xl text-text-main leading-[0.95] tracking-tight mb-5">
@@ -72,9 +72,10 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          {/* Below lg: 2 columns at half height (¼ of the old full-width photo); the 3rd photo is centered on its own row */}
+          {/* Below lg: 2 columns at half height (¼ of the old full-width photo); the 3rd photo is centered on its own row.
+              lg+: 27fr photo columns are 8% wider than the old 1fr-of-5 (+20%, then -10%) and keep the old 11:16 shape */}
           {HERO_PHOTOS.map((src, i) => (
-            <div key={src} className={`rounded-2xl overflow-hidden shadow-floating h-[210px] lg:h-auto lg:min-h-full ${
+            <div key={src} className={`rounded-2xl overflow-hidden shadow-floating h-[210px] lg:h-auto lg:aspect-[11/16] ${
               i === 2 ? "col-span-2 justify-self-center w-[calc(50%-0.5rem)] lg:col-span-1 lg:w-auto lg:justify-self-stretch" : ""
             }`}>
               <img src={src} alt="" loading="lazy" className="w-full h-full object-cover" />
