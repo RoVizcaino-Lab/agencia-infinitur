@@ -72,7 +72,10 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
 
   const scroll = (dir) => {
     if (!railRef.current) return;
-    railRef.current.scrollBy({ left: dir * CARD_STEP, behavior: "smooth" });
+    // One card per click; card width and gap differ between phones and larger screens
+    const el = railRef.current;
+    const step = (el.firstElementChild?.offsetWidth || 0) + parseFloat(getComputedStyle(el).columnGap || "0");
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
     setTimeout(updateScrollState, 300);
   };
 
@@ -114,7 +117,7 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
           <div
             ref={railRef}
             onScroll={updateScrollState}
-            className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-5 lg:-mx-20 px-5 lg:px-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-2 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-pl-5 sm:scroll-pl-0 pb-2 -mx-5 lg:-mx-20 px-5 lg:px-20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {groups.map((g) => {
               const key = `${g.year}-${g.month}`;
@@ -122,31 +125,32 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
               const count = g.trips.length;
               const hasTrips = count > 0;
               return (
+                // Phones: 3 cards per screen plus ~36px of the 4th as a swipe hint
+                // (viewport minus 20px left padding, three 8px gaps and the 36px peek)
                 <button
                   key={key}
                   data-testid={`month-card-${key}`}
                   onClick={() => hasTrips && setActive(isActive ? null : key)}
                   disabled={!hasTrips}
-                  className={`snap-start flex-shrink-0 min-w-[220px] h-32 rounded-2xl px-6 text-left transition-all duration-200 flex flex-col justify-between
+                  className={`snap-start flex-shrink-0 w-[calc((100vw-80px)/3)] h-20 rounded-xl px-2.5 py-2.5 sm:w-auto sm:min-w-[220px] sm:h-32 sm:rounded-2xl sm:px-6 sm:py-5 text-left transition-all duration-200 flex flex-col justify-between
                     ${isActive
                       ? "bg-green-700 text-white ring-4 ring-orange-500 ring-offset-2 ring-offset-white"
                       : hasTrips
                         ? "bg-green-600 text-white hover:bg-green-700 cursor-pointer"
                         : "bg-[#D7D6CF] text-text-sec cursor-default opacity-80"}
                   `}
-                  style={{ paddingTop: "1.25rem", paddingBottom: "1.25rem" }}
                 >
                   <div>
-                    <div className="font-display text-2xl leading-tight">{MONTH_NAMES[g.month]}</div>
-                    <div className="text-xs opacity-80 font-semibold">{g.year}</div>
+                    <div className="font-display text-[min(15px,3.6vw)] sm:text-2xl leading-tight truncate">{MONTH_NAMES[g.month]}</div>
+                    <div className="text-[10px] sm:text-xs opacity-80 font-semibold">{g.year}</div>
                   </div>
                   {hasTrips ? (
-                    <div className="flex items-center gap-1.5 text-sm">
-                      <span className="w-2 h-2 rounded-full bg-orange-500" />
+                    <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-sm">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-orange-500" />
                       {count} {count === 1 ? "viaje" : "viajes"}
                     </div>
                   ) : (
-                    <div className="text-sm italic opacity-90">Próximamente</div>
+                    <div className="text-[11px] sm:text-sm italic opacity-90">Próximamente</div>
                   )}
                 </button>
               );
