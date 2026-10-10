@@ -126,10 +126,14 @@ export default function Home() {
               Cada viaje está diseñado a mano. Visitamos lugares que nos enamoraron, dormimos en hospedajes con alma,
               y conocemos personas que enriquecen el camino. Si buscas conexión, bienvenido/a.
             </p>
-            <div className="flex flex-wrap justify-center gap-2.5 mt-8">
-              {["GRUPOS PEQUEÑOS", "ITINERARIOS CUIDADOS", "UN GUÍA COMO AMIGO", "CONEXIÓN REAL"].map((p) => (
-                <span key={p} className="px-4 py-1.5 rounded-full border border-green-300 bg-green-100 text-green-700 text-xs font-bold tracking-widest">{p}</span>
-              ))}
+            {/* Phones: smaller chips in two staggered rows of 2 (row 1 nudged left, row 2 right); sm+: one centered row as before */}
+            <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 sm:gap-2.5 mt-8">
+              {["GRUPOS PEQUEÑOS", "ITINERARIOS CUIDADOS", "UN GUÍA COMO AMIGO", "CONEXIÓN REAL"].map((p, i) => [
+                i === 2 && <span key="row-break" className="basis-full h-0 sm:hidden" aria-hidden="true" />,
+                <span key={p} className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border border-green-300 bg-green-100 text-green-700 text-[9.5px] sm:text-xs font-bold tracking-wide sm:tracking-widest whitespace-nowrap sm:translate-x-0 ${
+                  i < 2 ? "-translate-x-5" : "translate-x-5"
+                }`}>{p}</span>,
+              ])}
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0 mt-12">
