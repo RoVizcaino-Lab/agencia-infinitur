@@ -147,7 +147,8 @@ export default function TripDetail() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10" />
         <div className="relative min-h-[320px] sm:min-h-[400px] lg:min-h-[440px] max-w-[1440px] mx-auto px-5 lg:px-20 flex flex-col justify-end pt-24 pb-10">
           <div className="absolute top-6 right-5 lg:right-20">
-            <div className="bg-[#F5F2EC] rounded-2xl px-6 py-4 text-center shadow-floating">
+            {/* Phones: 20% smaller, anchored to the top-right corner */}
+            <div className="bg-[#F5F2EC] rounded-2xl px-6 py-4 text-center shadow-floating scale-[0.8] origin-top-right sm:scale-100">
               <div className="text-[11px] text-text-sec">desde</div>
               <div className="font-display text-[32px] text-text-main font-bold leading-none">
                 {fmtMoney(minTier.price)}
