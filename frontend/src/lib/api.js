@@ -1,6 +1,7 @@
 import axios from "axios";
 
-export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// Unset → same origin ("/api"), e.g. behind Nginx on the VPS.
+export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 export const API = `${BACKEND_URL}/api`;
 
 // Resolve image URLs that may be relative ('/api/files/<id>') or already absolute
