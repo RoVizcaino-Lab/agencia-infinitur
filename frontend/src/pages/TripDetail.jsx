@@ -12,14 +12,15 @@ import WhatsAppGlyph from "@/components/WhatsAppGlyph";
 import { getTripTypeStyle, getRegionStyle } from "@/lib/tripStyle";
 import { waLink, WA_DISPLAY } from "@/lib/whatsapp";
 import { toast } from "sonner";
+import { parseDate } from "@/lib/utils";
 
 const MONTHS_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
 const fmtDateRange = (startIso, endIso, duration) => {
   try {
-    const s = new Date(startIso);
-    const e = endIso ? new Date(endIso) : s;
+    const s = parseDate(startIso);
+    const e = endIso ? parseDate(endIso) : s;
     const sDay = s.getDate(); const eDay = e.getDate();
     const sM = MONTHS_ES[s.getMonth()]; const yr = e.getFullYear();
     const range = (s.getMonth() === e.getMonth())
@@ -42,8 +43,8 @@ const DEFAULT_EXCLUDED = [
 
 const rangeDays = (startIso, endIso) => {
   try {
-    const s = new Date(startIso);
-    const e = endIso ? new Date(endIso) : s;
+    const s = parseDate(startIso);
+    const e = endIso ? parseDate(endIso) : s;
     return Math.max(1, Math.round((e - s) / 86400000) + 1);
   } catch { return 1; }
 };

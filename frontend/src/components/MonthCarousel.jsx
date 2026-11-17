@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, MapPin, ArrowRight } from "lucide-react";
 import api from "@/lib/api";
 import { waLink, WA_MESSAGES } from "@/lib/whatsapp";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
+import { parseDate } from "@/lib/utils";
 
 const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -34,7 +35,7 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
     const map = new Map();
     trips.forEach((t) => {
       if (!t.start_date) return;
-      const d = new Date(t.start_date);
+      const d = parseDate(t.start_date);
       if (d < today) return;
       const key = `${d.getFullYear()}-${d.getMonth()}`;
       if (!map.has(key)) map.set(key, { year: d.getFullYear(), month: d.getMonth(), trips: [] });
@@ -179,8 +180,8 @@ export default function MonthCarousel({ expanded = true, eyebrow = "CALENDARIO D
 }
 
 function PanelRow({ trip }) {
-  const start = new Date(trip.start_date);
-  const end = trip.end_date ? new Date(trip.end_date) : start;
+  const start = parseDate(trip.start_date);
+  const end = trip.end_date ? parseDate(trip.end_date) : start;
   return (
     <div className="py-4 grid md:grid-cols-12 gap-4 items-center">
       <div className="md:col-span-2 flex items-center gap-3">

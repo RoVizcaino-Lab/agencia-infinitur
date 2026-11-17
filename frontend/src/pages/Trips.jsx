@@ -8,6 +8,7 @@ import MonthCarousel from "@/components/MonthCarousel";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
+import { parseDate } from "@/lib/utils";
 
 const MONTH_NAMES = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -15,7 +16,7 @@ const MONTH_NAMES = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 const MAX_CARDS = 8;
 
 export const SORTS = {
-  fecha: { label: "Fecha más próxima", fn: (a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0) },
+  fecha: { label: "Fecha más próxima", fn: (a, b) => parseDate(a.start_date || 0) - parseDate(b.start_date || 0) },
   precio_asc: { label: "Precio: menor a mayor", fn: (a, b) => (a.price || 0) - (b.price || 0) },
   precio_desc: { label: "Precio: mayor a menor", fn: (a, b) => (b.price || 0) - (a.price || 0) },
 };
@@ -42,7 +43,7 @@ export default function Trips() {
     let list = typeFilter === "Todos" ? [...trips] : trips.filter((t) => t.trip_type === typeFilter);
     if (mes) {
       const m = parseInt(mes, 10);
-      list = list.filter((t) => t.start_date && new Date(t.start_date).getMonth() + 1 === m);
+      list = list.filter((t) => t.start_date && parseDate(t.start_date).getMonth() + 1 === m);
     }
     return list.sort(SORTS[sort].fn);
   }, [trips, typeFilter, mes, sort]);

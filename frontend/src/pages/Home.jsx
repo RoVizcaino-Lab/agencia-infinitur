@@ -7,11 +7,12 @@ import MonthCarousel from "@/components/MonthCarousel";
 import TripCard from "@/components/TripCard";
 import { waLink, WA_MESSAGES, WA_DISPLAY } from "@/lib/whatsapp";
 import WhatsAppGlyph from "@/components/WhatsAppGlyph";
+import { parseDate } from "@/lib/utils";
 
 const fmtMoney = (n) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(n);
 const fmtRange = (s, e) => {
   if (!s) return "";
-  const a = new Date(s); const b = e ? new Date(e) : a;
+  const a = parseDate(s); const b = e ? parseDate(e) : a;
   const opts = { day: "numeric", month: "short", year: "numeric" };
   if (a.getMonth() === b.getMonth()) {
     return `${a.getDate()} al ${b.getDate()} de ${a.toLocaleDateString("es-MX", { month: "long" })}, ${a.getFullYear()}`;
@@ -40,7 +41,7 @@ export default function Home() {
 
   useEffect(() => {
     api.get("/trips?featured=true").then((r) => setDestacados(
-      [...r.data].sort((a, b) => new Date(a.start_date || 0) - new Date(b.start_date || 0)).slice(0, 4)
+      [...r.data].sort((a, b) => parseDate(a.start_date || 0) - parseDate(b.start_date || 0)).slice(0, 4)
     )).finally(() => setFeaturedLoaded(true));
     api.get("/videos").then((r) => setVideos(r.data.slice(0, 3))).catch(() => setVideos([]));
     api.get("/testimonials").then((r) => setTestimonials(r.data)).catch(() => setTestimonials([]));

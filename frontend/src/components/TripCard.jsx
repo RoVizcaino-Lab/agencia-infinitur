@@ -2,14 +2,15 @@ import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 import { getTripTypeStyle, getRegionStyle } from "@/lib/tripStyle";
 import { resolveImage } from "@/lib/api";
+import { parseDate } from "@/lib/utils";
 
 const MONTHS_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
 const fmtDateRange = (startIso, endIso) => {
   try {
-    const s = new Date(startIso);
-    const e = endIso ? new Date(endIso) : s;
+    const s = parseDate(startIso);
+    const e = endIso ? parseDate(endIso) : s;
     const sDay = s.getDate();
     const eDay = e.getDate();
     const sMonth = MONTHS_ES[s.getMonth()];
@@ -27,7 +28,7 @@ const fmtMoney = (n) => new Intl.NumberFormat("es-MX", { maximumFractionDigits: 
 export const allDates = (trip) => [
   { start_date: trip.start_date, end_date: trip.end_date },
   ...(trip.extra_dates || []),
-].filter((d) => d.start_date).sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+].filter((d) => d.start_date).sort((a, b) => parseDate(a.start_date) - parseDate(b.start_date));
 
 export default function TripCard({ trip }) {
   const style = getTripTypeStyle(trip.trip_type);
@@ -80,13 +81,18 @@ export default function TripCard({ trip }) {
           )}
         </div>
 
-        {trip.destination ? (
-          <p className="text-[12px] text-text-sec leading-relaxed line-clamp-3 mb-4" data-testid={`trip-card-destination-${trip.id}`}>
-            <span className="font-bold text-text-main">Destino:</span> {trip.destination}
-          </p>
-        ) : (
-          <p className="text-[12px] text-text-sec leading-relaxed line-clamp-3 mb-4">{trip.description}</p>
-        )}
+        <div className="mb-4 space-y-1.5">
+          {trip.destination && (
+            <p className="text-[12px] text-text-sec leading-relaxed line-clamp-2" data-testid={`trip-card-destination-${trip.id}`}>
+              <span className="font-bold text-text-main">Destino:</span> {trip.destination}
+            </p>
+          )}
+          {trip.description && (
+            <p className="text-[12px] text-text-sec leading-relaxed line-clamp-3" data-testid={`trip-card-description-${trip.id}`}>
+              {trip.description}
+            </p>
+          )}
+        </div>
 
         <div className="mt-auto flex items-end justify-between gap-3">
           <div>

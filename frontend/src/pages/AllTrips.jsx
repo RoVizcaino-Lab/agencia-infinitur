@@ -6,6 +6,7 @@ import TripCard from "@/components/TripCard";
 import FilterChip from "@/components/FilterChip";
 import { TRIP_TYPES, REGIONS } from "@/lib/tripStyle";
 import { SORTS } from "@/pages/Trips";
+import { parseDate } from "@/lib/utils";
 
 const MONTH_NAMES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -26,7 +27,7 @@ export default function AllTrips() {
     const mo = overrides.month ?? month;
     if (ty !== "Todos" && t.trip_type !== ty) return false;
     if (rg !== "Todas" && (t.region || "Nacional") !== rg) return false;
-    if (mo && (!t.start_date || new Date(t.start_date).getMonth() + 1 !== mo)) return false;
+    if (mo && (!t.start_date || parseDate(t.start_date).getMonth() + 1 !== mo)) return false;
     return true;
   };
 
