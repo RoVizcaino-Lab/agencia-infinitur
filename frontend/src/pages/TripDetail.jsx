@@ -98,7 +98,8 @@ export default function TripDetail() {
     ? trip.pricing_tiers
     : [{ label: "Por persona", price: trip.price, icon: "bed" }];
   const minTier = tiers.reduce((min, t) => t.price < min.price ? t : min, tiers[0]);
-  const fillPct = trip.group_max ? Math.max(8, Math.min(95, 100 - (trip.spots_left / trip.group_max) * 100)) : 50;
+  const soldOut = Number(trip.spots_left) <= 0;
+  const fillPct = soldOut ? 100 : trip.group_max ? Math.max(8, Math.min(95, 100 - (trip.spots_left / trip.group_max) * 100)) : 50;
   const excluded = (trip.excluded && trip.excluded.length > 0) ? trip.excluded : DEFAULT_EXCLUDED;
   // Show every line the admin typed (no keyword filtering: lines like "Transporte local…" are real extras)
   const extras = (trip.included || []).map((s) => (s || "").trim()).filter(Boolean);
@@ -159,6 +160,12 @@ export default function TripDetail() {
             </div>
           </div>
 
+          {soldOut && (
+            <div data-testid="trip-soldout-banner"
+              className="self-start inline-flex items-center bg-red-600 text-white text-[13px] sm:text-[15px] font-bold uppercase tracking-wider px-4 py-2 rounded-xl shadow-floating mb-4">
+              Sin Lugares Disponibles
+            </div>
+          )}
           <div className="flex gap-2 mb-3 flex-wrap">
             <span className={`inline-flex items-center gap-1.5 ${style.chip} text-[11px] font-bold px-3 py-1 rounded-full`}>
               <Icon size={12} /> {trip.trip_type}
@@ -301,8 +308,10 @@ export default function TripDetail() {
                 <div className="h-2.5 bg-white rounded-full overflow-hidden mb-3">
                   <div className="h-full bg-orange-500 rounded-full" style={{ width: `${fillPct}%` }} />
                 </div>
-                <p className="text-[12px] text-orange-700/80 leading-relaxed">
-                  Quedan pocos lugares disponibles.<br />Aparta el tuyo pronto.
+                <p className="text-[12px] text-orange-700/80 leading-relaxed" data-testid="trip-spots-text">
+                  {soldOut
+                    ? "Los lugares para este viaje están agotados."
+                    : <>Quedan pocos lugares disponibles.<br />Aparta el tuyo pronto.</>}
                 </p>
               </div>
 

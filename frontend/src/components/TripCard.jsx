@@ -42,7 +42,7 @@ export default function TripCard({ trip }) {
       data-testid={`trip-card-${trip.id}`}
       data-soldout={soldOut ? "true" : "false"}
       className={`group bg-white border border-[#E8E6E0] rounded-2xl overflow-hidden flex flex-col transition-all duration-300 ${
-        soldOut ? "opacity-60" : "hover:-translate-y-1 hover:shadow-floating hover:border-green-200"
+        "hover:-translate-y-1 hover:shadow-floating hover:border-green-200"
       }`}
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-[#EFEAE1]">
@@ -51,9 +51,15 @@ export default function TripCard({ trip }) {
           alt={trip.title}
           loading="lazy"
           className={`w-full h-full object-cover transition-transform duration-700 ${
-            soldOut ? "grayscale-[35%]" : "group-hover:scale-105"
+            soldOut ? "grayscale-[45%]" : "group-hover:scale-105"
           }`}
         />
+        {soldOut && (
+          <span data-testid={`trip-card-soldout-${trip.id}`}
+            className="absolute top-3 right-3 bg-red-600 text-white text-[12px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+            Agotado
+          </span>
+        )}
       </div>
 
       <div className="px-4 pt-3.5 pb-4 flex flex-col flex-1">
@@ -101,15 +107,7 @@ export default function TripCard({ trip }) {
               ${fmtMoney(trip.price)} <span className="text-[10px] font-body font-medium text-text-sec">{trip.currency || "MXN"}</span>
             </div>
           </div>
-          {soldOut ? (
-            <span
-              data-testid={`trip-card-cta-${trip.id}`}
-              aria-disabled="true"
-              className="inline-flex items-center justify-center bg-green-200 text-white px-4 py-2 rounded-lg text-[13px] font-semibold cursor-not-allowed select-none"
-            >
-              Sin cupo
-            </span>
-          ) : (
+          {/* Sold-out trips stay viewable: the trip page shows "Sin Lugares Disponibles" */}
             <Link
               to={`/destinos/${trip.id}`}
               data-testid={`trip-card-cta-${trip.id}`}
@@ -117,7 +115,6 @@ export default function TripCard({ trip }) {
             >
               Ver más
             </Link>
-          )}
         </div>
       </div>
     </article>

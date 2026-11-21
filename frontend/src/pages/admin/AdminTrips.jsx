@@ -7,11 +7,15 @@ import ItineraryDaysEditor, { StopImagesField } from "@/components/ItineraryDays
 import { Switch } from "@/components/ui/switch";
 import { TRIP_TYPES } from "@/lib/tripStyle";
 
+// "Lugares ocupados" for trips saved before that field existed: totales - disponibles
+const takenOf = (t) => (t.spots_taken ?? Math.max(0, Number(t.group_max || 0) - Number(t.spots_left ?? t.group_max ?? 0)));
+const spotsLeftOf = (total, taken) => Math.max(0, (Number(total) || 0) - (Number(taken) || 0));
+
 const empty = {
   title: "", destination: "", country: "México", description: "", long_description: "",
   start_date: "", end_date: "", price: 0, currency: "MXN", pricing_tiers: [], extra_dates: [],
   included_transport: "", included_lodging: "", departure_points: "",
-  group_min: 10, group_max: 15, spots_left: 15, cover_image: "",
+  group_min: 10, group_max: 15, spots_taken: 0, spots_left: 15, cover_image: "",
   trip_type: "Clásico", region: "Nacional",
   images: [], itinerary: [], included: [], excluded: [], featured: false, active: true,
   itinerary_pdf_url: "", itinerary_text: "", itinerary_days: [],
@@ -42,8 +46,9 @@ export default function AdminTrips() {
         duration_days: days,
         price: basePrice,
         group_min: Number(data.group_min),
-        group_max: Number(data.group_max),
-        spots_left: Number(data.spots_left),
+        group_max: Number(data.group_max) || 0,
+        spots_taken: Number(data.spots_taken) || 0,
+        spots_left: spotsLeftOf(data.group_max, data.spots_taken),
         reservation_price: data.reservation_price === "" || data.reservation_price == null ? null : Number(data.reservation_price),
         included: typeof data.included === "string" ? data.included.split("\n").filter(Boolean) : data.included,
         excluded: typeof data.excluded === "string" ? data.excluded.split("\n").filter(Boolean) : data.excluded,
@@ -87,6 +92,7 @@ export default function AdminTrips() {
               <th className="px-5 py-3 font-medium">Destino</th>
               <th className="px-5 py-3 font-medium">Salida</th>
               <th className="px-5 py-3 font-medium">Precio</th>
+              <th className="px-5 py-3 font-medium">Lugares disponibles</th>
               <th className="px-5 py-3 font-medium">Estado</th>
               <th className="px-5 py-3"></th>
             </tr>
@@ -98,17 +104,22 @@ export default function AdminTrips() {
                 <td className="px-5 py-3 text-ink/70">{t.destination}</td>
                 <td className="px-5 py-3 text-ink/70">{t.start_date}</td>
                 <td className="px-5 py-3">${t.price}</td>
+                <td className="px-5 py-3" data-testid={`trip-spots-${t.id}`}>
+                  {t.spots_left > 0
+                    ? <span className="text-ink">{t.spots_left} <span className="text-ink/50">de {t.group_max}</span></span>
+                    : <span className="text-xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-600">Agotado</span>}
+                </td>
                 <td className="px-5 py-3">
                   {t.featured && <span className="text-xs px-2 py-0.5 rounded bg-terracotta/10 text-terracotta mr-1">Destacado</span>}
                   {t.active ? <span className="text-xs text-sage">Activo</span> : <span className="text-xs text-ink/50">Inactivo</span>}
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button data-testid={`edit-trip-${t.id}`} onClick={() => setEditing({ ...t })} className="p-1.5 hover:text-terracotta"><Edit size={16} /></button>
+                  <button data-testid={`edit-trip-${t.id}`} onClick={() => setEditing({ ...t, spots_taken: takenOf(t) })} className="p-1.5 hover:text-terracotta"><Edit size={16} /></button>
                   <button data-testid={`del-trip-${t.id}`} onClick={() => del(t.id)} className="p-1.5 hover:text-destructive"><Trash2 size={16} /></button>
                 </td>
               </tr>
             ))}
-            {trips.length === 0 && <tr><td colSpan="6" className="text-center py-10 text-ink/50">No hay viajes</td></tr>}
+            {trips.length === 0 && <tr><td colSpan="7" className="text-center py-10 text-ink/50">No hay viajes</td></tr>}
           </tbody>
         </table>
       </div>
@@ -160,8 +171,17 @@ function TripModal({ data, onClose, onSave }) {
             {(f.pricing_tiers || []).length === 0 && (
               <Inp label="Precio base (desde)" type="number" v={f.price} onChange={(v) => set("price", v)} />
             )}
-            <Inp label="Min grupo" type="number" v={f.group_min} onChange={(v) => set("group_min", v)} />
-            <Inp label="Max grupo" type="number" v={f.group_max} onChange={(v) => set("group_max", v)} />
+          </div>
+          <div className="grid grid-cols-3 gap-4" data-testid="trip-spots">
+            <Inp label="Lugares totales" type="number" v={f.group_max} onChange={(v) => set("group_max", v)} testId="trip-spots-total" />
+            <Inp label="Lugares ocupados" type="number" v={f.spots_taken} onChange={(v) => set("spots_taken", v)} testId="trip-spots-taken" />
+            <div>
+              <label className="text-xs uppercase tracking-wider text-ink/60 mb-1 block">Lugares disponibles</label>
+              <div data-testid="trip-spots-left"
+                className={`w-full px-4 py-2.5 rounded-xl border border-[#E5E0D8] bg-sand/60 font-semibold ${spotsLeftOf(f.group_max, f.spots_taken) === 0 ? "text-red-600" : "text-ink"}`}>
+                {spotsLeftOf(f.group_max, f.spots_taken) === 0 ? "0 · Agotado" : spotsLeftOf(f.group_max, f.spots_taken)}
+              </div>
+            </div>
           </div>
 
           <PricingTiersField tiers={f.pricing_tiers || []} onChange={(v) => set("pricing_tiers", v)} />
@@ -191,7 +211,6 @@ function TripModal({ data, onClose, onSave }) {
               images={f.places_photos || []}
               update={(fn) => setF((prev) => ({ ...prev, places_photos: fn(prev.places_photos || []) }))} />
           </div>
-          <Inp label="Lugares disponibles" type="number" v={f.spots_left} onChange={(v) => set("spots_left", v)} />
           <ImageUploadField label="Imagen principal" value={f.cover_image} onChange={(v) => set("cover_image", v)} testId="trip-cover" />
           <ItineraryDaysEditor
             days={f.itinerary_days || []}

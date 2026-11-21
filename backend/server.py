@@ -17,7 +17,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Depend
 from fastapi.responses import FileResponse
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, model_validator
 
 # --- DB ---
 mongo_url = os.environ['MONGO_URL']
@@ -186,9 +186,10 @@ class TripBase(BaseModel):
     price: float
     reservation_price: Optional[float] = Field(None, ge=0)  # "Reserva con:" box; hidden when empty
     currency: str = "MXN"
-    group_min: int = 10
-    group_max: int = 15
-    spots_left: int = 15
+    group_min: int = 10  # legacy, no longer edited in the admin
+    group_max: int = 15  # "Lugares totales"
+    spots_taken: Optional[int] = Field(None, ge=0)  # "Lugares ocupados" (None = legacy trip, keep spots_left)
+    spots_left: int = 15  # "Lugares disponibles": computed = group_max - spots_taken (min 0)
     cover_image: str
     images: List[str] = []
     itinerary: List[dict] = []  # DEPRECATED: leftover seed data (wrong for real trips); not shown or edited. Use itinerary_days.
@@ -217,6 +218,12 @@ class TripBase(BaseModel):
     itinerary_pdf_url: Optional[str] = ""
     itinerary_text: Optional[str] = ""  # fallback: free text shown only when itinerary_days is empty
     itinerary_days: List[ItineraryDay] = []
+
+    @model_validator(mode="after")
+    def _compute_spots_left(self):
+        if self.spots_taken is not None:
+            self.spots_left = max(0, (self.group_max or 0) - self.spots_taken)
+        return self
 
 
 class Trip(TripBase):
@@ -631,6 +638,11 @@ async def _migrate_trip_fields():
             update["places"] = []
         if "pricing_tiers" not in t:
             update["pricing_tiers"] = []  # frontend shows the base price as "Por persona"
+        if t.get("spots_taken") is None:
+            # Keep the current "lugares disponibles": ocupados = totales - disponibles
+            total = int(t.get("group_max") or 0)
+            left = int(t.get("spots_left") if t.get("spots_left") is not None else total)
+            update["spots_taken"] = max(0, total - left)
         if "itinerary_pdf_url" not in t:
             update["itinerary_pdf_url"] = ""
         if "itinerary_text" not in t:
