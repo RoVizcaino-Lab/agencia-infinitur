@@ -32,7 +32,7 @@ class TestTripFieldsMigration:
             assert t["region"] == expected, f"trip {t['title']} region={t['region']} country={t['country']}"
 
     def test_pricing_tiers_backfilled(self):
-        """Migration should produce 3 tiers from base price for legacy trips."""
+        """pricing_tiers is always a list (may be empty: base price shown as "Por persona")."""
         trips = requests.get(f"{BASE_URL}/api/trips", timeout=20).json()
         for t in trips:
             tiers = t["pricing_tiers"]

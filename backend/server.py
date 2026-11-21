@@ -603,27 +603,10 @@ def _region_from_country(country: str) -> str:
 
 
 async def _migrate_trip_fields():
-    """Backfill new fields on legacy trips (trip_type, region, places, pricing_tiers).
+    """Backfill missing fields on legacy trips (trip_type, region, places, pricing_tiers).
 
-    To enrich the catalog UX, assign varied trip_type values based on title
-    keywords when the trip currently has the default 'Clásico'.
+    Runs on every startup, so it must never overwrite values set from the admin.
     """
-    # Title keyword → trip_type heuristic, applied only if still default.
-    type_map = [
-        ("machu", "Infinitur 90°"),
-        ("patagonia", "Infinitur 90°"),
-        ("sumidero", "Explora"),
-        ("cañon", "Explora"),
-        ("oaxaca", "Explora"),
-        ("tepoztl", "4 Elementos"),
-        ("paris", "Confort"),
-        ("parís", "Confort"),
-        ("toscana", "Confort"),
-        ("roma", "Confort"),
-        ("cartagena", "Mochilero"),
-        ("buenos aires", "Confort"),
-    ]
-
     # Renamed / removed trip types → current catalog taxonomy.
     renamed_types = {
         "Aventura": "Infinitur 90°",
@@ -638,26 +621,16 @@ async def _migrate_trip_fields():
     async for t in cursor:
         update = {}
         current_type = t.get("trip_type")
+        # Only backfill fields that are MISSING. Never overwrite values the admin
+        # set (e.g. an empty pricing_tiers list or a deliberate "Clásico" type).
         if not current_type:
             update["trip_type"] = "Clásico"
-        # Diversify legacy 'Clásico' defaults based on title.
-        title_l = (t.get("title") or "").lower()
-        if current_type in (None, "", "Clásico"):
-            for kw, mapped in type_map:
-                if kw in title_l:
-                    update["trip_type"] = mapped
-                    break
         if not t.get("region"):
             update["region"] = _region_from_country(t.get("country", "México"))
-        if "places" not in t or not t.get("places"):
+        if "places" not in t:
             update["places"] = []
-        if "pricing_tiers" not in t or not t.get("pricing_tiers"):
-            base = float(t.get("price", 0))
-            update["pricing_tiers"] = [
-                {"label": "Cuádruple", "price": base, "icon": "bed"},
-                {"label": "Triple", "price": round(base * 1.15), "icon": "bed"},
-                {"label": "Doble", "price": round(base * 1.30), "icon": "bed"},
-            ]
+        if "pricing_tiers" not in t:
+            update["pricing_tiers"] = []  # frontend shows the base price as "Por persona"
         if "itinerary_pdf_url" not in t:
             update["itinerary_pdf_url"] = ""
         if "itinerary_text" not in t:
