@@ -197,7 +197,7 @@ class TripBase(BaseModel):
     featured: bool = False
     active: bool = True
     # New (per Figma briefing)
-    trip_type: str = "Clásico"  # Clásico | Explora | Mochilero | Infinitur 90° | 4 Elementos | Altruismo | Confort | A la Carta
+    trip_type: str = "Clásico"  # Clásico | Explora | Mochilero | Infinitur 90° | 4 Elementos | AlTurismo | Confort | A la Carta
     region: str = "Nacional"  # Nacional | Internacional
     places: List[str] = []  # ["Maruata", "Palma Sola", ...]
     places_photos: List[str] = Field(default_factory=list, max_length=4)  # "Lugares a visitar" photos (/api/files URLs)
@@ -628,7 +628,8 @@ async def _migrate_trip_fields():
     renamed_types = {
         "Aventura": "Infinitur 90°",
         "Bienestar": "4 Elementos",
-        "Alturismo": "Altruismo",
+        "Alturismo": "AlTurismo",
+        "Altruismo": "AlTurismo",
     }
     for old, new in renamed_types.items():
         await db.trips.update_many({"trip_type": old}, {"$set": {"trip_type": new}})

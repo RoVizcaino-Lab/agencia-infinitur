@@ -100,9 +100,10 @@ export default function TripDetail() {
   const minTier = tiers.reduce((min, t) => t.price < min.price ? t : min, tiers[0]);
   const fillPct = trip.group_max ? Math.max(8, Math.min(95, 100 - (trip.spots_left / trip.group_max) * 100)) : 50;
   const excluded = (trip.excluded && trip.excluded.length > 0) ? trip.excluded : DEFAULT_EXCLUDED;
-  const extras = (trip.included || []).filter(
-    (it) => !["transporte", "hospedaje", "guía", "guia", "coordinador"].some((k) => it.toLowerCase().includes(k))
-  );
+  // Show every line the admin typed (no keyword filtering: lines like "Transporte local…" are real extras)
+  const extras = (trip.included || []).map((s) => (s || "").trim()).filter(Boolean);
+  // One-day trips have no lodging: compact price box without the lodging note
+  const isOneDay = trip.duration_days === 1 || (trip.start_date && trip.start_date === trip.end_date);
   // One item per line only (not commas), so sentences with commas stay whole
   const knowBefore = (trip.know_before || "").split("\n").map((s) => s.trim()).filter(Boolean);
 
@@ -306,6 +307,14 @@ export default function TripDetail() {
               </div>
 
               {/* Costo por viajero */}
+              {isOneDay && tiers.length === 1 ? (
+              <div className="border border-[#E8E6E0] rounded-2xl p-5 flex items-center justify-between gap-3" data-testid="trip-price-oneday">
+                <span className="font-display text-[19px] text-text-main font-bold">Costo por viajero:</span>
+                <span className="font-display text-[19px] text-text-main font-bold whitespace-nowrap">
+                  {fmtMoney(tiers[0].price)} <span className="text-[13px] font-sans font-semibold text-text-sec">{trip.currency || "MXN"}</span>
+                </span>
+              </div>
+              ) : (
               <div className="border border-[#E8E6E0] rounded-2xl p-5">
                 <h3 className="font-display text-[19px] text-text-main mb-4">Costo por viajero</h3>
                 <ul className="space-y-3.5">
@@ -322,9 +331,12 @@ export default function TripDetail() {
                   })}
                 </ul>
                 <p className="text-[11px] text-text-sec mt-4 leading-relaxed">
-                  Hospedaje en hotel o cabaña sujeto a disponibilidad. Todos los precios en {trip.currency || "MXN"}.
+                  {isOneDay
+                    ? `Todos los precios en ${trip.currency || "MXN"}.`
+                    : `Hospedaje en hotel o cabaña sujeto a disponibilidad. Todos los precios en ${trip.currency || "MXN"}.`}
                 </p>
               </div>
+              )}
 
               {/* Reserva con */}
               {trip.reservation_price > 0 && (

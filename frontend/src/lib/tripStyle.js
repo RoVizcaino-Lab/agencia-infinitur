@@ -18,7 +18,7 @@ export const TRIP_TYPES = [
   { key: "Mochilero", icon: EmojiIcon("🎒"), bg: "bg-[#FFE0C8]", fg: "text-orange-700", chip: "bg-orange-100 text-orange-700" },
   { key: "Infinitur 90°", icon: EmojiIcon("🏔️"), bg: "bg-[#E8D6BE]", fg: "text-[#7a5a36]", chip: "bg-[#F6E7D6] text-[#7a5a36]" },
   { key: "4 Elementos", icon: EmojiIcon("🌿"), bg: "bg-[#D9EFE4]", fg: "text-[#1F5D47]", chip: "bg-[#DCF1E7] text-[#1F5D47]" },
-  { key: "Altruismo", icon: EmojiIcon("🎖️"), bg: "bg-[#D6EDCA]", fg: "text-green-700", chip: "bg-green-50 text-green-700" },
+  { key: "AlTurismo", icon: EmojiIcon("🎖️"), bg: "bg-[#D6EDCA]", fg: "text-green-700", chip: "bg-green-50 text-green-700" },
   { key: "Confort", icon: EmojiIcon("🏨"), bg: "bg-[#FFF3EC]", fg: "text-orange-700", chip: "bg-orange-50 text-orange-700" },
   { key: "A la Carta", icon: UtensilsCrossed, bg: "bg-[#EFEAE1]", fg: "text-[#6B705C]", chip: "bg-[#F1EEE7] text-[#5C6151]" },
 ];
@@ -29,7 +29,7 @@ export const TRIP_TYPE_DESCRIPTIONS = {
   "Mochilero": "Para universitarios. Festivales, playa, buena vibra y diversión.",
   "Infinitur 90°": "Adrenalina máxima: rapel, rafting, paracaídas, tirolesa.",
   "4 Elementos": "Yoga, temazcales, meditación y reconexión interior.",
-  "Altruismo": "Turismo con impacto. Comunidades, conservación y donaciones.",
+  "AlTurismo": "Turismo con impacto. Comunidades, conservación y donaciones.",
   "Confort": "Recorridos con todas las comodidades. Hotel, descanso y disfrute.",
   "A la Carta": "Tú decides destino, fechas y modalidad. Escríbenos y armamos tu viaje.",
 };

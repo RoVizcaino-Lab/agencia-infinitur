@@ -6,7 +6,7 @@ import requests
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://grupos-expedicion.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
-NEW_TYPES = {"Clásico", "Explora", "Mochilero", "Infinitur 90°", "4 Elementos", "Altruismo", "Confort", "A la Carta"}
+NEW_TYPES = {"Clásico", "Explora", "Mochilero", "Infinitur 90°", "4 Elementos", "AlTurismo", "Confort", "A la Carta"}
 LEGACY = {"Aventura", "Bienestar", "Alturismo"}
 
 
